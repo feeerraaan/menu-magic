@@ -214,7 +214,7 @@ export default function MenuEditor() {
   const [categoryDialog, setCategoryDialog] = useState<{ open: boolean; category?: Category }>({ open: false });
   const [itemDialog, setItemDialog] = useState<{ open: boolean; item?: Item; categoryId?: string }>({ open: false });
   const [deleteConfirm, setDeleteConfirm] = useState<{ open: boolean; type: 'category' | 'item'; id: string } | null>(null);
-  const [scheduleDialog, setScheduleDialog] = useState<{ open: boolean; menu?: Menu }>({ open: false });
+  const [menuDialog, setMenuDialog] = useState<{ open: boolean; menu?: Menu }>({ open: false });
   
   const { toast } = useToast();
 
@@ -452,17 +452,15 @@ export default function MenuEditor() {
                 </Select>
               )}
               <Button 
-                variant="outline" 
+                variant="ghost" 
+                size="icon"
                 onClick={() => {
                   const menu = menus.find(m => m.id === selectedMenuId);
-                  if (menu) setScheduleDialog({ open: true, menu });
+                  if (menu) setMenuDialog({ open: true, menu });
                 }}
+                title="Editar menú"
               >
-                <Clock className="mr-2 h-4 w-4" />
-                Horario
-                {menus.find(m => m.id === selectedMenuId)?.schedule_rules && (
-                  <span className="ml-1 h-2 w-2 rounded-full bg-primary" />
-                )}
+                <Edit2 className="h-4 w-4" />
               </Button>
             </>
           )}
@@ -560,20 +558,24 @@ export default function MenuEditor() {
         </DialogContent>
       </Dialog>
 
-      {/* Schedule Dialog */}
-      <ScheduleDialog
-        open={scheduleDialog.open}
-        menu={scheduleDialog.menu}
-        onClose={() => setScheduleDialog({ open: false })}
-        onSave={async (menu, scheduleRules) => {
+      {/* Menu Edit Dialog */}
+      <MenuEditDialog
+        open={menuDialog.open}
+        menu={menuDialog.menu}
+        onClose={() => setMenuDialog({ open: false })}
+        onSave={async (menu, data) => {
           try {
             const { supabase } = await import('@/integrations/supabase/client');
             await supabase
               .from('menus')
-              .update({ schedule_rules: scheduleRules as any })
+              .update({
+                name: data.name,
+                description: data.description,
+                schedule_rules: data.schedule_rules as any,
+              })
               .eq('id', menu.id);
-            toast({ title: 'Horario guardado' });
-            setScheduleDialog({ open: false });
+            toast({ title: 'Menú actualizado' });
+            setMenuDialog({ open: false });
           } catch (e: any) {
             toast({ title: 'Error', description: e.message, variant: 'destructive' });
           }
@@ -817,8 +819,8 @@ function ItemDialog({
   );
 }
 
-// Schedule Dialog Component
-function ScheduleDialog({
+// Menu Edit Dialog Component
+function MenuEditDialog({
   open,
   menu,
   onClose,
@@ -827,40 +829,67 @@ function ScheduleDialog({
   open: boolean;
   menu?: Menu;
   onClose: () => void;
-  onSave: (menu: Menu, scheduleRules: ScheduleRule[] | null) => void;
+  onSave: (menu: Menu, data: { name: string; description: string | null; schedule_rules: ScheduleRule[] | null }) => void;
 }) {
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
   const [scheduleRules, setScheduleRules] = useState<ScheduleRule[] | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (menu) {
+      setName(menu.name);
+      setDescription(menu.description || '');
       setScheduleRules(menu.schedule_rules || null);
     }
   }, [menu, open]);
 
   const handleSave = async () => {
-    if (!menu) return;
+    if (!menu || !name.trim()) return;
     setLoading(true);
-    await onSave(menu, scheduleRules);
+    await onSave(menu, {
+      name: name.trim(),
+      description: description.trim() || null,
+      schedule_rules: scheduleRules,
+    });
     setLoading(false);
   };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Horario: {menu?.name}</DialogTitle>
-          <p className="text-sm text-muted-foreground">
-            Configura cuándo se muestra este menú específico
-          </p>
+          <DialogTitle>Editar menú</DialogTitle>
         </DialogHeader>
-        <MenuScheduleEditor
-          scheduleRules={scheduleRules}
-          onChange={setScheduleRules}
-        />
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="menu-name">Nombre</Label>
+            <Input
+              id="menu-name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="ej: Menú del día, Carta de vinos..."
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="menu-desc">Descripción (opcional)</Label>
+            <Textarea
+              id="menu-desc"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Una breve descripción del menú"
+            />
+          </div>
+          <div className="border-t pt-4">
+            <MenuScheduleEditor
+              scheduleRules={scheduleRules}
+              onChange={setScheduleRules}
+            />
+          </div>
+        </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancelar</Button>
-          <Button onClick={handleSave} disabled={loading}>
+          <Button onClick={handleSave} disabled={loading || !name.trim()}>
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Guardar
           </Button>
