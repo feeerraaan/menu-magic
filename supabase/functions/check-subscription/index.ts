@@ -14,9 +14,9 @@ const logStep = (step: string, details?: any) => {
 
 // Price/Product mapping for SaCarta
 const PLAN_MAPPING: Record<string, { plan: string; photos: number; languages: number }> = {
-  "price_1ShbjSClyJbFQEQavF7mAwX9": { plan: "pro_monthly", photos: 50, languages: 10 },
-  "price_1ShbkAClyJbFQEQa0JUtzEOp": { plan: "pro_annual", photos: 50, languages: 10 },
-  "price_1ShbkTClyJbFQEQaodGb9UEE": { plan: "lifetime", photos: 999, languages: 999 },
+  "price_1SheAFCgFIHkYWstnfLIdA3W": { plan: "pro_monthly", photos: 50, languages: 10 },
+  "price_1SheAQCgFIHkYWstrVsgPJQN": { plan: "pro_annual", photos: 50, languages: 10 },
+  "price_1SheAjCgFIHkYWstGofwVV2K": { plan: "lifetime", photos: 999, languages: 999 },
 };
 
 serve(async (req) => {
@@ -97,7 +97,7 @@ serve(async (req) => {
     logStep("Found Stripe customer", { customerId });
 
     // Check for lifetime purchase first (one-time payments)
-    const lifetimePriceId = "price_1ShbkTClyJbFQEQaodGb9UEE";
+    const lifetimePriceId = "price_1SheAjCgFIHkYWstGofwVV2K";
     let isLifetime = false;
     
     // Check checkout sessions for successful lifetime purchases

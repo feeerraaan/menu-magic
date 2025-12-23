@@ -17,8 +17,8 @@ export const PRICING_PLANS = [
     periodAnnual: '/año',
     features: ['Menús ilimitados', '3 idiomas automáticos', 'Fotos de alta calidad', 'Analíticas avanzadas', 'Personalización de marca', 'Soporte prioritario'], 
     popular: true,
-    stripeId: 'price_1ShbjSClyJbFQEQavF7mAwX9',
-    stripeIdAnnual: 'price_1ShbkAClyJbFQEQa0JUtzEOp',
+    stripeId: 'price_1SheAFCgFIHkYWstnfLIdA3W',
+    stripeIdAnnual: 'price_1SheAQCgFIHkYWstrVsgPJQN',
     planIdMonthly: 'pro_monthly',
     planIdAnnual: 'pro_annual',
     mode: 'subscription'
@@ -35,7 +35,7 @@ export const PRICING_PLANS = [
 ];
 
 export const STRIPE_PRICES = {
-  pro_monthly: 'price_1ShbjSClyJbFQEQavF7mAwX9',
-  pro_annual: 'price_1ShbkAClyJbFQEQa0JUtzEOp',
-  lifetime: 'price_1ShbkTClyJbFQEQaodGb9UEE',
+  pro_monthly: 'price_1SheAFCgFIHkYWstnfLIdA3W',
+  pro_annual: 'price_1SheAQCgFIHkYWstrVsgPJQN',
+  lifetime: 'price_1SheAjCgFIHkYWstGofwVV2K',
 };
