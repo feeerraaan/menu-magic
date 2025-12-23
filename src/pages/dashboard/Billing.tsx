@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useOutletContext, useSearchParams } from 'react-router-dom';
+import { useOutletContext } from 'react-router-dom';
 import { Restaurant } from '@/types/database';
 import { useSubscription } from '@/hooks/useRestaurant';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -62,36 +62,11 @@ interface StripeSubscriptionStatus {
 export default function Billing() {
   const { restaurant } = useOutletContext<{ restaurant: Restaurant }>();
   const { subscription, loading: subLoading, refetch } = useSubscription(restaurant.id);
-  const [searchParams, setSearchParams] = useSearchParams();
   const { toast } = useToast();
   
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [stripeStatus, setStripeStatus] = useState<StripeSubscriptionStatus | null>(null);
   const [checkingStatus, setCheckingStatus] = useState(false);
-
-  // Check for success/cancel from Stripe
-  useEffect(() => {
-    const success = searchParams.get('success');
-    const canceled = searchParams.get('canceled');
-    
-    if (success === 'true') {
-      toast({
-        title: '¡Pago exitoso!',
-        description: 'Tu suscripción ha sido activada. Puede tardar unos segundos en reflejarse.',
-      });
-      setSearchParams({});
-      // Refresh subscription status
-      checkSubscription();
-      refetch();
-    } else if (canceled === 'true') {
-      toast({
-        title: 'Pago cancelado',
-        description: 'El proceso de pago fue cancelado.',
-        variant: 'destructive',
-      });
-      setSearchParams({});
-    }
-  }, [searchParams]);
 
   // Check Stripe subscription status
   const checkSubscription = async () => {
