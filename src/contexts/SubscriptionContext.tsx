@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode, useRef } from 'react';
 import { Subscription } from '@/types/database';
 import { PlanType, PlanLimits, getPlanLimits, isPremiumPlan } from '@/lib/subscription-limits';
+import { useToast } from '@/hooks/use-toast';
 import * as api from '@/lib/api';
 
 interface SubscriptionContextType {
@@ -19,10 +20,20 @@ interface SubscriptionProviderProps {
   children: ReactNode;
 }
 
+const PLAN_NAMES: Record<PlanType, string> = {
+  free: 'Free',
+  pro_monthly: 'Pro Mensual',
+  pro_annual: 'Pro Anual',
+  lifetime: 'Lifetime',
+};
+
 export function SubscriptionProvider({ restaurantId, children }: SubscriptionProviderProps) {
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [loading, setLoading] = useState(true);
   const hasFetchedOnce = useRef(false);
+  const previousPlan = useRef<PlanType | null>(null);
+  const isVisibilityRefetch = useRef(false);
+  const { toast } = useToast();
 
   const refetch = useCallback(async () => {
     if (!restaurantId) return;
@@ -30,12 +41,25 @@ export function SubscriptionProvider({ restaurantId, children }: SubscriptionPro
     try {
       const data = await api.fetchSubscription(restaurantId);
       setSubscription(data);
+
+      const newPlan = (data?.plan || 'free') as PlanType;
+      
+      // Show toast if plan changed after returning from checkout
+      if (isVisibilityRefetch.current && previousPlan.current && previousPlan.current !== newPlan) {
+        toast({
+          title: '¡Plan actualizado!',
+          description: `Tu plan ha cambiado a ${PLAN_NAMES[newPlan]}.`,
+        });
+      }
+      
+      previousPlan.current = newPlan;
+      isVisibilityRefetch.current = false;
     } catch (error) {
       console.error('Error fetching subscription:', error);
     } finally {
       setLoading(false);
     }
-  }, [restaurantId]);
+  }, [restaurantId, toast]);
 
   // Initial fetch
   useEffect(() => {
@@ -47,6 +71,7 @@ export function SubscriptionProvider({ restaurantId, children }: SubscriptionPro
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible' && hasFetchedOnce.current) {
+        isVisibilityRefetch.current = true;
         refetch();
       }
     };
@@ -61,6 +86,7 @@ export function SubscriptionProvider({ restaurantId, children }: SubscriptionPro
   useEffect(() => {
     const handleFocus = () => {
       if (hasFetchedOnce.current) {
+        isVisibilityRefetch.current = true;
         refetch();
       }
     };
