@@ -23,7 +23,20 @@ export default function Auth() {
   const location = useLocation();
   const { toast } = useToast();
 
-  const from = (location.state as any)?.from?.pathname || '/dashboard';
+  // Validate redirect path to prevent open redirect attacks
+  const from = (() => {
+    const statePath = (location.state as any)?.from?.pathname;
+    // Only allow internal paths that start with / but not // (protocol-relative)
+    if (
+      typeof statePath === 'string' &&
+      statePath.startsWith('/') &&
+      !statePath.startsWith('//') &&
+      !statePath.match(/^[a-z]+:/i)
+    ) {
+      return statePath;
+    }
+    return '/dashboard';
+  })();
 
   // Redirect if already authenticated
   if (user) {

@@ -40,12 +40,18 @@ function MenuContent({ data }: { data: PublicMenuData }) {
   const categoryRefs = useRef<Record<string, HTMLElement | null>>({});
   const navRef = useRef<HTMLElement>(null);
 
-  // Track view
+  // Track view with throttling to prevent analytics abuse
+  const trackedViews = useRef(new Set<string>());
+  
   useEffect(() => {
-    supabase.from('menu_views').insert({
-      restaurant_id: restaurant.id,
-      language: language,
-    }).then(() => {});
+    const viewKey = `${restaurant.id}-${language}`;
+    if (!trackedViews.current.has(viewKey)) {
+      supabase.from('menu_views').insert({
+        restaurant_id: restaurant.id,
+        language: language,
+      }).then(() => {});
+      trackedViews.current.add(viewKey);
+    }
   }, [restaurant.id, language]);
 
   // Featured items
@@ -380,16 +386,23 @@ interface ItemCardProps {
   featured?: boolean;
 }
 
+// Use a module-level set to track viewed items across all ItemCard instances
+const trackedItemViews = new Set<string>();
+
 function ItemCard({ item, getName, getDescription, formatPrice, restaurantId, onSelect, featured }: ItemCardProps) {
   const price = formatPrice(item.price);
   const description = getDescription(item);
 
-  // Track item view and open modal
+  // Track item view with throttling and open modal
   const handleClick = () => {
-    supabase.from('menu_views').insert({
-      restaurant_id: restaurantId,
-      item_id: item.id,
-    }).then(() => {});
+    const viewKey = `${restaurantId}-${item.id}`;
+    if (!trackedItemViews.has(viewKey)) {
+      supabase.from('menu_views').insert({
+        restaurant_id: restaurantId,
+        item_id: item.id,
+      }).then(() => {});
+      trackedItemViews.add(viewKey);
+    }
     onSelect?.();
   };
 
@@ -486,10 +499,10 @@ export default function PublicMenu() {
       }
 
       try {
-        // Fetch restaurant
+        // Fetch restaurant - explicitly select public fields only (exclude owner_id, custom_domain)
         const { data: restaurant, error: restError } = await supabase
           .from('restaurants')
-          .select('*')
+          .select('id, name, slug, logo_url, address, phone, instagram_url, website_url, currency, default_language, supported_languages, hide_prices, theme, template, is_published, onboarding_completed, created_at, updated_at')
           .eq('slug', slug)
           .eq('is_published', true)
           .maybeSingle();
@@ -500,12 +513,15 @@ export default function PublicMenu() {
           setLoading(false);
           return;
         }
+        
+        // Cast to Restaurant type with owner_id as undefined (not used in public view)
+        const restaurantData = { ...restaurant, owner_id: '' } as Restaurant;
 
         // Fetch active menus
         const { data: menus, error: menuError } = await supabase
           .from('menus')
           .select('*')
-          .eq('restaurant_id', restaurant.id)
+          .eq('restaurant_id', restaurantData.id)
           .eq('is_active', true)
           .order('display_order');
 
@@ -560,7 +576,7 @@ export default function PublicMenu() {
         })) as (Category & { items: Item[] })[];
 
         setData({
-          restaurant: restaurant as unknown as Restaurant,
+          restaurant: restaurantData,
           menu: menu as unknown as Menu,
           categories,
         });
