@@ -27,11 +27,11 @@ export function LanguageProvider({
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
-    localStorage.setItem('SaCarta-language', lang);
+    localStorage.setItem('menuya-language', lang);
   };
 
   useEffect(() => {
-    const stored = localStorage.getItem('SaCarta-language') as Language | null;
+    const stored = localStorage.getItem('menuya-language') as Language | null;
     if (stored && supportedLanguages.includes(stored)) {
       setLanguageState(stored);
     }

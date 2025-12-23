@@ -12,7 +12,7 @@ const logStep = (step: string, details?: any) => {
   console.log(`[SYNC-SUBSCRIPTION] ${step}${detailsStr}`);
 };
 
-// Price/Product mapping for SaCarta
+// Price/Product mapping for MenuYa
 const PLAN_MAPPING: Record<string, { plan: string; photos: number; languages: number }> = {
   "price_1ShbjSClyJbFQEQavF7mAwX9": { plan: "pro_monthly", photos: 50, languages: 10 },
   "price_1ShbkAClyJbFQEQa0JUtzEOp": { plan: "pro_annual", photos: 50, languages: 10 },

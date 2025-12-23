@@ -87,7 +87,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
         template: formData.template as 'classic' | 'modern' | 'minimal',
         onboarding_completed: true,
       });
-      toast({ title: 'Welcome to SaCarta!', description: 'Your restaurant is ready.' });
+      toast({ title: 'Welcome to MenuYa!', description: 'Your restaurant is ready.' });
       onComplete();
     } catch (e: any) {
       toast({ title: 'Error', description: e.message, variant: 'destructive' });
