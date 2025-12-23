@@ -11,9 +11,9 @@ export const PRICING_PLANS = [
   { 
     id: 'pro', 
     name: 'Pro', 
-    price: '9€', 
+    price: '8.99€', 
     period: '/mes', 
-    priceAnnual: '79€',
+    priceAnnual: '79.99€',
     periodAnnual: '/año',
     features: ['Menús ilimitados', '10 idiomas automáticos', 'Fotos de alta calidad', 'Analíticas avanzadas', 'Personalización de marca', 'Soporte prioritario'], 
     popular: true,
@@ -26,7 +26,7 @@ export const PRICING_PLANS = [
   { 
     id: 'lifetime', 
     name: 'Lifetime', 
-    price: '149€', 
+    price: '139.99€', 
     period: ' pago único', 
     features: ['Todo lo incluido en Pro', 'Sin cuotas mensuales', 'Acceso de por vida', 'Actualizaciones futuras', 'Soporte VIP'],
     stripeId: 'price_1ShbkTClyJbFQEQaodGb9UEE',
