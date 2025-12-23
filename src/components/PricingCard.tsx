@@ -36,27 +36,47 @@ export function PricingCard({
 }: PricingCardProps) {
   const [isAnnual, setIsAnnual] = useState(false);
   
-  // Determine if this card represents the current plan
-  const isCurrentPlan = currentPlan === plan.id || 
-    (plan.id === 'pro' && (currentPlan === 'pro_monthly' || currentPlan === 'pro_annual'));
-    
-  const canUpgrade = !isPublic && plan.id !== 'free' && !isCurrentPlan && (!isLifetime || plan.id === 'lifetime');
-  
+  // Normalize marketing ids (UI) to internal plan ids used by billing/subscriptions
+  const normalizePlanId = (id: string) => {
+    const v = (id || '').toLowerCase();
+    if (v === 'sargantana' || v === 'free') return 'free';
+    if (v === 'ferreret' || v === 'pro') return 'pro_monthly';
+    if (v === 'pro_monthly' || v === 'pro_annual') return v;
+    if (v === 'myotragus' || v === 'lifetime') return 'lifetime';
+    return id;
+  };
+
   const displayPrice = isAnnual && plan.priceAnnual ? plan.priceAnnual : plan.price;
   const displayPeriod = isAnnual && plan.periodAnnual ? plan.periodAnnual : plan.period;
   const targetPlanId = isAnnual && plan.planIdAnnual ? plan.planIdAnnual : (plan.planIdMonthly || plan.id);
 
+  const normalizedCurrentPlan = normalizePlanId(currentPlan || 'free');
+  const normalizedTargetPlan = normalizePlanId(targetPlanId);
+
+  // Determine if this card represents the current plan
+  const isCurrentPlan =
+    normalizedCurrentPlan === normalizedTargetPlan ||
+    (String(normalizedCurrentPlan).startsWith('pro') && String(normalizedTargetPlan).startsWith('pro'));
+
   // Calculate plan weight to determine if it's a downgrade
   const getPlanWeight = (id: string) => {
-    if (id === 'lifetime') return 3;
-    if (id.startsWith('pro')) return 2;
-    if (id === 'free') return 1;
+    const n = normalizePlanId(id);
+    if (n === 'lifetime') return 3;
+    if (String(n).startsWith('pro')) return 2;
+    if (n === 'free') return 1;
     return 0;
   };
 
-  const currentWeight = getPlanWeight(currentPlan || 'free');
-  const planWeight = getPlanWeight(plan.id);
+  const currentWeight = getPlanWeight(normalizedCurrentPlan);
+  const planWeight = getPlanWeight(normalizedTargetPlan);
   const isDowngrade = !isPublic && currentWeight > planWeight;
+
+  const canUpgrade =
+    !isPublic &&
+    normalizedTargetPlan !== 'free' &&
+    !isCurrentPlan &&
+    !isDowngrade &&
+    (!isLifetime || normalizedTargetPlan === 'lifetime');
 
   return (
     <div className={`relative p-8 rounded-3xl border flex flex-col ${plan.popular ? 'border-primary shadow-xl shadow-primary/10 bg-card z-10' : 'border-border bg-card/50 hover:bg-card transition-colors'}`}>
