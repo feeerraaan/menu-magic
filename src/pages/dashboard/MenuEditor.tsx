@@ -149,28 +149,28 @@ function CategoryCard({
                 {items.map(item => (
                   <SortableItem key={item.id} id={item.id}>
                     <div className={cn(
-                      'flex items-center gap-3 p-3 pl-8 rounded-lg border bg-card hover:border-primary/30 transition-colors',
+                      'flex items-center gap-3 p-3 pl-8 rounded-lg border bg-card hover:border-primary/30 transition-colors overflow-hidden',
                       !item.is_active && 'opacity-50'
                     )}>
                       {item.photo_url && (
                         <img src={item.photo_url} alt={item.name} className="h-12 w-12 rounded object-cover flex-shrink-0" />
                       )}
-                      <div className="flex-1 min-w-0">
+                      <div className="flex-1 min-w-0 overflow-hidden">
                         <div className="flex items-center gap-2">
                           <span className="font-medium truncate">{item.name}</span>
-                          {item.is_featured && <Star className="h-3 w-3 text-warning fill-warning" />}
-                          {item.is_vegetarian && <Leaf className="h-3 w-3 text-green-600" />}
-                          {item.is_vegan && <Leaf className="h-3 w-3 text-green-700 fill-green-700" />}
-                          {item.is_spicy && <Flame className="h-3 w-3 text-red-500" />}
-                          {item.is_gluten_free && <Wheat className="h-3 w-3 text-amber-600 line-through" />}
+                          {item.is_featured && <Star className="h-3 w-3 text-warning fill-warning flex-shrink-0" />}
+                          {item.is_vegetarian && <Leaf className="h-3 w-3 text-green-600 flex-shrink-0" />}
+                          {item.is_vegan && <Leaf className="h-3 w-3 text-green-700 fill-green-700 flex-shrink-0" />}
+                          {item.is_spicy && <Flame className="h-3 w-3 text-red-500 flex-shrink-0" />}
+                          {item.is_gluten_free && <Wheat className="h-3 w-3 text-amber-600 line-through flex-shrink-0" />}
                         </div>
                         {item.description && (
-                          <p className="text-sm text-muted-foreground truncate">{item.description}</p>
+                          <p className="text-sm text-muted-foreground truncate max-w-[300px]">{item.description}</p>
                         )}
                       </div>
-                      <div className="flex items-center gap-2 ml-4">
+                      <div className="flex items-center gap-2 flex-shrink-0">
                         {item.price !== null && (
-                          <span className="font-semibold text-primary">{item.price.toFixed(2)}</span>
+                          <span className="font-semibold text-primary whitespace-nowrap">{item.price.toFixed(2)}</span>
                         )}
                         <Button variant="ghost" size="icon" onClick={() => onToggleItemActive(item)}>
                           {item.is_active ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
