@@ -1,7 +1,7 @@
 export const PRICING_PLANS = [
   { 
-    id: 'free', 
-    name: 'Gratis', 
+    id: 'sargantana', 
+    name: 'Sargantana', 
     price: '0€', 
     period: '/mes', 
     features: ['1 menú digital', '1 idioma', 'QR básico', 'Platos ilimitados', 'Soporte por email'],
@@ -9,8 +9,8 @@ export const PRICING_PLANS = [
     mode: null
   },
   { 
-    id: 'pro', 
-    name: 'Pro', 
+    id: 'ferreret', 
+    name: 'Ferreret', 
     price: '8.99€', 
     period: '/mes', 
     priceAnnual: '79.99€',
@@ -24,11 +24,11 @@ export const PRICING_PLANS = [
     mode: 'subscription'
   },
   { 
-    id: 'lifetime', 
-    name: 'Lifetime', 
+    id: 'myotragus', 
+    name: 'Myotragus', 
     price: '139.99€', 
     period: ' pago único', 
-    features: ['Todo lo incluido en Pro', 'Sin cuotas mensuales', 'Acceso de por vida', 'Actualizaciones futuras', 'Soporte VIP'],
+    features: ['Todo lo incluido en Ferreret', 'Sin cuotas mensuales', 'Acceso de por vida', 'Actualizaciones futuras', 'Soporte VIP'],
     stripeId: 'price_1ShbkTClyJbFQEQaodGb9UEE',
     mode: 'payment'
   },
