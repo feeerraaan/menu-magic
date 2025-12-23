@@ -121,7 +121,7 @@ export default function Index() {
       <footer className="border-t border-border/50 bg-secondary/20 py-8">
         <div className="container mx-auto px-4 text-center">
           <p className="text-muted-foreground text-sm">
-            © {new Date().getFullYear()} SaCarta. Fet des de la illa.
+            © {new Date().getFullYear()} SaCarta. Fet des de sa illa.
           </p>
         </div>
       </footer>
