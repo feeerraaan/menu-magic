@@ -17,6 +17,8 @@ import QRCodePage from "./pages/dashboard/QRCode";
 import Analytics from "./pages/dashboard/Analytics";
 import Settings from "./pages/dashboard/Settings";
 import Billing from "./pages/dashboard/Billing";
+import PaymentSuccess from "./pages/dashboard/PaymentSuccess";
+import PaymentCanceled from "./pages/dashboard/PaymentCanceled";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +45,8 @@ const App = () => (
                 <Route path="analytics" element={<Analytics />} />
                 <Route path="settings" element={<Settings />} />
                 <Route path="billing" element={<Billing />} />
+                <Route path="billing/success" element={<PaymentSuccess />} />
+                <Route path="billing/canceled" element={<PaymentCanceled />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
