@@ -370,7 +370,7 @@ function MenuContent({ data }: { data: PublicMenuData }) {
 
       {/* Footer */}
       <footer className="border-t border-border py-6 text-center text-sm text-muted-foreground">
-        <p>Powered by MenuYa</p>
+        <p>Powered by SaCarta</p>
       </footer>
     </div>
   );

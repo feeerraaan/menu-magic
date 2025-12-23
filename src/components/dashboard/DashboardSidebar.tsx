@@ -56,7 +56,7 @@ export function DashboardSidebar() {
           <div className="flex h-8 w-8 items-center justify-center rounded-lg gradient-primary">
             <Utensils className="h-4 w-4 text-primary-foreground" />
           </div>
-          {!collapsed && <span className="font-display text-lg font-bold">MenuYa</span>}
+          {!collapsed && <span className="font-display text-lg font-bold">SaCarta</span>}
         </div>
       </SidebarHeader>
 

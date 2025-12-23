@@ -7,12 +7,9 @@ export default function Index() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b border-border/50 bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto flex items-center justify-between py-4">
+        <div className="container pt-0 pb-0 mx-auto flex items-center justify-between py-4">
           <div className="flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl gradient-primary">
-              <Utensils className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <span className="font-display text-xl font-bold">MenuYa</span>
+            <a href="/"><img src="/public/favicon.ico" alt="SaCarta Logo" height={92} width={92}/></a>    
           </div>
           <div className="flex items-center gap-4">
             <Link to="/auth">
@@ -105,7 +102,7 @@ export default function Index() {
       {/* Footer */}
       <footer className="border-t border-border py-8">
         <div className="container mx-auto text-center text-muted-foreground">
-          <p>© 2024 MenuYa. Made with ❤️ for restaurants.</p>
+          <p>© 2024 SaCarta. Made with ❤️ for restaurants.</p>
         </div>
       </footer>
     </div>
