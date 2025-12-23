@@ -9,6 +9,7 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import PublicMenu from "./pages/PublicMenu";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import DashboardOverview from "./pages/dashboard/Overview";
 import MenuEditor from "./pages/dashboard/MenuEditor";
@@ -30,7 +31,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
-              <Route path="/m/:slug" element={<div className="p-8 text-center">Public Menu (coming next)</div>} />
+              <Route path="/m/:slug" element={<PublicMenu />} />
               <Route path="/dashboard" element={
                 <ProtectedRoute>
                   <DashboardLayout />
