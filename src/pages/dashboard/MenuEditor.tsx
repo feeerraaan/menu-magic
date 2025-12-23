@@ -225,15 +225,33 @@ export default function MenuEditor() {
   // Fetch items for all categories
   useEffect(() => {
     const fetchItems = async () => {
-      if (!categories.length) return;
-      const items: Record<string, Item[]> = {};
-      for (const cat of categories) {
-        const { data } = await import('@/integrations/supabase/client').then(m => 
-          m.supabase.from('items').select('*').eq('category_id', cat.id).order('display_order')
-        );
-        items[cat.id] = (data || []) as Item[];
+      if (!categories.length) {
+        setItemsByCategory({});
+        return;
       }
-      setItemsByCategory(items);
+      try {
+        const { supabase } = await import('@/integrations/supabase/client');
+        const items: Record<string, Item[]> = {};
+        for (const cat of categories) {
+          const { data, error } = await supabase
+            .from('items')
+            .select('*')
+            .eq('category_id', cat.id)
+            .order('display_order');
+          
+          if (error) {
+            if (import.meta.env.DEV) {
+              console.error('Error fetching items for category', cat.id, error);
+            }
+          }
+          items[cat.id] = (data || []) as Item[];
+        }
+        setItemsByCategory(items);
+      } catch (e) {
+        if (import.meta.env.DEV) {
+          console.error('Error fetching items:', e);
+        }
+      }
     };
     fetchItems();
   }, [categories]);
