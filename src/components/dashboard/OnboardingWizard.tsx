@@ -1,0 +1,312 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useRestaurant } from '@/hooks/useRestaurant';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
+import { Utensils, MapPin, Phone, Globe, ArrowRight, ArrowLeft, Check, Loader2 } from 'lucide-react';
+import { languages } from '@/lib/i18n';
+
+const CURRENCIES = [
+  { code: 'EUR', symbol: '€', name: 'Euro' },
+  { code: 'USD', symbol: '$', name: 'US Dollar' },
+  { code: 'GBP', symbol: '£', name: 'British Pound' },
+  { code: 'MXN', symbol: '$', name: 'Mexican Peso' },
+];
+
+const TEMPLATES = [
+  { id: 'classic', name: 'Classic', desc: 'Elegant and timeless' },
+  { id: 'modern', name: 'Modern', desc: 'Clean and minimal' },
+  { id: 'minimal', name: 'Minimal', desc: 'Simple and focused' },
+];
+
+interface OnboardingWizardProps {
+  onComplete: () => void;
+}
+
+export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
+  const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const { create, update, restaurant } = useRestaurant();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    name: '',
+    address: '',
+    phone: '',
+    instagram_url: '',
+    currency: 'EUR',
+    default_language: 'en',
+    supported_languages: ['en'],
+    template: 'classic',
+  });
+
+  const updateField = (field: string, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleNext = async () => {
+    if (step === 1) {
+      if (!formData.name.trim()) {
+        toast({ title: 'Please enter your restaurant name', variant: 'destructive' });
+        return;
+      }
+      
+      setLoading(true);
+      try {
+        await create({ name: formData.name });
+        setStep(2);
+      } catch (e: any) {
+        toast({ title: 'Error', description: e.message, variant: 'destructive' });
+      } finally {
+        setLoading(false);
+      }
+    } else if (step < 4) {
+      setStep(step + 1);
+    }
+  };
+
+  const handleBack = () => {
+    if (step > 1) setStep(step - 1);
+  };
+
+  const handleFinish = async () => {
+    setLoading(true);
+    try {
+      await update({
+        address: formData.address || null,
+        phone: formData.phone || null,
+        instagram_url: formData.instagram_url || null,
+        currency: formData.currency,
+        default_language: formData.default_language,
+        supported_languages: formData.supported_languages,
+        template: formData.template as 'classic' | 'modern' | 'minimal',
+        onboarding_completed: true,
+      });
+      toast({ title: 'Welcome to MenuYa!', description: 'Your restaurant is ready.' });
+      onComplete();
+    } catch (e: any) {
+      toast({ title: 'Error', description: e.message, variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleLanguage = (lang: string) => {
+    const current = formData.supported_languages;
+    if (current.includes(lang)) {
+      if (current.length > 1) {
+        updateField('supported_languages', current.filter(l => l !== lang));
+        if (formData.default_language === lang) {
+          updateField('default_language', current.find(l => l !== lang) || 'en');
+        }
+      }
+    } else {
+      updateField('supported_languages', [...current, lang]);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-secondary/20 to-background p-4">
+      <Card className="w-full max-w-lg">
+        <CardHeader className="text-center">
+          <div className="flex justify-center gap-2 mb-4">
+            {[1, 2, 3, 4].map(s => (
+              <div
+                key={s}
+                className={`h-2 w-8 rounded-full transition-colors ${
+                  s <= step ? 'bg-primary' : 'bg-muted'
+                }`}
+              />
+            ))}
+          </div>
+          <CardTitle className="font-display text-2xl">
+            {step === 1 && "Let's get started"}
+            {step === 2 && 'Contact details'}
+            {step === 3 && 'Language & Currency'}
+            {step === 4 && 'Choose your style'}
+          </CardTitle>
+          <CardDescription>
+            {step === 1 && 'What\'s your restaurant called?'}
+            {step === 2 && 'Help customers find you (optional)'}
+            {step === 3 && 'Configure your menu settings'}
+            {step === 4 && 'Pick a template for your menu'}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {step === 1 && (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Restaurant Name</Label>
+                <div className="relative">
+                  <Utensils className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="name"
+                    placeholder="e.g., La Bella Italia"
+                    value={formData.name}
+                    onChange={(e) => updateField('name', e.target.value)}
+                    className="pl-10"
+                    autoFocus
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {step === 2 && (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="address">Address</Label>
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="address"
+                    placeholder="123 Main St, City"
+                    value={formData.address}
+                    onChange={(e) => updateField('address', e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone</Label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="phone"
+                    placeholder="+1 234 567 890"
+                    value={formData.phone}
+                    onChange={(e) => updateField('phone', e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="instagram">Instagram</Label>
+                <div className="relative">
+                  <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="instagram"
+                    placeholder="https://instagram.com/yourrestaurant"
+                    value={formData.instagram_url}
+                    onChange={(e) => updateField('instagram_url', e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {step === 3 && (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>Currency</Label>
+                <Select value={formData.currency} onValueChange={(v) => updateField('currency', v)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CURRENCIES.map(c => (
+                      <SelectItem key={c.code} value={c.code}>
+                        {c.symbol} {c.name} ({c.code})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Menu Languages</Label>
+                <p className="text-sm text-muted-foreground">Select languages for your menu</p>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {languages.map(lang => (
+                    <Button
+                      key={lang.code}
+                      type="button"
+                      variant={formData.supported_languages.includes(lang.code) ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => toggleLanguage(lang.code)}
+                    >
+                      {lang.flag} {lang.name}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>Default Language</Label>
+                <Select 
+                  value={formData.default_language} 
+                  onValueChange={(v) => updateField('default_language', v)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {languages
+                      .filter(l => formData.supported_languages.includes(l.code))
+                      .map(l => (
+                        <SelectItem key={l.code} value={l.code}>
+                          {l.flag} {l.name}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          )}
+
+          {step === 4 && (
+            <div className="space-y-4">
+              <div className="grid gap-3">
+                {TEMPLATES.map(template => (
+                  <button
+                    key={template.id}
+                    type="button"
+                    onClick={() => updateField('template', template.id)}
+                    className={`p-4 rounded-lg border-2 text-left transition-all ${
+                      formData.template === template.id
+                        ? 'border-primary bg-primary/5'
+                        : 'border-border hover:border-primary/50'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium">{template.name}</p>
+                        <p className="text-sm text-muted-foreground">{template.desc}</p>
+                      </div>
+                      {formData.template === template.id && (
+                        <Check className="h-5 w-5 text-primary" />
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="flex gap-3">
+            {step > 1 && (
+              <Button variant="outline" onClick={handleBack} disabled={loading}>
+                <ArrowLeft className="mr-2 h-4 w-4" /> Back
+              </Button>
+            )}
+            {step < 4 ? (
+              <Button className="flex-1" onClick={handleNext} disabled={loading}>
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Next <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            ) : (
+              <Button className="flex-1" onClick={handleFinish} disabled={loading}>
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Finish Setup <Check className="ml-2 h-4 w-4" />
+              </Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
