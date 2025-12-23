@@ -462,7 +462,9 @@ export default function PublicMenu() {
           categories,
         });
       } catch (e: any) {
-        console.error('Error fetching menu:', e);
+        if (import.meta.env.DEV) {
+          console.error('Error fetching menu:', e);
+        }
         setError('Failed to load menu');
       } finally {
         setLoading(false);
