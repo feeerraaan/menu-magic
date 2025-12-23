@@ -283,9 +283,10 @@ export default function MenuEditor() {
         }));
         toast({ title: 'Item updated' });
       } else if (categoryId) {
+        const insertData = { ...data, category_id: categoryId, display_order: (itemsByCategory[categoryId]?.length || 0) };
         const { data: newItem } = await supabase
           .from('items')
-          .insert({ ...data, category_id: categoryId, display_order: (itemsByCategory[categoryId]?.length || 0) })
+          .insert([insertData as any])
           .select()
           .single();
         if (newItem) {
