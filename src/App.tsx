@@ -9,6 +9,13 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
+import DashboardOverview from "./pages/dashboard/Overview";
+import MenuEditor from "./pages/dashboard/MenuEditor";
+import QRCodePage from "./pages/dashboard/QRCode";
+import Analytics from "./pages/dashboard/Analytics";
+import Settings from "./pages/dashboard/Settings";
+import Billing from "./pages/dashboard/Billing";
 
 const queryClient = new QueryClient();
 
@@ -24,11 +31,18 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/m/:slug" element={<div className="p-8 text-center">Public Menu (coming next)</div>} />
-              <Route path="/dashboard/*" element={
+              <Route path="/dashboard" element={
                 <ProtectedRoute>
-                  <div className="p-8 text-center">Dashboard (coming next)</div>
+                  <DashboardLayout />
                 </ProtectedRoute>
-              } />
+              }>
+                <Route index element={<DashboardOverview />} />
+                <Route path="editor" element={<MenuEditor />} />
+                <Route path="qr" element={<QRCodePage />} />
+                <Route path="analytics" element={<Analytics />} />
+                <Route path="settings" element={<Settings />} />
+                <Route path="billing" element={<Billing />} />
+              </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

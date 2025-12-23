@@ -1,0 +1,36 @@
+import { Outlet } from 'react-router-dom';
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { DashboardSidebar } from './DashboardSidebar';
+import { useRestaurant } from '@/hooks/useRestaurant';
+import { OnboardingWizard } from './OnboardingWizard';
+import { LoadingPage } from '@/components/ui/loading-spinner';
+
+export function DashboardLayout() {
+  const { restaurant, loading, refetch } = useRestaurant();
+
+  if (loading) {
+    return <LoadingPage />;
+  }
+
+  // Show onboarding if no restaurant or onboarding not completed
+  if (!restaurant || !restaurant.onboarding_completed) {
+    return <OnboardingWizard onComplete={refetch} />;
+  }
+
+  return (
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full">
+        <DashboardSidebar />
+        <div className="flex-1 flex flex-col">
+          <header className="h-14 border-b border-border flex items-center px-4 gap-4 bg-card/50 backdrop-blur-sm sticky top-0 z-40">
+            <SidebarTrigger />
+            <h1 className="font-display text-lg font-semibold">{restaurant.name}</h1>
+          </header>
+          <main className="flex-1 p-6 bg-background">
+            <Outlet context={{ restaurant }} />
+          </main>
+        </div>
+      </div>
+    </SidebarProvider>
+  );
+}
