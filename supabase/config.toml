@@ -1,10 +1,13 @@
 project_id = "sipxerzltoczbhrybwnn"
 
+# NOTE: verify_jwt is disabled due to JWT algorithm mismatch in Edge Function gateway.
+# These functions still require Authorization header and validate the user via auth.getUser().
+
 [functions.create-checkout]
-verify_jwt = true
+verify_jwt = false
 
 [functions.check-subscription]
-verify_jwt = true
+verify_jwt = false
 
 [functions.customer-portal]
-verify_jwt = true
+verify_jwt = false
