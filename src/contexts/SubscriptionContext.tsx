@@ -36,13 +36,20 @@ export function SubscriptionProvider({ restaurantId, children }: SubscriptionPro
   const { toast } = useToast();
 
   const refetch = useCallback(async () => {
-    if (!restaurantId) return;
+    console.log('[SubscriptionContext] refetch called, restaurantId:', restaurantId);
+    if (!restaurantId) {
+      console.log('[SubscriptionContext] No restaurantId, skipping fetch');
+      return;
+    }
     setLoading(true);
     try {
+      console.log('[SubscriptionContext] Fetching subscription...');
       const data = await api.fetchSubscription(restaurantId);
+      console.log('[SubscriptionContext] Fetched subscription data:', data);
       setSubscription(data);
 
       const newPlan = (data?.plan || 'free') as PlanType;
+      console.log('[SubscriptionContext] Plan resolved to:', newPlan);
       
       // Show toast if plan changed after returning from checkout
       if (isVisibilityRefetch.current && previousPlan.current && previousPlan.current !== newPlan) {
@@ -55,9 +62,10 @@ export function SubscriptionProvider({ restaurantId, children }: SubscriptionPro
       previousPlan.current = newPlan;
       isVisibilityRefetch.current = false;
     } catch (error) {
-      console.error('Error fetching subscription:', error);
+      console.error('[SubscriptionContext] Error fetching subscription:', error);
     } finally {
       setLoading(false);
+      console.log('[SubscriptionContext] Loading complete');
     }
   }, [restaurantId, toast]);
 
