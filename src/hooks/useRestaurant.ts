@@ -188,13 +188,20 @@ export function useSubscription(restaurantId: string | undefined) {
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const refetch = async () => {
     if (!restaurantId) return;
     setLoading(true);
-    api.fetchSubscription(restaurantId)
-      .then(setSubscription)
-      .finally(() => setLoading(false));
+    try {
+      const data = await api.fetchSubscription(restaurantId);
+      setSubscription(data);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    refetch();
   }, [restaurantId]);
 
-  return { subscription, loading };
+  return { subscription, loading, refetch };
 }
