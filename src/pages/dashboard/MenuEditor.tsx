@@ -424,50 +424,59 @@ export default function MenuEditor() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="font-display text-2xl font-bold">Menu Editor</h2>
-          <p className="text-muted-foreground">Manage your categories and menu items</p>
-        </div>
-        <div className="flex items-center gap-3">
-          {menus.length > 0 && (
-            <>
-              {menus.length > 1 && (
-                <Select value={selectedMenuId || ''} onValueChange={setSelectedMenuId}>
-                  <SelectTrigger className="w-48">
-                    <SelectValue placeholder="Select menu" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {menus.map(m => (
-                      <SelectItem key={m.id} value={m.id}>
-                        <span className="flex items-center gap-2">
-                          {m.name}
-                          {m.schedule_rules && (
-                            <Clock className="h-3 w-3 text-muted-foreground" />
-                          )}
-                        </span>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-              <Button 
-                variant="ghost" 
-                size="icon"
-                onClick={() => {
-                  const menu = menus.find(m => m.id === selectedMenuId);
-                  if (menu) setMenuDialog({ open: true, menu });
-                }}
-                title="Editar menú"
-              >
-                <Edit2 className="h-4 w-4" />
-              </Button>
-            </>
-          )}
-          <Button onClick={() => setCategoryDialog({ open: true })}>
-            <Plus className="mr-2 h-4 w-4" /> Add Category
+      {/* Menu Selection Bar */}
+      <Card className="p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Label className="text-sm font-medium">Menú:</Label>
+            <Select value={selectedMenuId || ''} onValueChange={setSelectedMenuId}>
+              <SelectTrigger className="w-56">
+                <SelectValue placeholder="Seleccionar menú" />
+              </SelectTrigger>
+              <SelectContent>
+                {menus.map(m => (
+                  <SelectItem key={m.id} value={m.id}>
+                    <span className="flex items-center gap-2">
+                      {m.name}
+                      {m.schedule_rules && (
+                        <Clock className="h-3 w-3 text-muted-foreground" />
+                      )}
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => {
+                const menu = menus.find(m => m.id === selectedMenuId);
+                if (menu) setMenuDialog({ open: true, menu });
+              }}
+              title="Editar menú"
+            >
+              <Edit2 className="h-4 w-4" />
+            </Button>
+          </div>
+          <Button 
+            variant="outline"
+            onClick={() => setMenuDialog({ open: true })}
+          >
+            <Plus className="mr-2 h-4 w-4" /> Nuevo Menú
           </Button>
         </div>
+      </Card>
+
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="font-display text-2xl font-bold">
+            {menus.find(m => m.id === selectedMenuId)?.name || 'Menu Editor'}
+          </h2>
+          <p className="text-muted-foreground">Manage your categories and menu items</p>
+        </div>
+        <Button onClick={() => setCategoryDialog({ open: true })}>
+          <Plus className="mr-2 h-4 w-4" /> Add Category
+        </Button>
       </div>
 
       {categories.length === 0 ? (
@@ -562,19 +571,41 @@ export default function MenuEditor() {
       <MenuEditDialog
         open={menuDialog.open}
         menu={menuDialog.menu}
+        restaurantId={restaurant.id}
         onClose={() => setMenuDialog({ open: false })}
-        onSave={async (menu, data) => {
+        onSave={async (data, menu) => {
           try {
             const { supabase } = await import('@/integrations/supabase/client');
-            await supabase
-              .from('menus')
-              .update({
-                name: data.name,
-                description: data.description,
-                schedule_rules: data.schedule_rules as any,
-              })
-              .eq('id', menu.id);
-            toast({ title: 'Menú actualizado' });
+            if (menu) {
+              // Update existing menu
+              await supabase
+                .from('menus')
+                .update({
+                  name: data.name,
+                  description: data.description,
+                  schedule_rules: data.schedule_rules as any,
+                })
+                .eq('id', menu.id);
+              toast({ title: 'Menú actualizado' });
+            } else {
+              // Create new menu
+              const { data: newMenu, error } = await supabase
+                .from('menus')
+                .insert({
+                  restaurant_id: restaurant.id,
+                  name: data.name,
+                  description: data.description,
+                  schedule_rules: data.schedule_rules as any,
+                  display_order: menus.length,
+                })
+                .select()
+                .single();
+              if (error) throw error;
+              if (newMenu) {
+                setSelectedMenuId(newMenu.id);
+              }
+              toast({ title: 'Menú creado' });
+            }
             setMenuDialog({ open: false });
           } catch (e: any) {
             toast({ title: 'Error', description: e.message, variant: 'destructive' });
@@ -823,13 +854,15 @@ function ItemDialog({
 function MenuEditDialog({
   open,
   menu,
+  restaurantId,
   onClose,
   onSave,
 }: {
   open: boolean;
   menu?: Menu;
+  restaurantId: string;
   onClose: () => void;
-  onSave: (menu: Menu, data: { name: string; description: string | null; schedule_rules: ScheduleRule[] | null }) => void;
+  onSave: (data: { name: string; description: string | null; schedule_rules: ScheduleRule[] | null }, menu?: Menu) => void;
 }) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -837,21 +870,27 @@ function MenuEditDialog({
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (menu) {
-      setName(menu.name);
-      setDescription(menu.description || '');
-      setScheduleRules(menu.schedule_rules || null);
+    if (open) {
+      if (menu) {
+        setName(menu.name);
+        setDescription(menu.description || '');
+        setScheduleRules(menu.schedule_rules || null);
+      } else {
+        setName('');
+        setDescription('');
+        setScheduleRules(null);
+      }
     }
   }, [menu, open]);
 
   const handleSave = async () => {
-    if (!menu || !name.trim()) return;
+    if (!name.trim()) return;
     setLoading(true);
-    await onSave(menu, {
+    await onSave({
       name: name.trim(),
       description: description.trim() || null,
       schedule_rules: scheduleRules,
-    });
+    }, menu);
     setLoading(false);
   };
 
@@ -859,7 +898,7 @@ function MenuEditDialog({
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Editar menú</DialogTitle>
+          <DialogTitle>{menu ? 'Editar menú' : 'Nuevo menú'}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">
@@ -891,7 +930,7 @@ function MenuEditDialog({
           <Button variant="outline" onClick={onClose}>Cancelar</Button>
           <Button onClick={handleSave} disabled={loading || !name.trim()}>
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Guardar
+            {menu ? 'Guardar' : 'Crear'}
           </Button>
         </DialogFooter>
       </DialogContent>
