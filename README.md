@@ -48,7 +48,42 @@ npm run dev
 - Click on the "Code" button (green button) near the top right.
 - Select the "Codespaces" tab.
 - Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+
+---
+
+## 🎨 Color Palette
+
+### Light Mode
+| Color | Hex | Usage |
+|-------|-----|-------|
+| Primary (Terracotta) | `#CC5C3D` | Main brand color, buttons, links |
+| Secondary | `#F0E8E0` | Light backgrounds |
+| Accent (Gold) | `#FFC62E` | Highlights, emphasis |
+| Destructive (Red) | `#EC4C46` | Alerts, errors |
+| Success (Green) | `#40B34F` | Success messages |
+| Warning (Orange) | `#FFA500` | Warnings |
+| Background | `#FBF8F5` | Main background |
+| Foreground | `#2E1F18` | Text color |
+| Card/Popover | `#FFFFFF` | Card backgrounds |
+| Border | `#E8DFCE` | Borders |
+| Muted | `#EBE5E0` | Muted text, secondary elements |
+| Sidebar Background | `#F0E8DE` | Sidebar background |
+
+### Dark Mode
+| Color | Hex | Usage |
+|-------|-----|-------|
+| Primary (Terracotta) | `#DA7561` | Main brand color |
+| Secondary | `#1F1410` | Dark backgrounds |
+| Accent (Gold) | `#FFB800` | Highlights |
+| Destructive (Red) | `#D93D37` | Errors |
+| Success (Green) | `#35A240` | Success |
+| Warning (Orange) | `#FF9500` | Warnings |
+| Background | `#140B06` | Main background |
+| Foreground | `#F0E5E0` | Text color |
+| Card/Popover | `#1F1410` | Card backgrounds |
+| Border | `#1F1410` | Borders |
+| Muted | `#221614` | Muted elements |
+| Sidebar Background | `#161018` | Sidebar background |
 
 ## What technologies are used for this project?
 
