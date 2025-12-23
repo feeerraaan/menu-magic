@@ -13,7 +13,7 @@ export default function Index() {
           <div className="flex items-center gap-2">
             <Link to="/" className="flex items-center gap-2 group">
               <div className="h-20 w-20">
-                <img src="/src/assets/logo.png" alt="SaCarta Logo"/>
+                <img src="/logo.png" alt="SaCarta Logo"/>
               </div>
             </Link>
           </div>
