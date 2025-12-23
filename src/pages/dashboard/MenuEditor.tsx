@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { Restaurant, Category, Item, Menu, ScheduleRule, PLAN_LIMITS, PlanType } from '@/types/database';
+import { Restaurant, Category, Item, Menu, ScheduleRule } from '@/types/database';
+import { PlanType, PLAN_LIMITS } from '@/lib/subscription-limits';
 import { useMenus, useCategories, useItems, useSubscription } from '@/hooks/useRestaurant';
+import { usePlanLimits } from '@/hooks/usePlanLimits';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,6 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { MenuScheduleEditor } from '@/components/dashboard/MenuScheduleEditor';
+import { UpgradeBanner, LimitIndicator } from '@/components/subscription';
 import { 
   DndContext, 
   closestCenter, 
@@ -47,6 +50,7 @@ import {
   Image as ImageIcon,
   Clock,
   AlertTriangle,
+  Crown,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ImageUpload } from '@/components/ui/image-upload';
@@ -82,6 +86,7 @@ function SortableItem({ id, children }: SortableItemProps) {
 interface CategoryCardProps {
   category: Category;
   items: Item[];
+  canAddItem: boolean;
   onEdit: () => void;
   onDelete: () => void;
   onAddItem: () => void;
@@ -96,7 +101,8 @@ interface CategoryCardProps {
 
 function CategoryCard({ 
   category, 
-  items, 
+  items,
+  canAddItem,
   onEdit, 
   onDelete, 
   onAddItem, 
@@ -192,8 +198,14 @@ function CategoryCard({
                     </div>
                   </SortableItem>
                 ))}
-                <Button variant="outline" className="w-full mt-2" onClick={onAddItem}>
+                <Button 
+                  variant="outline" 
+                  className="w-full mt-2" 
+                  onClick={onAddItem}
+                  disabled={!canAddItem}
+                >
                   <Plus className="mr-2 h-4 w-4" /> Add Item
+                  {!canAddItem && <Crown className="ml-2 h-3 w-3 text-warning" />}
                 </Button>
               </div>
             </SortableContext>
@@ -223,8 +235,26 @@ export default function MenuEditor() {
 
   // Plan limits
   const currentPlan = (subscription?.plan || 'free') as PlanType;
-  const planLimits = PLAN_LIMITS[currentPlan];
+  const { limits: planLimits, checkLimit, isPremium } = usePlanLimits(currentPlan);
+  
+  // Count photos across all items
+  const totalPhotos = useMemo(() => {
+    return Object.values(itemsByCategory)
+      .flat()
+      .filter(item => item.photo_url)
+      .length;
+  }, [itemsByCategory]);
+
+  // Count total items across all categories
+  const totalItems = useMemo(() => {
+    return Object.values(itemsByCategory).flat().length;
+  }, [itemsByCategory]);
+
+  // Limit checks
   const canCreateMenu = menus.length < planLimits.menus;
+  const canCreateCategory = categories.length < planLimits.categories;
+  const canCreateItem = totalItems < planLimits.items;
+  const canAddPhoto = totalPhotos < planLimits.photos;
   const canUseSchedules = planLimits.schedules;
 
   // Set initial menu
@@ -433,6 +463,44 @@ export default function MenuEditor() {
 
   return (
     <div className="space-y-6">
+      {/* Plan Limits Overview */}
+      {!isPremium && (
+        <UpgradeBanner 
+          message="Desbloquea fotos ilimitadas, más idiomas, menús y funciones avanzadas."
+          variant="compact"
+        />
+      )}
+
+      {/* Limit Indicators */}
+      <Card className="p-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <LimitIndicator 
+            feature="menus" 
+            current={menus.length} 
+            limit={planLimits.menus}
+            size="sm"
+          />
+          <LimitIndicator 
+            feature="categories" 
+            current={categories.length} 
+            limit={planLimits.categories}
+            size="sm"
+          />
+          <LimitIndicator 
+            feature="items" 
+            current={totalItems} 
+            limit={planLimits.items}
+            size="sm"
+          />
+          <LimitIndicator 
+            feature="photos" 
+            current={totalPhotos} 
+            limit={planLimits.photos}
+            size="sm"
+          />
+        </div>
+      </Card>
+
       {/* Menu Selection Bar */}
       <Card className="p-4">
         <div className="flex items-center justify-between flex-wrap gap-3">
@@ -486,13 +554,24 @@ export default function MenuEditor() {
           </div>
           <div className="flex items-center gap-2">
             {!canCreateMenu && (
-              <span className="text-xs text-muted-foreground">
-                Límite: {menus.length}/{planLimits.menus} menús
-              </span>
+              <Badge variant="outline" className="text-xs gap-1 border-warning/30">
+                <Crown className="h-3 w-3 text-warning" />
+                Límite alcanzado
+              </Badge>
             )}
             <Button 
               variant="outline"
-              onClick={() => setMenuDialog({ open: true })}
+              onClick={() => {
+                if (!canCreateMenu) {
+                  toast({ 
+                    title: 'Límite de menús alcanzado', 
+                    description: 'Actualiza tu plan para crear más menús.',
+                    variant: 'destructive'
+                  });
+                  return;
+                }
+                setMenuDialog({ open: true });
+              }}
               disabled={!canCreateMenu}
             >
               <Plus className="mr-2 h-4 w-4" /> Nuevo Menú
@@ -511,7 +590,20 @@ export default function MenuEditor() {
           </h2>
           <p className="text-muted-foreground">Manage your categories and menu items</p>
         </div>
-        <Button onClick={() => setCategoryDialog({ open: true })}>
+        <Button 
+          onClick={() => {
+            if (!canCreateCategory) {
+              toast({ 
+                title: 'Límite de categorías alcanzado', 
+                description: 'Actualiza tu plan para crear más categorías.',
+                variant: 'destructive'
+              });
+              return;
+            }
+            setCategoryDialog({ open: true });
+          }}
+          disabled={!canCreateCategory}
+        >
           <Plus className="mr-2 h-4 w-4" /> Add Category
         </Button>
       </div>
@@ -519,7 +611,10 @@ export default function MenuEditor() {
       {categories.length === 0 ? (
         <Card className="p-12 text-center">
           <p className="text-muted-foreground mb-4">No categories yet. Start by adding one.</p>
-          <Button onClick={() => setCategoryDialog({ open: true })}>
+          <Button 
+            onClick={() => setCategoryDialog({ open: true })}
+            disabled={!canCreateCategory}
+          >
             <Plus className="mr-2 h-4 w-4" /> Add Category
           </Button>
         </Card>
@@ -532,6 +627,7 @@ export default function MenuEditor() {
                   <CategoryCard
                     category={category}
                     items={itemsByCategory[category.id] || []}
+                    canAddItem={canCreateItem}
                     expanded={expandedCategories.has(category.id)}
                     onToggleExpand={() => toggleCategoryExpand(category.id)}
                     onEdit={() => setCategoryDialog({ open: true, category })}
@@ -565,6 +661,9 @@ export default function MenuEditor() {
         categoryId={itemDialog.categoryId}
         currency={restaurant.currency}
         restaurantId={restaurant.id}
+        canAddPhoto={canAddPhoto}
+        photosUsed={totalPhotos}
+        photosLimit={planLimits.photos}
         onClose={() => setItemDialog({ open: false })}
         onSave={handleSaveItem}
       />
@@ -774,6 +873,9 @@ function ItemDialog({
   categoryId,
   currency,
   restaurantId,
+  canAddPhoto,
+  photosUsed,
+  photosLimit,
   onClose, 
   onSave 
 }: { 
@@ -782,6 +884,9 @@ function ItemDialog({
   categoryId?: string;
   currency: string;
   restaurantId: string;
+  canAddPhoto: boolean;
+  photosUsed: number;
+  photosLimit: number;
   onClose: () => void; 
   onSave: (data: Partial<Item>, item?: Item, categoryId?: string) => void;
 }) {
@@ -797,6 +902,10 @@ function ItemDialog({
     is_gluten_free: false,
   });
   const [loading, setLoading] = useState(false);
+
+  // Check if this item already has a photo (editing existing photo doesn't count against limit)
+  const itemHasExistingPhoto = item?.photo_url ? true : false;
+  const canUploadPhoto = canAddPhoto || itemHasExistingPhoto || formData.photo_url === item?.photo_url;
 
   useEffect(() => {
     if (item) {
@@ -852,16 +961,34 @@ function ItemDialog({
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label>Photo</Label>
-            <ImageUpload
-              value={formData.photo_url}
-              onChange={(url) => setFormData(p => ({ ...p, photo_url: url }))}
-              restaurantId={restaurantId}
-              folder="items"
-              aspectRatio="video"
-              maxWidth={800}
-              quality={0.85}
-            />
+            <div className="flex items-center justify-between">
+              <Label>Photo</Label>
+              {!canAddPhoto && !itemHasExistingPhoto && (
+                <Badge variant="outline" className="text-xs gap-1 border-warning/30">
+                  <Crown className="h-3 w-3 text-warning" />
+                  {photosUsed}/{photosLimit} fotos
+                </Badge>
+              )}
+            </div>
+            {canUploadPhoto ? (
+              <ImageUpload
+                value={formData.photo_url}
+                onChange={(url) => setFormData(p => ({ ...p, photo_url: url }))}
+                restaurantId={restaurantId}
+                folder="items"
+                aspectRatio="video"
+                maxWidth={800}
+                quality={0.85}
+              />
+            ) : (
+              <div className="border-2 border-dashed border-warning/30 rounded-lg p-6 text-center bg-warning/5">
+                <Crown className="h-8 w-8 text-warning mx-auto mb-2" />
+                <p className="text-sm font-medium">Límite de fotos alcanzado</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Actualiza tu plan para añadir más fotos ({photosUsed}/{photosLimit})
+                </p>
+              </div>
+            )}
           </div>
           <div className="space-y-2">
             <Label htmlFor="item-name">Name</Label>
