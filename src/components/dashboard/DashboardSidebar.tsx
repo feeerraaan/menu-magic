@@ -45,9 +45,9 @@ export function DashboardSidebar() {
   const location = useLocation();
   const { plan, isPremium, loading } = useSubscriptionContext();
 
-  const planLabel = plan === 'lifetime' ? 'Lifetime' : 
-                    plan === 'pro_annual' ? 'Pro Anual' : 
-                    plan === 'pro_monthly' ? 'Pro' : 'Free';
+  const planLabel = plan === 'lifetime' ? 'Myotragus' : 
+                    plan === 'pro_annual' ? 'Ferreret anual' : 
+                    plan === 'pro_monthly' ? 'Ferreret mensual' : 'Sargantana';
 
   return (
     <Sidebar collapsible="icon">
@@ -107,7 +107,7 @@ export function DashboardSidebar() {
                     </span>
                     {!isPremium && (
                       <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-                        Upgrade
+                        Mejorar
                       </Badge>
                     )}
                   </div>
