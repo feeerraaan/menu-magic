@@ -7,6 +7,7 @@ import { Language, languages, getBrowserLanguage, t } from '@/lib/i18n';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { 
   Leaf, 
   Flame, 
@@ -17,7 +18,8 @@ import {
   Instagram, 
   Globe,
   ChevronDown,
-  AlertCircle
+  AlertCircle,
+  X
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -32,6 +34,7 @@ function MenuContent({ data }: { data: PublicMenuData }) {
   const { language, setLanguage, t } = useLanguage();
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const categoryRefs = useRef<Record<string, HTMLElement | null>>({});
   const navRef = useRef<HTMLElement>(null);
 
@@ -219,7 +222,7 @@ function MenuContent({ data }: { data: PublicMenuData }) {
         </div>
       </nav>
 
-      <main className="container mx-auto px-4 py-6 pb-safe-bottom">
+      <main className="container mx-auto px-4 py-6 pb-safe-bottom overflow-x-hidden">
         {/* Featured Items */}
         {featuredItems.length > 0 && (
           <section className="mb-8">
@@ -236,6 +239,7 @@ function MenuContent({ data }: { data: PublicMenuData }) {
                   getDescription={getItemDescription}
                   formatPrice={formatPrice}
                   restaurantId={restaurant.id}
+                  onSelect={() => setSelectedItem(item)}
                   featured
                 />
               ))}
@@ -262,6 +266,7 @@ function MenuContent({ data }: { data: PublicMenuData }) {
                   getDescription={getItemDescription}
                   formatPrice={formatPrice}
                   restaurantId={restaurant.id}
+                  onSelect={() => setSelectedItem(item)}
                 />
               ))}
               {category.items.filter(i => i.is_active).length === 0 && (
@@ -271,6 +276,89 @@ function MenuContent({ data }: { data: PublicMenuData }) {
           </section>
         ))}
       </main>
+
+      {/* Item Detail Modal */}
+      <Dialog open={!!selectedItem} onOpenChange={(open) => !open && setSelectedItem(null)}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto p-0">
+          {selectedItem && (
+            <>
+              {/* Large Image */}
+              {selectedItem.photo_url && (
+                <div className="relative w-full aspect-video">
+                  <img 
+                    src={selectedItem.photo_url} 
+                    alt={getItemName(selectedItem)}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+              
+              <div className="p-6">
+                {/* Header with name and price */}
+                <div className="flex items-start justify-between gap-4 mb-4">
+                  <div>
+                    <h2 className="font-display text-2xl font-bold">{getItemName(selectedItem)}</h2>
+                    
+                    {/* Dietary badges */}
+                    <div className="flex flex-wrap items-center gap-2 mt-2">
+                      {selectedItem.is_vegetarian && (
+                        <Badge variant="secondary" className="gap-1 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                          <Leaf className="h-3 w-3" /> Vegetariano
+                        </Badge>
+                      )}
+                      {selectedItem.is_vegan && (
+                        <Badge variant="secondary" className="gap-1 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                          <Leaf className="h-3 w-3 fill-current" /> Vegano
+                        </Badge>
+                      )}
+                      {selectedItem.is_spicy && (
+                        <Badge variant="secondary" className="gap-1 bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                          <Flame className="h-3 w-3" /> Picante
+                        </Badge>
+                      )}
+                      {selectedItem.is_gluten_free && (
+                        <Badge variant="secondary" className="gap-1 bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
+                          <Wheat className="h-3 w-3" /> Sin Gluten
+                        </Badge>
+                      )}
+                      {selectedItem.is_featured && (
+                        <Badge variant="secondary" className="gap-1 bg-warning/20 text-warning">
+                          <Star className="h-3 w-3 fill-current" /> Destacado
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Price */}
+                  {formatPrice(selectedItem.price) && (
+                    <span className="font-bold text-primary text-2xl shrink-0">
+                      {formatPrice(selectedItem.price)}
+                    </span>
+                  )}
+                </div>
+                
+                {/* Description */}
+                {getItemDescription(selectedItem) && (
+                  <p className="text-muted-foreground leading-relaxed mb-4">
+                    {getItemDescription(selectedItem)}
+                  </p>
+                )}
+                
+                {/* Allergens */}
+                {selectedItem.allergens && selectedItem.allergens.length > 0 && (
+                  <div className="flex items-start gap-2 p-3 rounded-lg bg-muted/50 border border-border">
+                    <AlertCircle className="h-4 w-4 mt-0.5 text-warning shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium">Alérgenos</p>
+                      <p className="text-sm text-muted-foreground">{selectedItem.allergens.join(', ')}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Footer */}
       <footer className="border-t border-border py-6 text-center text-sm text-muted-foreground">
@@ -286,26 +374,28 @@ interface ItemCardProps {
   getDescription: (item: Item) => string | null;
   formatPrice: (price: number | null) => string | null;
   restaurantId: string;
+  onSelect?: () => void;
   featured?: boolean;
 }
 
-function ItemCard({ item, getName, getDescription, formatPrice, restaurantId, featured }: ItemCardProps) {
+function ItemCard({ item, getName, getDescription, formatPrice, restaurantId, onSelect, featured }: ItemCardProps) {
   const price = formatPrice(item.price);
   const description = getDescription(item);
 
-  // Track item view
+  // Track item view and open modal
   const handleClick = () => {
     supabase.from('menu_views').insert({
       restaurant_id: restaurantId,
       item_id: item.id,
     }).then(() => {});
+    onSelect?.();
   };
 
   return (
     <div 
       onClick={handleClick}
       className={cn(
-        'bg-card rounded-xl border border-border p-4 transition-all hover:shadow-md',
+        'bg-card rounded-xl border border-border p-4 transition-all hover:shadow-md cursor-pointer',
         featured && 'ring-2 ring-warning/20 bg-warning/5'
       )}
     >
