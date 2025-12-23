@@ -1,5 +1,5 @@
 import { NavLink } from '@/components/NavLink';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import {
   Sidebar,
   SidebarContent,
@@ -13,7 +13,9 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSubscriptionContext } from '@/contexts/SubscriptionContext';
 import { 
   Utensils, 
   LayoutDashboard, 
@@ -22,7 +24,9 @@ import {
   BarChart3, 
   Settings, 
   CreditCard,
-  LogOut
+  LogOut,
+  Crown,
+  Sparkles
 } from 'lucide-react';
 
 const navItems = [
@@ -39,6 +43,11 @@ export function DashboardSidebar() {
   const collapsed = state === 'collapsed';
   const { signOut } = useAuth();
   const location = useLocation();
+  const { plan, isPremium, loading } = useSubscriptionContext();
+
+  const planLabel = plan === 'lifetime' ? 'Lifetime' : 
+                    plan === 'pro_annual' ? 'Pro Anual' : 
+                    plan === 'pro_monthly' ? 'Pro' : 'Free';
 
   return (
     <Sidebar collapsible="icon">
@@ -75,7 +84,45 @@ export function DashboardSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-4">
+      <SidebarFooter className="p-4 space-y-3">
+        {/* Plan Badge */}
+        {!loading && (
+          <Link to="/dashboard/billing" className="block">
+            <div className={`
+              flex items-center gap-2 px-3 py-2 rounded-lg border transition-all
+              ${isPremium 
+                ? 'bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-amber-500/30 hover:border-amber-500/50' 
+                : 'bg-muted/50 border-border hover:border-primary/30 hover:bg-muted'
+              }
+            `}>
+              {isPremium ? (
+                <Crown className="h-4 w-4 text-amber-500 shrink-0" />
+              ) : (
+                <Sparkles className="h-4 w-4 text-muted-foreground shrink-0" />
+              )}
+              {!collapsed && (
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className={`text-sm font-medium ${isPremium ? 'text-amber-600 dark:text-amber-400' : 'text-foreground'}`}>
+                      {planLabel}
+                    </span>
+                    {!isPremium && (
+                      <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                        Upgrade
+                      </Badge>
+                    )}
+                  </div>
+                  {!isPremium && (
+                    <p className="text-[10px] text-muted-foreground truncate">
+                      Desbloquea todas las funciones
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+          </Link>
+        )}
+
         <Button 
           variant="ghost" 
           className="w-full justify-start gap-3" 
