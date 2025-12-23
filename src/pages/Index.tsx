@@ -118,16 +118,10 @@ export default function Index() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border/50 bg-secondary/20 py-12">
+      <footer className="border-t border-border/50 bg-secondary/20 py-8">
         <div className="container mx-auto px-4 text-center">
-            <div className="flex items-center justify-center gap-2 mb-6 opacity-80">
-                 <div className="h-8 w-8 rounded-lg bg-primary/10 p-1.5">
-                    <img src="/logo.svg" alt="SaCarta Logo" className="h-full w-full object-contain" />
-                 </div>
-                 <span className="font-display font-bold text-xl">SaCarta</span>
-            </div>
           <p className="text-muted-foreground text-sm">
-            © {new Date().getFullYear()} SaCarta. Hecho con ❤️ para la hostelería.
+            © {new Date().getFullYear()} SaCarta. Fet des de la illa.
           </p>
         </div>
       </footer>
