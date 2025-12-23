@@ -439,7 +439,14 @@ export default function MenuEditor() {
                   </SelectTrigger>
                   <SelectContent>
                     {menus.map(m => (
-                      <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
+                      <SelectItem key={m.id} value={m.id}>
+                        <span className="flex items-center gap-2">
+                          {m.name}
+                          {m.schedule_rules && (
+                            <Clock className="h-3 w-3 text-muted-foreground" />
+                          )}
+                        </span>
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -842,7 +849,10 @@ function ScheduleDialog({
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Horario del menú</DialogTitle>
+          <DialogTitle>Horario: {menu?.name}</DialogTitle>
+          <p className="text-sm text-muted-foreground">
+            Configura cuándo se muestra este menú específico
+          </p>
         </DialogHeader>
         <MenuScheduleEditor
           scheduleRules={scheduleRules}
