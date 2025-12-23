@@ -5,51 +5,11 @@ import { useSubscriptionContext } from '@/contexts/SubscriptionContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Check, CreditCard, Zap, Loader2, ExternalLink, RefreshCw } from 'lucide-react';
+import { CreditCard, Loader2, ExternalLink, RefreshCw } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-
-// Stripe Price IDs
-const STRIPE_PRICES = {
-  pro_monthly: 'price_1ShbjSClyJbFQEQavF7mAwX9',
-  pro_annual: 'price_1ShbkAClyJbFQEQa0JUtzEOp',
-  lifetime: 'price_1ShbkTClyJbFQEQaodGb9UEE',
-};
-
-const PLANS = [
-  { 
-    id: 'free', 
-    name: 'Free', 
-    price: '€0', 
-    period: '/forever',
-    features: ['1 menu', '1 language', 'Basic QR code', 'Unlimited items'],
-  },
-  { 
-    id: 'pro_monthly', 
-    name: 'Pro Monthly', 
-    price: '€9.99', 
-    period: '/month',
-    features: ['10 menus', 'Up to 10 languages', '50 photos', 'All templates', 'Analytics', 'Menu schedules'],
-    popular: true,
-    mode: 'subscription',
-  },
-  { 
-    id: 'pro_annual', 
-    name: 'Pro Annual', 
-    price: '€79.99', 
-    period: '/year',
-    features: ['Everything in Pro Monthly', 'Save 33%', 'Priority support'],
-    mode: 'subscription',
-  },
-  { 
-    id: 'lifetime', 
-    name: 'Lifetime', 
-    price: '€249.99', 
-    period: ' one-time',
-    features: ['All Pro features forever', 'No recurring payments', 'All future updates', '100 photos', '20 menus'],
-    mode: 'payment',
-  },
-];
+import { PRICING_PLANS, STRIPE_PRICES } from '@/lib/constants';
+import { PricingCard } from '@/components/PricingCard';
 
 interface StripeSubscriptionStatus {
   subscribed: boolean;
@@ -145,8 +105,8 @@ export default function Billing() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="font-display text-2xl font-bold">Billing</h2>
-        <p className="text-muted-foreground">Manage your subscription plan</p>
+        <h2 className="font-display text-2xl font-bold">Facturación</h2>
+        <p className="text-muted-foreground">Gestiona tu plan de suscripción</p>
       </div>
 
       {/* Current Plan */}
@@ -155,7 +115,7 @@ export default function Billing() {
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg flex items-center gap-2">
               <CreditCard className="h-5 w-5" />
-              Current Plan
+              Plan Actual
             </CardTitle>
             <div className="flex items-center gap-2">
               <Badge variant={currentPlan === 'free' ? 'secondary' : 'default'} className="capitalize">
@@ -175,17 +135,17 @@ export default function Billing() {
         <CardContent>
           <div className="grid gap-4 sm:grid-cols-3">
             <div>
-              <p className="text-sm text-muted-foreground">Photos Limit</p>
+              <p className="text-sm text-muted-foreground">Límite de Fotos</p>
               <p className="font-semibold">{subscription?.photos_limit || 0}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Languages Limit</p>
+              <p className="text-sm text-muted-foreground">Límite de Idiomas</p>
               <p className="font-semibold">{subscription?.languages_limit || 1}</p>
             </div>
             {stripeStatus?.subscription_end && (
               <div>
                 <p className="text-sm text-muted-foreground">
-                  {stripeStatus.cancel_at_period_end ? 'Expires' : 'Renews'}
+                  {stripeStatus.cancel_at_period_end ? 'Expira' : 'Renueva'}
                 </p>
                 <p className="font-semibold">
                   {new Date(stripeStatus.subscription_end).toLocaleDateString()}
@@ -194,8 +154,8 @@ export default function Billing() {
             )}
             {stripeStatus?.is_lifetime && (
               <div>
-                <p className="text-sm text-muted-foreground">Status</p>
-                <p className="font-semibold text-primary">Lifetime Access</p>
+                <p className="text-sm text-muted-foreground">Estado</p>
+                <p className="font-semibold text-primary">Acceso Lifetime</p>
               </div>
             )}
           </div>
@@ -212,7 +172,7 @@ export default function Billing() {
               ) : (
                 <ExternalLink className="mr-2 h-4 w-4" />
               )}
-              Manage Subscription
+              Gestionar Suscripción
             </Button>
           )}
         </CardContent>
@@ -220,73 +180,31 @@ export default function Billing() {
 
       {/* Available Plans */}
       <div>
-        <h3 className="font-display text-lg font-semibold mb-4">Available Plans</h3>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {PLANS.map(plan => {
-            const isCurrentPlan = currentPlan === plan.id;
-            const canUpgrade = plan.id !== 'free' && !isCurrentPlan && (!stripeStatus?.is_lifetime || plan.id === 'lifetime');
-            
-            return (
-              <Card 
-                key={plan.id} 
-                className={`relative flex flex-col ${plan.popular ? 'ring-2 ring-primary' : ''} ${isCurrentPlan ? 'bg-primary/5 ring-2 ring-primary' : ''}`}
-              >
-                {plan.popular && !isCurrentPlan && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <Badge className="bg-primary">
-                      <Zap className="mr-1 h-3 w-3" /> Most Popular
-                    </Badge>
-                  </div>
-                )}
-                {isCurrentPlan && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <Badge variant="secondary">
-                      Your Plan
-                    </Badge>
-                  </div>
-                )}
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">{plan.name}</CardTitle>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-3xl font-bold">{plan.price}</span>
-                    <span className="text-muted-foreground">{plan.period}</span>
-                  </div>
-                </CardHeader>
-                <CardContent className="flex flex-col flex-1">
-                  <ul className="space-y-2 text-sm flex-1">
-                    {plan.features.map((f, i) => (
-                      <li key={i} className="flex items-start gap-2">
-                        <Check className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                        <span>{f}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <Button 
-                    className="w-full mt-4" 
-                    variant={isCurrentPlan ? 'outline' : plan.popular ? 'default' : 'outline'}
-                    disabled={!canUpgrade || loadingPlan === plan.id}
-                    onClick={() => handleUpgrade(plan.id, plan.mode)}
-                  >
-                    {loadingPlan === plan.id && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {isCurrentPlan ? 'Current Plan' : stripeStatus?.is_lifetime ? 'Lifetime Active' : 'Upgrade'}
-                  </Button>
-                </CardContent>
-              </Card>
-            );
-          })}
+        <h3 className="font-display text-lg font-semibold mb-4">Planes Disponibles</h3>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {PRICING_PLANS.map(plan => (
+            <PricingCard 
+              key={plan.id}
+              plan={plan}
+              currentPlan={currentPlan}
+              loadingPlan={loadingPlan}
+              onUpgrade={handleUpgrade}
+              isLifetime={stripeStatus?.is_lifetime}
+            />
+          ))}
         </div>
       </div>
 
       {/* Info */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Payment Information</CardTitle>
-          <CardDescription>Secure payments powered by Stripe</CardDescription>
+          <CardTitle className="text-lg">Información de Pago</CardTitle>
+          <CardDescription>Pagos seguros procesados por Stripe</CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
-            All payments are processed securely through Stripe. You can manage your subscription, 
-            update payment methods, or cancel anytime through the customer portal.
+            Todos los pagos se procesan de forma segura a través de Stripe. Puedes gestionar tu suscripción,
+            actualizar métodos de pago o cancelar en cualquier momento a través del portal de cliente.
           </p>
         </CardContent>
       </Card>

@@ -53,10 +53,9 @@ export function DashboardSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader className="p-4">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg gradient-primary">
-            <Utensils className="h-4 w-4 text-primary-foreground" />
+          <div className="flex h-20 w-20 items-center justify-center rounded-lg ">
+            <img src="/src/assets/logo.png" alt="SaCarta Logo"/>
           </div>
-          {!collapsed && <span className="font-display text-lg font-bold">SaCarta</span>}
         </div>
       </SidebarHeader>
 
@@ -70,8 +69,8 @@ export function DashboardSidebar() {
                     <NavLink 
                       to={item.url} 
                       end={item.url === '/dashboard'}
-                      className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-accent transition-colors"
-                      activeClassName="bg-accent text-accent-foreground font-medium"
+                      className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-300 hover:text-white transition-colors"
+                      activeClassName="bg-primary text-white font-medium"
                     >
                       <item.icon className="h-4 w-4 shrink-0" />
                       {!collapsed && <span>{item.title}</span>}

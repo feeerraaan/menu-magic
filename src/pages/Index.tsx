@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { QrCode, BarChart3, Globe, ArrowRight, Check } from 'lucide-react';
+import { PRICING_PLANS } from '@/lib/constants';
+import { PricingCard } from '@/components/PricingCard';
 
 export default function Index() {
   return (
@@ -104,36 +106,12 @@ export default function Index() {
           </div>
           
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            { [
-              { name: 'Gratis', price: '0€', period: '/mes', features: ['1 menú digital', '1 idioma', 'QR básico', 'Platos ilimitados', 'Soporte por email'] },
-              { name: 'Pro', price: '8.99€', period: '/mes', features: ['Menús ilimitados', '10 idiomas automáticos', 'Fotos de alta calidad', 'Analíticas avanzadas', 'Personalización de marca', 'Soporte prioritario'], popular: true },
-              { name: 'Lifetime', price: '149€', period: ' pago único', features: ['Todo lo incluido en Pro', 'Sin cuotas mensuales', 'Acceso de por vida', 'Actualizaciones futuras', 'Soporte VIP'] },
-            ].map((plan, i) => (
-              <div key={i} className={`relative p-8 rounded-3xl border flex flex-col ${plan.popular ? 'border-primary shadow-xl shadow-primary/10 bg-card z-10' : 'border-border bg-card/50 hover:bg-card transition-colors'}`}>
-                {plan.popular && (
-                  <div className="absolute -top-4 left-0 right-0 mx-auto w-fit px-4 py-1 rounded-full bg-primary text-primary-foreground text-sm font-medium shadow-sm">
-                    Más popular
-                  </div>
-                )}
-                <h3 className="font-display text-2xl font-bold mb-2">{plan.name}</h3>
-                <div className="flex items-baseline gap-1 mb-6">
-                    <span className="text-4xl font-bold">{plan.price}</span>
-                    <span className="text-muted-foreground">{plan.period}</span>
-                </div>
-                <ul className="space-y-4 mb-8 flex-grow">
-                  {plan.features.map((f, j) => (
-                    <li key={j} className="flex items-start gap-3 text-sm text-muted-foreground">
-                      <Check className={`h-5 w-5 shrink-0 ${plan.popular ? 'text-primary' : 'text-muted-foreground'}`} /> 
-                      <span>{f}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Link to="/auth" className="block mt-auto">
-                  <Button className="w-full h-12 rounded-xl font-medium" variant={plan.popular ? 'default' : 'outline'}>
-                    {plan.price === '0€' ? 'Empezar gratis' : 'Seleccionar plan'}
-                  </Button>
-                </Link>
-              </div>
+            {PRICING_PLANS.map((plan, i) => (
+              <PricingCard 
+                key={i}
+                plan={plan}
+                isPublic={true}
+              />
             ))}
           </div>
         </div>
