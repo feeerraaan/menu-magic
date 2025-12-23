@@ -86,7 +86,7 @@ export default function Billing() {
           {PLANS.map(plan => (
             <Card 
               key={plan.id} 
-              className={`relative ${plan.popular ? 'ring-2 ring-primary' : ''} ${currentPlan === plan.id ? 'bg-muted/50' : ''}`}
+              className={`relative flex flex-col ${plan.popular ? 'ring-2 ring-primary' : ''} ${currentPlan === plan.id ? 'bg-muted/50' : ''}`}
             >
               {plan.popular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
@@ -102,8 +102,8 @@ export default function Billing() {
                   <span className="text-muted-foreground">{plan.period}</span>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <ul className="space-y-2 text-sm">
+              <CardContent className="flex flex-col flex-1">
+                <ul className="space-y-2 text-sm flex-1">
                   {plan.features.map((f, i) => (
                     <li key={i} className="flex items-start gap-2">
                       <Check className="h-4 w-4 text-primary mt-0.5 shrink-0" />
@@ -112,7 +112,7 @@ export default function Billing() {
                   ))}
                 </ul>
                 <Button 
-                  className="w-full" 
+                  className="w-full mt-4" 
                   variant={currentPlan === plan.id ? 'outline' : plan.popular ? 'default' : 'outline'}
                   disabled={currentPlan === plan.id}
                 >
