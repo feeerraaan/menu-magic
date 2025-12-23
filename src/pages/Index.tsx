@@ -10,10 +10,9 @@ export default function Index() {
         <div className="container mx-auto flex items-center justify-between py-4 px-6">
           <div className="flex items-center gap-2">
             <Link to="/" className="flex items-center gap-2 group">
-              <div className="relative h-10 w-10 overflow-hidden rounded-xl bg-primary/10 p-2 transition-transform group-hover:scale-105">
-                <img src="/logo.svg" alt="SaCarta Logo" className="h-full w-full object-contain" />
+              <div className="h-20 w-20">
+                <img src="/src/assets/logo.png" alt="SaCarta Logo"/>
               </div>
-              <span className="font-display text-xl font-bold tracking-tight">SaCarta</span>
             </Link>
           </div>
           <div className="flex items-center gap-4">
@@ -28,7 +27,7 @@ export default function Index() {
       </header>
 
       {/* Hero */}
-      <section className="relative overflow-hidden pt-32 pb-20 lg:pt-40 lg:pb-32">
+      <section className="relative overflow-hidden pt-32 pb-20 lg:pb-32">
         {/* Background decoration */}
         <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
         <div className="absolute left-0 right-0 top-0 -z-10 m-auto h-[310px] w-[310px] rounded-full bg-primary/20 opacity-20 blur-[100px]"></div>
@@ -107,7 +106,7 @@ export default function Index() {
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             { [
               { name: 'Gratis', price: '0€', period: '/mes', features: ['1 menú digital', '1 idioma', 'QR básico', 'Platos ilimitados', 'Soporte por email'] },
-              { name: 'Pro', price: '9€', period: '/mes', features: ['Menús ilimitados', '10 idiomas automáticos', 'Fotos de alta calidad', 'Analíticas avanzadas', 'Personalización de marca', 'Soporte prioritario'], popular: true },
+              { name: 'Pro', price: '8.99€', period: '/mes', features: ['Menús ilimitados', '10 idiomas automáticos', 'Fotos de alta calidad', 'Analíticas avanzadas', 'Personalización de marca', 'Soporte prioritario'], popular: true },
               { name: 'Lifetime', price: '149€', period: ' pago único', features: ['Todo lo incluido en Pro', 'Sin cuotas mensuales', 'Acceso de por vida', 'Actualizaciones futuras', 'Soporte VIP'] },
             ].map((plan, i) => (
               <div key={i} className={`relative p-8 rounded-3xl border flex flex-col ${plan.popular ? 'border-primary shadow-xl shadow-primary/10 bg-card z-10' : 'border-border bg-card/50 hover:bg-card transition-colors'}`}>
