@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { Restaurant } from '@/types/database';
-import { useSubscription } from '@/hooks/useRestaurant';
+import { useSubscriptionContext } from '@/contexts/SubscriptionContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -61,7 +61,7 @@ interface StripeSubscriptionStatus {
 
 export default function Billing() {
   const { restaurant } = useOutletContext<{ restaurant: Restaurant }>();
-  const { subscription, loading: subLoading, refetch } = useSubscription(restaurant.id);
+  const { subscription, plan: globalPlan, limits, refetch: refetchSubscription } = useSubscriptionContext();
   const { toast } = useToast();
   
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
@@ -75,6 +75,8 @@ export default function Billing() {
       const { data, error } = await supabase.functions.invoke('check-subscription');
       if (error) throw error;
       setStripeStatus(data);
+      // Also refresh global subscription state
+      await refetchSubscription();
     } catch (error) {
       console.error('Error checking subscription:', error);
     } finally {

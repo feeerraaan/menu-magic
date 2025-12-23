@@ -4,6 +4,7 @@ import { DashboardSidebar } from './DashboardSidebar';
 import { useRestaurant } from '@/hooks/useRestaurant';
 import { OnboardingWizard } from './OnboardingWizard';
 import { LoadingPage } from '@/components/ui/loading-spinner';
+import { SubscriptionProvider, useSubscriptionContext } from '@/contexts/SubscriptionContext';
 
 export function DashboardLayout() {
   const { restaurant, loading, refetch } = useRestaurant();
@@ -18,19 +19,21 @@ export function DashboardLayout() {
   }
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full overflow-x-hidden">
-        <DashboardSidebar />
-        <div className="flex-1 flex flex-col min-w-0">
-          <header className="h-14 border-b border-border flex items-center px-4 gap-4 bg-card/50 backdrop-blur-sm sticky top-0 z-40">
-            <SidebarTrigger />
-            <h1 className="font-display text-lg font-semibold truncate">{restaurant.name}</h1>
-          </header>
-          <main className="flex-1 p-6 bg-background overflow-x-auto">
-            <Outlet context={{ restaurant }} />
-          </main>
+    <SubscriptionProvider restaurantId={restaurant.id}>
+      <SidebarProvider>
+        <div className="min-h-screen flex w-full overflow-x-hidden">
+          <DashboardSidebar />
+          <div className="flex-1 flex flex-col min-w-0">
+            <header className="h-14 border-b border-border flex items-center px-4 gap-4 bg-card/50 backdrop-blur-sm sticky top-0 z-40">
+              <SidebarTrigger />
+              <h1 className="font-display text-lg font-semibold truncate">{restaurant.name}</h1>
+            </header>
+            <main className="flex-1 p-6 bg-background overflow-x-auto">
+              <Outlet context={{ restaurant }} />
+            </main>
+          </div>
         </div>
-      </div>
-    </SidebarProvider>
+      </SidebarProvider>
+    </SubscriptionProvider>
   );
 }

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { Restaurant } from '@/types/database';
 import { useRestaurant } from '@/hooks/useRestaurant';
+import { useSubscriptionContext } from '@/contexts/SubscriptionContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,9 +10,10 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ImageUpload } from '@/components/ui/image-upload';
+import { LimitIndicator } from '@/components/subscription';
 import { useToast } from '@/hooks/use-toast';
 import { languages } from '@/lib/i18n';
-import { Loader2, Save, Globe, Palette, Eye, Image as ImageIcon } from 'lucide-react';
+import { Loader2, Save, Globe, Palette, Eye, Image as ImageIcon, Crown } from 'lucide-react';
 
 const CURRENCIES = [
   { code: 'EUR', symbol: '€', name: 'Euro' },
@@ -52,6 +54,11 @@ export default function Settings() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const { limits } = useSubscriptionContext();
+  const languagesLimit = limits.languages;
+  const currentLanguagesCount = formData.supported_languages.length;
+  const isAtLanguageLimit = currentLanguagesCount >= languagesLimit;
+
   const toggleLanguage = (lang: string) => {
     const current = formData.supported_languages;
     if (current.includes(lang)) {
@@ -62,6 +69,15 @@ export default function Settings() {
         }
       }
     } else {
+      // Check limit before adding
+      if (current.length >= languagesLimit) {
+        toast({ 
+          title: 'Límite alcanzado', 
+          description: `Tu plan permite máximo ${languagesLimit} idioma${languagesLimit > 1 ? 's' : ''}. Mejora tu plan para añadir más.`,
+          variant: 'destructive' 
+        });
+        return;
+      }
       updateField('supported_languages', [...current, lang]);
     }
   };
@@ -199,20 +215,35 @@ export default function Settings() {
           </div>
           
           <div className="space-y-2">
-            <Label>Menu Languages</Label>
-            <div className="flex flex-wrap gap-2">
-              {languages.map(lang => (
-                <Button
-                  key={lang.code}
-                  type="button"
-                  variant={formData.supported_languages.includes(lang.code) ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => toggleLanguage(lang.code)}
-                >
-                  {lang.flag} {lang.name}
-                </Button>
-              ))}
+            <div className="flex items-center justify-between">
+              <Label>Menu Languages</Label>
+              <LimitIndicator feature="languages" current={currentLanguagesCount} limit={languagesLimit} showProgress={false} size="sm" />
             </div>
+            <div className="flex flex-wrap gap-2">
+              {languages.map(lang => {
+                const isSelected = formData.supported_languages.includes(lang.code);
+                const isDisabled = !isSelected && isAtLanguageLimit;
+                return (
+                  <Button
+                    key={lang.code}
+                    type="button"
+                    variant={isSelected ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => toggleLanguage(lang.code)}
+                    disabled={isDisabled}
+                    className={isDisabled ? 'opacity-50' : ''}
+                  >
+                    {isDisabled && <Crown className="h-3 w-3 mr-1 text-amber-500" />}
+                    {lang.flag} {lang.name}
+                  </Button>
+                );
+              })}
+            </div>
+            {isAtLanguageLimit && (
+              <p className="text-xs text-muted-foreground">
+                Has alcanzado el límite de idiomas de tu plan. <a href="/dashboard/billing" className="text-primary underline">Mejora tu plan</a> para añadir más.
+              </p>
+            )}
           </div>
           
           <div className="space-y-2">
