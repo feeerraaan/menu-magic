@@ -43,8 +43,10 @@ import {
   EyeOff,
   Star,
   Loader2,
+  Image as ImageIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ImageUpload } from '@/components/ui/image-upload';
 
 interface SortableItemProps {
   id: string;
@@ -147,9 +149,12 @@ function CategoryCard({
                 {items.map(item => (
                   <SortableItem key={item.id} id={item.id}>
                     <div className={cn(
-                      'flex items-center justify-between p-3 pl-8 rounded-lg border bg-card hover:border-primary/30 transition-colors',
+                      'flex items-center gap-3 p-3 pl-8 rounded-lg border bg-card hover:border-primary/30 transition-colors',
                       !item.is_active && 'opacity-50'
                     )}>
+                      {item.photo_url && (
+                        <img src={item.photo_url} alt={item.name} className="h-12 w-12 rounded object-cover flex-shrink-0" />
+                      )}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <span className="font-medium truncate">{item.name}</span>
@@ -470,6 +475,7 @@ export default function MenuEditor() {
         item={itemDialog.item}
         categoryId={itemDialog.categoryId}
         currency={restaurant.currency}
+        restaurantId={restaurant.id}
         onClose={() => setItemDialog({ open: false })}
         onSave={handleSaveItem}
       />
@@ -589,6 +595,7 @@ function ItemDialog({
   item, 
   categoryId,
   currency,
+  restaurantId,
   onClose, 
   onSave 
 }: { 
@@ -596,6 +603,7 @@ function ItemDialog({
   item?: Item; 
   categoryId?: string;
   currency: string;
+  restaurantId: string;
   onClose: () => void; 
   onSave: (data: Partial<Item>, item?: Item, categoryId?: string) => void;
 }) {
@@ -603,6 +611,7 @@ function ItemDialog({
     name: '',
     description: '',
     price: '',
+    photo_url: null as string | null,
     is_featured: false,
     is_vegetarian: false,
     is_vegan: false,
@@ -617,6 +626,7 @@ function ItemDialog({
         name: item.name,
         description: item.description || '',
         price: item.price?.toString() || '',
+        photo_url: item.photo_url || null,
         is_featured: item.is_featured,
         is_vegetarian: item.is_vegetarian,
         is_vegan: item.is_vegan,
@@ -628,6 +638,7 @@ function ItemDialog({
         name: '',
         description: '',
         price: '',
+        photo_url: null,
         is_featured: false,
         is_vegetarian: false,
         is_vegan: false,
@@ -644,6 +655,7 @@ function ItemDialog({
       name: formData.name,
       description: formData.description || null,
       price: formData.price ? parseFloat(formData.price) : null,
+      photo_url: formData.photo_url,
       is_featured: formData.is_featured,
       is_vegetarian: formData.is_vegetarian,
       is_vegan: formData.is_vegan,
@@ -656,11 +668,23 @@ function ItemDialog({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{item ? 'Edit Item' : 'Add Item'}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
+          <div className="space-y-2">
+            <Label>Photo</Label>
+            <ImageUpload
+              value={formData.photo_url}
+              onChange={(url) => setFormData(p => ({ ...p, photo_url: url }))}
+              restaurantId={restaurantId}
+              folder="items"
+              aspectRatio="video"
+              maxWidth={800}
+              quality={0.85}
+            />
+          </div>
           <div className="space-y-2">
             <Label htmlFor="item-name">Name</Label>
             <Input
