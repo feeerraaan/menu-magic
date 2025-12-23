@@ -19,14 +19,14 @@ export function DashboardLayout() {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full">
+      <div className="min-h-screen flex w-full overflow-x-hidden">
         <DashboardSidebar />
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col min-w-0">
           <header className="h-14 border-b border-border flex items-center px-4 gap-4 bg-card/50 backdrop-blur-sm sticky top-0 z-40">
             <SidebarTrigger />
-            <h1 className="font-display text-lg font-semibold">{restaurant.name}</h1>
+            <h1 className="font-display text-lg font-semibold truncate">{restaurant.name}</h1>
           </header>
-          <main className="flex-1 p-6 bg-background">
+          <main className="flex-1 p-6 bg-background overflow-x-auto">
             <Outlet context={{ restaurant }} />
           </main>
         </div>
