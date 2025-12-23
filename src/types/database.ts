@@ -126,9 +126,9 @@ export interface Profile {
 
 export type PlanType = 'free' | 'pro_monthly' | 'pro_annual' | 'lifetime';
 
-export const PLAN_LIMITS: Record<PlanType, { photos: number; languages: number; schedules: boolean; templates: string[] }> = {
-  free: { photos: 0, languages: 1, schedules: false, templates: ['classic'] },
-  pro_monthly: { photos: 50, languages: 10, schedules: true, templates: ['classic', 'modern', 'minimal'] },
-  pro_annual: { photos: 50, languages: 10, schedules: true, templates: ['classic', 'modern', 'minimal'] },
-  lifetime: { photos: 100, languages: 10, schedules: true, templates: ['classic', 'modern', 'minimal'] },
+export const PLAN_LIMITS: Record<PlanType, { photos: number; languages: number; menus: number; schedules: boolean; templates: string[] }> = {
+  free: { photos: 0, languages: 1, menus: 1, schedules: false, templates: ['classic'] },
+  pro_monthly: { photos: 50, languages: 10, menus: 10, schedules: true, templates: ['classic', 'modern', 'minimal'] },
+  pro_annual: { photos: 50, languages: 10, menus: 10, schedules: true, templates: ['classic', 'modern', 'minimal'] },
+  lifetime: { photos: 100, languages: 10, menus: 20, schedules: true, templates: ['classic', 'modern', 'minimal'] },
 };

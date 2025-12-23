@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { Restaurant, Category, Item, Menu, ScheduleRule } from '@/types/database';
-import { useMenus, useCategories, useItems } from '@/hooks/useRestaurant';
+import { Restaurant, Category, Item, Menu, ScheduleRule, PLAN_LIMITS, PlanType } from '@/types/database';
+import { useMenus, useCategories, useItems, useSubscription } from '@/hooks/useRestaurant';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { MenuScheduleEditor } from '@/components/dashboard/MenuScheduleEditor';
@@ -46,9 +46,11 @@ import {
   Loader2,
   Image as ImageIcon,
   Clock,
+  AlertTriangle,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ImageUpload } from '@/components/ui/image-upload';
+import { Badge } from '@/components/ui/badge';
 
 interface SortableItemProps {
   id: string;
@@ -204,7 +206,8 @@ function CategoryCard({
 
 export default function MenuEditor() {
   const { restaurant } = useOutletContext<{ restaurant: Restaurant }>();
-  const { menus, loading: menusLoading } = useMenus(restaurant.id);
+  const { menus, loading: menusLoading, refetch: refetchMenus } = useMenus(restaurant.id);
+  const { subscription } = useSubscription(restaurant.id);
   const [selectedMenuId, setSelectedMenuId] = useState<string | null>(null);
   const { categories, create: createCategory, update: updateCategory, remove: removeCategory, reorder: reorderCategories, setCategories } = useCategories(selectedMenuId || undefined);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
@@ -213,10 +216,16 @@ export default function MenuEditor() {
   // Dialogs
   const [categoryDialog, setCategoryDialog] = useState<{ open: boolean; category?: Category }>({ open: false });
   const [itemDialog, setItemDialog] = useState<{ open: boolean; item?: Item; categoryId?: string }>({ open: false });
-  const [deleteConfirm, setDeleteConfirm] = useState<{ open: boolean; type: 'category' | 'item'; id: string } | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<{ open: boolean; type: 'category' | 'item' | 'menu'; id: string } | null>(null);
   const [menuDialog, setMenuDialog] = useState<{ open: boolean; menu?: Menu }>({ open: false });
   
   const { toast } = useToast();
+
+  // Plan limits
+  const currentPlan = (subscription?.plan || 'free') as PlanType;
+  const planLimits = PLAN_LIMITS[currentPlan];
+  const canCreateMenu = menus.length < planLimits.menus;
+  const canUseSchedules = planLimits.schedules;
 
   // Set initial menu
   useEffect(() => {
@@ -426,7 +435,7 @@ export default function MenuEditor() {
     <div className="space-y-6">
       {/* Menu Selection Bar */}
       <Card className="p-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-3">
           <div className="flex items-center gap-3">
             <Label className="text-sm font-medium">Menú:</Label>
             <Select value={selectedMenuId || ''} onValueChange={setSelectedMenuId}>
@@ -438,7 +447,10 @@ export default function MenuEditor() {
                   <SelectItem key={m.id} value={m.id}>
                     <span className="flex items-center gap-2">
                       {m.name}
-                      {m.schedule_rules && (
+                      {m.is_active && (
+                        <Badge variant="default" className="text-xs px-1.5 py-0">Activo</Badge>
+                      )}
+                      {m.schedule_rules && canUseSchedules && (
                         <Clock className="h-3 w-3 text-muted-foreground" />
                       )}
                     </span>
@@ -457,20 +469,45 @@ export default function MenuEditor() {
             >
               <Edit2 className="h-4 w-4" />
             </Button>
+            {menus.length > 1 && (
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={() => {
+                  if (selectedMenuId) {
+                    setDeleteConfirm({ open: true, type: 'menu', id: selectedMenuId });
+                  }
+                }}
+                title="Eliminar menú"
+              >
+                <Trash2 className="h-4 w-4 text-destructive" />
+              </Button>
+            )}
           </div>
-          <Button 
-            variant="outline"
-            onClick={() => setMenuDialog({ open: true })}
-          >
-            <Plus className="mr-2 h-4 w-4" /> Nuevo Menú
-          </Button>
+          <div className="flex items-center gap-2">
+            {!canCreateMenu && (
+              <span className="text-xs text-muted-foreground">
+                Límite: {menus.length}/{planLimits.menus} menús
+              </span>
+            )}
+            <Button 
+              variant="outline"
+              onClick={() => setMenuDialog({ open: true })}
+              disabled={!canCreateMenu}
+            >
+              <Plus className="mr-2 h-4 w-4" /> Nuevo Menú
+            </Button>
+          </div>
         </div>
       </Card>
 
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-display text-2xl font-bold">
+          <h2 className="font-display text-2xl font-bold flex items-center gap-2">
             {menus.find(m => m.id === selectedMenuId)?.name || 'Menu Editor'}
+            {menus.find(m => m.id === selectedMenuId)?.is_active && (
+              <Badge variant="default">Activo</Badge>
+            )}
           </h2>
           <p className="text-muted-foreground">Manage your categories and menu items</p>
         </div>
@@ -536,32 +573,53 @@ export default function MenuEditor() {
       <Dialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete {deleteConfirm?.type}?</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-destructive" />
+              {deleteConfirm?.type === 'menu' ? '¿Eliminar menú?' : 
+               deleteConfirm?.type === 'category' ? '¿Eliminar categoría?' : 
+               '¿Eliminar item?'}
+            </DialogTitle>
           </DialogHeader>
           <p className="text-muted-foreground">
-            {deleteConfirm?.type === 'category' 
-              ? 'This will also delete all items in this category.'
-              : 'This action cannot be undone.'}
+            {deleteConfirm?.type === 'menu' 
+              ? 'Esto eliminará el menú y todas sus categorías e items. Esta acción no se puede deshacer.'
+              : deleteConfirm?.type === 'category' 
+              ? 'Esto eliminará la categoría y todos sus items.'
+              : 'Esta acción no se puede deshacer.'}
           </p>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteConfirm(null)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setDeleteConfirm(null)}>Cancelar</Button>
             <Button 
               variant="destructive" 
-              onClick={() => {
+              onClick={async () => {
                 if (deleteConfirm?.type === 'category') {
                   handleDeleteCategory(deleteConfirm.id);
                 } else if (deleteConfirm?.type === 'item') {
-                  // Find category ID for this item
                   for (const [catId, items] of Object.entries(itemsByCategory)) {
                     if (items.find(i => i.id === deleteConfirm.id)) {
                       handleDeleteItem(deleteConfirm.id, catId);
                       break;
                     }
                   }
+                } else if (deleteConfirm?.type === 'menu') {
+                  try {
+                    const { supabase } = await import('@/integrations/supabase/client');
+                    await supabase.from('menus').delete().eq('id', deleteConfirm.id);
+                    toast({ title: 'Menú eliminado' });
+                    setDeleteConfirm(null);
+                    // Select another menu
+                    const remaining = menus.filter(m => m.id !== deleteConfirm.id);
+                    if (remaining.length > 0) {
+                      setSelectedMenuId(remaining[0].id);
+                    }
+                    refetchMenus();
+                  } catch (e: any) {
+                    toast({ title: 'Error', description: e.message, variant: 'destructive' });
+                  }
                 }
               }}
             >
-              Delete
+              Eliminar
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -572,10 +630,22 @@ export default function MenuEditor() {
         open={menuDialog.open}
         menu={menuDialog.menu}
         restaurantId={restaurant.id}
+        menus={menus}
+        canUseSchedules={canUseSchedules}
         onClose={() => setMenuDialog({ open: false })}
         onSave={async (data, menu) => {
           try {
             const { supabase } = await import('@/integrations/supabase/client');
+            
+            // If setting this menu as active, deactivate all others
+            if (data.is_active) {
+              await supabase
+                .from('menus')
+                .update({ is_active: false })
+                .eq('restaurant_id', restaurant.id)
+                .neq('id', menu?.id || '');
+            }
+            
             if (menu) {
               // Update existing menu
               await supabase
@@ -583,18 +653,27 @@ export default function MenuEditor() {
                 .update({
                   name: data.name,
                   description: data.description,
+                  is_active: data.is_active,
                   schedule_rules: data.schedule_rules as any,
                 })
                 .eq('id', menu.id);
               toast({ title: 'Menú actualizado' });
             } else {
-              // Create new menu
+              // Create new menu - if it's active, deactivate others first
+              if (data.is_active) {
+                await supabase
+                  .from('menus')
+                  .update({ is_active: false })
+                  .eq('restaurant_id', restaurant.id);
+              }
+              
               const { data: newMenu, error } = await supabase
                 .from('menus')
                 .insert({
                   restaurant_id: restaurant.id,
                   name: data.name,
                   description: data.description,
+                  is_active: data.is_active,
                   schedule_rules: data.schedule_rules as any,
                   display_order: menus.length,
                 })
@@ -607,6 +686,7 @@ export default function MenuEditor() {
               toast({ title: 'Menú creado' });
             }
             setMenuDialog({ open: false });
+            refetchMenus();
           } catch (e: any) {
             toast({ title: 'Error', description: e.message, variant: 'destructive' });
           }
@@ -855,33 +935,42 @@ function MenuEditDialog({
   open,
   menu,
   restaurantId,
+  menus,
+  canUseSchedules,
   onClose,
   onSave,
 }: {
   open: boolean;
   menu?: Menu;
   restaurantId: string;
+  menus: Menu[];
+  canUseSchedules: boolean;
   onClose: () => void;
-  onSave: (data: { name: string; description: string | null; schedule_rules: ScheduleRule[] | null }, menu?: Menu) => void;
+  onSave: (data: { name: string; description: string | null; is_active: boolean; schedule_rules: ScheduleRule[] | null }, menu?: Menu) => void;
 }) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [isActive, setIsActive] = useState(false);
   const [scheduleRules, setScheduleRules] = useState<ScheduleRule[] | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const hasOtherActiveMenu = menus.some(m => m.is_active && m.id !== menu?.id);
 
   useEffect(() => {
     if (open) {
       if (menu) {
         setName(menu.name);
         setDescription(menu.description || '');
+        setIsActive(menu.is_active);
         setScheduleRules(menu.schedule_rules || null);
       } else {
         setName('');
         setDescription('');
+        setIsActive(menus.length === 0); // First menu is active by default
         setScheduleRules(null);
       }
     }
-  }, [menu, open]);
+  }, [menu, open, menus.length]);
 
   const handleSave = async () => {
     if (!name.trim()) return;
@@ -889,7 +978,8 @@ function MenuEditDialog({
     await onSave({
       name: name.trim(),
       description: description.trim() || null,
-      schedule_rules: scheduleRules,
+      is_active: isActive,
+      schedule_rules: canUseSchedules ? scheduleRules : null,
     }, menu);
     setLoading(false);
   };
@@ -919,11 +1009,43 @@ function MenuEditDialog({
               placeholder="Una breve descripción del menú"
             />
           </div>
-          <div className="border-t pt-4">
-            <MenuScheduleEditor
-              scheduleRules={scheduleRules}
-              onChange={setScheduleRules}
+          
+          {/* Active toggle */}
+          <div className="flex items-center justify-between p-3 rounded-lg border">
+            <div className="space-y-0.5">
+              <Label>Menú activo</Label>
+              <p className="text-xs text-muted-foreground">
+                Solo un menú puede estar activo a la vez
+              </p>
+            </div>
+            <Switch
+              checked={isActive}
+              onCheckedChange={setIsActive}
             />
+          </div>
+          
+          {isActive && hasOtherActiveMenu && (
+            <p className="text-xs text-warning flex items-center gap-1">
+              <AlertTriangle className="h-3 w-3" />
+              Al activar este menú, el menú activo actual se desactivará
+            </p>
+          )}
+          
+          {/* Schedule */}
+          <div className="border-t pt-4">
+            {canUseSchedules ? (
+              <MenuScheduleEditor
+                scheduleRules={scheduleRules}
+                onChange={setScheduleRules}
+              />
+            ) : (
+              <div className="p-3 rounded-lg bg-muted/50 text-center">
+                <Clock className="h-5 w-5 mx-auto mb-2 text-muted-foreground" />
+                <p className="text-sm text-muted-foreground">
+                  Los horarios programados están disponibles en el plan Pro
+                </p>
+              </div>
+            )}
           </div>
         </div>
         <DialogFooter>
