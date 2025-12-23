@@ -1,0 +1,10 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fork -->
+  <path d="M 20 30 L 20 80 Q 20 85 25 85 L 30 85 Q 35 85 35 80 L 35 45 L 40 45 L 40 80 Q 40 85 45 85 L 50 85 Q 55 85 55 80 L 55 45 L 60 45 L 60 80 Q 60 85 65 85 L 70 85 Q 75 85 75 80 L 75 30 Q 75 20 65 20 L 30 20 Q 20 20 20 30 Z" fill="#CC5C3D"/>
+  
+  <!-- Spoon handle -->
+  <rect x="25" y="15" width="50" height="8" rx="4" fill="#FFC62E" opacity="0.8"/>
+  
+  <!-- Decorative dot -->
+  <circle cx="50" cy="12" r="3" fill="#CC5C3D"/>
+</svg>
