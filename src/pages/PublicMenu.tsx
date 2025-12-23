@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { Restaurant, Menu, Category, Item } from '@/types/database';
+import { Restaurant, Menu, Category, Item, ScheduleRule } from '@/types/database';
 import { LanguageProvider, useLanguage } from '@/contexts/LanguageContext';
 import { Language, languages, getBrowserLanguage, t } from '@/lib/i18n';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { isMenuAvailable } from '@/components/dashboard/MenuScheduleEditor';
 import { 
   Leaf, 
   Flame, 
@@ -19,7 +20,8 @@ import {
   Globe,
   ChevronDown,
   AlertCircle,
-  X
+  X,
+  Clock
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -499,14 +501,13 @@ export default function PublicMenu() {
           return;
         }
 
-        // Fetch active menu
+        // Fetch active menus
         const { data: menus, error: menuError } = await supabase
           .from('menus')
           .select('*')
           .eq('restaurant_id', restaurant.id)
           .eq('is_active', true)
-          .order('display_order')
-          .limit(1);
+          .order('display_order');
 
         if (menuError) throw menuError;
         if (!menus || menus.length === 0) {
@@ -515,7 +516,19 @@ export default function PublicMenu() {
           return;
         }
 
-        const menu = menus[0];
+        // Find the first menu that is available based on schedule
+        const availableMenu = menus.find(m => {
+          const scheduleRules = m.schedule_rules as unknown as ScheduleRule[] | null;
+          return isMenuAvailable(scheduleRules);
+        });
+
+        if (!availableMenu) {
+          setError('Menu not available at this time');
+          setLoading(false);
+          return;
+        }
+
+        const menu = availableMenu;
 
         // Fetch categories with items
         const { data: categoriesData, error: catError } = await supabase
