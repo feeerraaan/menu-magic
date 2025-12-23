@@ -8,9 +8,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ImageUpload } from '@/components/ui/image-upload';
 import { useToast } from '@/hooks/use-toast';
 import { languages } from '@/lib/i18n';
-import { Loader2, Save, Globe, Palette, Eye } from 'lucide-react';
+import { Loader2, Save, Globe, Palette, Eye, Image as ImageIcon } from 'lucide-react';
 
 const CURRENCIES = [
   { code: 'EUR', symbol: '€', name: 'Euro' },
@@ -31,6 +32,7 @@ export default function Settings() {
   const { toast } = useToast();
   
   const [loading, setLoading] = useState(false);
+  const [logoUrl, setLogoUrl] = useState<string | null>(restaurant.logo_url);
   const [formData, setFormData] = useState({
     name: restaurant.name,
     address: restaurant.address || '',
@@ -69,6 +71,7 @@ export default function Settings() {
     try {
       await update({
         name: formData.name,
+        logo_url: logoUrl,
         address: formData.address || null,
         phone: formData.phone || null,
         instagram_url: formData.instagram_url || null,
@@ -101,6 +104,28 @@ export default function Settings() {
           Save Changes
         </Button>
       </div>
+
+      {/* Logo */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2">
+            <ImageIcon className="h-5 w-5" />
+            Restaurant Logo
+          </CardTitle>
+          <CardDescription>Upload your restaurant logo (auto-compressed)</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ImageUpload
+            value={logoUrl}
+            onChange={setLogoUrl}
+            restaurantId={restaurant.id}
+            folder="logos"
+            aspectRatio="video"
+            maxWidth={800}
+            quality={0.9}
+          />
+        </CardContent>
+      </Card>
 
       {/* Basic Info */}
       <Card>
