@@ -13,10 +13,10 @@ const logStep = (step: string, details?: any) => {
 };
 
 // Price/Product mapping for MenuYa
-const PLAN_MAPPING: Record<string, string> = {
-  "price_1ShbjSClyJbFQEQavF7mAwX9": "pro_monthly",
-  "price_1ShbkAClyJbFQEQa0JUtzEOp": "pro_annual",
-  "price_1ShbkTClyJbFQEQaodGb9UEE": "lifetime",
+const PLAN_MAPPING: Record<string, { plan: string; photos: number; languages: number }> = {
+  "price_1ShbjSClyJbFQEQavF7mAwX9": { plan: "pro_monthly", photos: 50, languages: 10 },
+  "price_1ShbkAClyJbFQEQa0JUtzEOp": { plan: "pro_annual", photos: 50, languages: 10 },
+  "price_1ShbkTClyJbFQEQaodGb9UEE": { plan: "lifetime", photos: 999, languages: 999 },
 };
 
 serve(async (req) => {
@@ -56,11 +56,33 @@ serve(async (req) => {
     const user = userData.user;
     logStep("User authenticated", { userId: user.id, email: user.email });
 
+    // Get the user's restaurant
+    const { data: restaurant } = await supabaseClient
+      .from("restaurants")
+      .select("id")
+      .eq("owner_id", user.id)
+      .single();
+
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
     
     if (customers.data.length === 0) {
       logStep("No Stripe customer found");
+      // Update DB to free if we have a restaurant
+      if (restaurant) {
+        await supabaseClient
+          .from("subscriptions")
+          .update({ 
+            plan: "free", 
+            photos_limit: 0, 
+            languages_limit: 1,
+            is_lifetime: false,
+            stripe_customer_id: null,
+            stripe_subscription_id: null,
+          })
+          .eq("restaurant_id", restaurant.id);
+        logStep("Updated DB to free plan");
+      }
       return new Response(JSON.stringify({ 
         subscribed: false, 
         plan: "free",
@@ -75,11 +97,6 @@ serve(async (req) => {
     logStep("Found Stripe customer", { customerId });
 
     // Check for lifetime purchase first (one-time payments)
-    const payments = await stripe.paymentIntents.list({
-      customer: customerId,
-      limit: 100,
-    });
-    
     const lifetimePriceId = "price_1ShbkTClyJbFQEQaodGb9UEE";
     let isLifetime = false;
     
@@ -104,6 +121,20 @@ serve(async (req) => {
     }
 
     if (isLifetime) {
+      // Update DB to lifetime
+      if (restaurant) {
+        await supabaseClient
+          .from("subscriptions")
+          .update({ 
+            plan: "lifetime", 
+            photos_limit: 999, 
+            languages_limit: 999,
+            is_lifetime: true,
+            stripe_customer_id: customerId,
+          })
+          .eq("restaurant_id", restaurant.id);
+        logStep("Updated DB to lifetime plan");
+      }
       return new Response(JSON.stringify({
         subscribed: true,
         plan: "lifetime",
@@ -124,6 +155,21 @@ serve(async (req) => {
 
     if (subscriptions.data.length === 0) {
       logStep("No active subscription found");
+      // Update DB to free
+      if (restaurant) {
+        await supabaseClient
+          .from("subscriptions")
+          .update({ 
+            plan: "free", 
+            photos_limit: 0, 
+            languages_limit: 1,
+            is_lifetime: false,
+            stripe_customer_id: customerId,
+            stripe_subscription_id: null,
+          })
+          .eq("restaurant_id", restaurant.id);
+        logStep("Updated DB to free plan");
+      }
       return new Response(JSON.stringify({ 
         subscribed: false, 
         plan: "free",
@@ -136,20 +182,43 @@ serve(async (req) => {
 
     const subscription = subscriptions.data[0];
     const priceId = subscription.items.data[0]?.price?.id;
-    const plan = priceId ? (PLAN_MAPPING[priceId] || "pro_monthly") : "pro_monthly";
+    const planInfo = priceId ? (PLAN_MAPPING[priceId] || { plan: "pro_monthly", photos: 50, languages: 10 }) : { plan: "pro_monthly", photos: 50, languages: 10 };
     const subscriptionEnd = subscription.current_period_end 
       ? new Date(subscription.current_period_end * 1000).toISOString()
+      : null;
+    const subscriptionStart = subscription.current_period_start 
+      ? new Date(subscription.current_period_start * 1000).toISOString()
       : null;
     
     logStep("Active subscription found", { 
       subscriptionId: subscription.id, 
-      plan, 
+      plan: planInfo.plan, 
       endDate: subscriptionEnd 
     });
 
+    // Update DB with subscription details
+    if (restaurant) {
+      await supabaseClient
+        .from("subscriptions")
+        .update({ 
+          plan: planInfo.plan, 
+          photos_limit: planInfo.photos, 
+          languages_limit: planInfo.languages,
+          is_lifetime: false,
+          stripe_customer_id: customerId,
+          stripe_subscription_id: subscription.id,
+          current_period_start: subscriptionStart,
+          current_period_end: subscriptionEnd,
+          cancel_at_period_end: subscription.cancel_at_period_end,
+          status: "active",
+        })
+        .eq("restaurant_id", restaurant.id);
+      logStep("Updated DB with subscription details", { plan: planInfo.plan });
+    }
+
     return new Response(JSON.stringify({
       subscribed: true,
-      plan,
+      plan: planInfo.plan,
       is_lifetime: false,
       subscription_end: subscriptionEnd,
       cancel_at_period_end: subscription.cancel_at_period_end,
