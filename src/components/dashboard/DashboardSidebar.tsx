@@ -54,7 +54,7 @@ export function DashboardSidebar() {
       <SidebarHeader className="p-4">
         <div className="flex items-center gap-2">
           <div className="flex h-20 w-20 items-center justify-center rounded-lg ">
-            <img src="/src/assets/logo.png" alt="SaCarta Logo"/>
+            <img src="/logo.png" alt="SaCarta Logo"/>
           </div>
         </div>
       </SidebarHeader>
