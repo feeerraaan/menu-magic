@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { Restaurant, Category, Item, Menu } from '@/types/database';
+import { Restaurant, Category, Item, Menu, ScheduleRule } from '@/types/database';
 import { useMenus, useCategories, useItems } from '@/hooks/useRestaurant';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
+import { MenuScheduleEditor } from '@/components/dashboard/MenuScheduleEditor';
 import { 
   DndContext, 
   closestCenter, 
@@ -44,6 +45,7 @@ import {
   Star,
   Loader2,
   Image as ImageIcon,
+  Clock,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ImageUpload } from '@/components/ui/image-upload';
@@ -212,6 +214,7 @@ export default function MenuEditor() {
   const [categoryDialog, setCategoryDialog] = useState<{ open: boolean; category?: Category }>({ open: false });
   const [itemDialog, setItemDialog] = useState<{ open: boolean; item?: Item; categoryId?: string }>({ open: false });
   const [deleteConfirm, setDeleteConfirm] = useState<{ open: boolean; type: 'category' | 'item'; id: string } | null>(null);
+  const [scheduleDialog, setScheduleDialog] = useState<{ open: boolean; menu?: Menu }>({ open: false });
   
   const { toast } = useToast();
 
@@ -427,17 +430,34 @@ export default function MenuEditor() {
           <p className="text-muted-foreground">Manage your categories and menu items</p>
         </div>
         <div className="flex items-center gap-3">
-          {menus.length > 1 && (
-            <Select value={selectedMenuId || ''} onValueChange={setSelectedMenuId}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Select menu" />
-              </SelectTrigger>
-              <SelectContent>
-                {menus.map(m => (
-                  <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          {menus.length > 0 && (
+            <>
+              {menus.length > 1 && (
+                <Select value={selectedMenuId || ''} onValueChange={setSelectedMenuId}>
+                  <SelectTrigger className="w-48">
+                    <SelectValue placeholder="Select menu" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {menus.map(m => (
+                      <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  const menu = menus.find(m => m.id === selectedMenuId);
+                  if (menu) setScheduleDialog({ open: true, menu });
+                }}
+              >
+                <Clock className="mr-2 h-4 w-4" />
+                Horario
+                {menus.find(m => m.id === selectedMenuId)?.schedule_rules && (
+                  <span className="ml-1 h-2 w-2 rounded-full bg-primary" />
+                )}
+              </Button>
+            </>
           )}
           <Button onClick={() => setCategoryDialog({ open: true })}>
             <Plus className="mr-2 h-4 w-4" /> Add Category
@@ -532,6 +552,26 @@ export default function MenuEditor() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Schedule Dialog */}
+      <ScheduleDialog
+        open={scheduleDialog.open}
+        menu={scheduleDialog.menu}
+        onClose={() => setScheduleDialog({ open: false })}
+        onSave={async (menu, scheduleRules) => {
+          try {
+            const { supabase } = await import('@/integrations/supabase/client');
+            await supabase
+              .from('menus')
+              .update({ schedule_rules: scheduleRules as any })
+              .eq('id', menu.id);
+            toast({ title: 'Horario guardado' });
+            setScheduleDialog({ open: false });
+          } catch (e: any) {
+            toast({ title: 'Error', description: e.message, variant: 'destructive' });
+          }
+        }}
+      />
     </div>
   );
 }
@@ -763,6 +803,56 @@ function ItemDialog({
           <Button onClick={handleSubmit} disabled={loading || !formData.name.trim()}>
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {item ? 'Save' : 'Create'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// Schedule Dialog Component
+function ScheduleDialog({
+  open,
+  menu,
+  onClose,
+  onSave,
+}: {
+  open: boolean;
+  menu?: Menu;
+  onClose: () => void;
+  onSave: (menu: Menu, scheduleRules: ScheduleRule[] | null) => void;
+}) {
+  const [scheduleRules, setScheduleRules] = useState<ScheduleRule[] | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (menu) {
+      setScheduleRules(menu.schedule_rules || null);
+    }
+  }, [menu, open]);
+
+  const handleSave = async () => {
+    if (!menu) return;
+    setLoading(true);
+    await onSave(menu, scheduleRules);
+    setLoading(false);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>Horario del menú</DialogTitle>
+        </DialogHeader>
+        <MenuScheduleEditor
+          scheduleRules={scheduleRules}
+          onChange={setScheduleRules}
+        />
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>Cancelar</Button>
+          <Button onClick={handleSave} disabled={loading}>
+            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Guardar
           </Button>
         </DialogFooter>
       </DialogContent>
