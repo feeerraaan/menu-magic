@@ -24,9 +24,9 @@ export default function Index() {
 
       {/* Hero */}
       <section className="container mx-auto py-20 text-center">
-        <h1 className="font-display text-4xl md:text-6xl font-bold mb-6 leading-tight">
+        <h1 className="font-display text-4xl md:text-6xl font-bold mb-6 leading-normal">
           Menús digitales bonitos<br />
-          <span className="text-gradient">en minutos</span>
+          <span className="text-gradient block mt-2">en minutos</span>
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
           Crea menús atractivos y adaptados a móvil para tu restaurante. 
