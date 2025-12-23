@@ -5,10 +5,12 @@ import { Button } from '@/components/ui/button';
 import { CheckCircle, Loader2, ArrowRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useSubscriptionContext } from '@/contexts/SubscriptionContext';
 
 export default function PaymentSuccess() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { refetch: refetchSubscription } = useSubscriptionContext();
   const [syncing, setSyncing] = useState(true);
   const [syncComplete, setSyncComplete] = useState(false);
 
@@ -35,6 +37,9 @@ export default function PaymentSuccess() {
           });
         }
         
+        // Refresh global subscription state
+        await refetchSubscription();
+        
         setSyncComplete(true);
       } catch (e) {
         console.error('Error syncing:', e);
@@ -44,7 +49,7 @@ export default function PaymentSuccess() {
     };
 
     syncSubscription();
-  }, [toast]);
+  }, [toast, refetchSubscription]);
 
   return (
     <div className="min-h-[60vh] flex items-center justify-center p-4">

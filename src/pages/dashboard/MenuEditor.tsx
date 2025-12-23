@@ -1,9 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { Restaurant, Category, Item, Menu, ScheduleRule } from '@/types/database';
-import { PlanType, PLAN_LIMITS } from '@/lib/subscription-limits';
-import { useMenus, useCategories, useItems, useSubscription } from '@/hooks/useRestaurant';
-import { usePlanLimits } from '@/hooks/usePlanLimits';
+import { useMenus, useCategories, useItems } from '@/hooks/useRestaurant';
+import { useSubscriptionContext } from '@/contexts/SubscriptionContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -219,7 +218,7 @@ function CategoryCard({
 export default function MenuEditor() {
   const { restaurant } = useOutletContext<{ restaurant: Restaurant }>();
   const { menus, loading: menusLoading, refetch: refetchMenus } = useMenus(restaurant.id);
-  const { subscription } = useSubscription(restaurant.id);
+  const { subscription, plan: currentPlan, limits: planLimits, isPremium } = useSubscriptionContext();
   const [selectedMenuId, setSelectedMenuId] = useState<string | null>(null);
   const { categories, create: createCategory, update: updateCategory, remove: removeCategory, reorder: reorderCategories, setCategories } = useCategories(selectedMenuId || undefined);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
@@ -232,10 +231,6 @@ export default function MenuEditor() {
   const [menuDialog, setMenuDialog] = useState<{ open: boolean; menu?: Menu }>({ open: false });
   
   const { toast } = useToast();
-
-  // Plan limits
-  const currentPlan = (subscription?.plan || 'free') as PlanType;
-  const { limits: planLimits, checkLimit, isPremium } = usePlanLimits(currentPlan);
   
   // Count photos across all items
   const totalPhotos = useMemo(() => {
