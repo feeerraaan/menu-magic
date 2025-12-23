@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,6 +21,7 @@ export default function Auth() {
   const { signInWithMagicLink, signInWithPassword, signUp, user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
 
   // Validate redirect path to prevent open redirect attacks
@@ -37,6 +38,13 @@ export default function Auth() {
     }
     return '/dashboard';
   })();
+
+  // Support deep-linking into auth modes from buttons like /auth?mode=signup
+  useEffect(() => {
+    const urlMode = searchParams.get('mode');
+    if (urlMode === 'signup') setMode('signup');
+    if (urlMode === 'signin') setMode('signin');
+  }, [searchParams]);
 
   // Redirect if already authenticated
   useEffect(() => {

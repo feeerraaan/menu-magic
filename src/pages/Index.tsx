@@ -18,10 +18,10 @@ export default function Index() {
             </Link>
           </div>
           <div className="flex items-center gap-4">
-            <Link to="/auth">
+            <Link to="/auth?mode=signin">
               <Button variant="ghost" className="font-medium hover:bg-primary/5 hover:text-primary">Iniciar sesión</Button>
             </Link>
-            <Link to="/auth">
+            <Link to="/auth?mode=signup">
               <Button className="rounded-full shadow-md shadow-primary/20">Empezar gratis</Button>
             </Link>
           </div>
