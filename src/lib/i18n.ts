@@ -1,9 +1,9 @@
 export type Language = 'en' | 'es' | 'fr' | 'de' | 'it' | 'pt' | 'ca';
 
-export const languages: { code: Language; name: string; flag: string }[] = [
-  { code: 'en', name: 'English', flag: '🇬🇧' },
-  { code: 'es', name: 'Español', flag: '🇪🇸' },
-  { code: 'ca', name: 'Català', flag: '🇪🇸' },
+export const languages: { code: Language; name: string }[] = [
+  { code: 'en', name: 'English' },
+  { code: 'es', name: 'Español' },
+  { code: 'ca', name: 'Català' },
 ];
 
 const translations: Record<Language, Record<string, string>> = {

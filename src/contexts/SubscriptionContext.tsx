@@ -22,9 +22,9 @@ interface SubscriptionProviderProps {
 
 const PLAN_NAMES: Record<PlanType, string> = {
   free: 'Free',
-  pro_monthly: 'Pro Mensual',
-  pro_annual: 'Pro Anual',
-  lifetime: 'Lifetime',
+  pro_monthly: 'Ferreret',
+  pro_annual: 'Myotragus',
+  lifetime: 'Myotragus',
 };
 
 export function SubscriptionProvider({ restaurantId, children }: SubscriptionProviderProps) {

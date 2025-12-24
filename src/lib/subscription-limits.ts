@@ -46,7 +46,7 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
   },
   pro_monthly: {
     photos: 50,
-    languages: 10,
+    languages: 3,
     menus: 10,
     categories: 50,
     items: 500,
@@ -58,7 +58,7 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
   },
   pro_annual: {
     photos: 50,
-    languages: 10,
+    languages: 999,
     menus: 10,
     categories: 50,
     items: 500,
@@ -70,7 +70,7 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
   },
   lifetime: {
     photos: 100,
-    languages: 10,
+    languages: 999,
     menus: 20,
     categories: 100,
     items: 1000,
@@ -94,21 +94,21 @@ export const PLANS: Record<PlanType, PlanInfo> = {
   },
   pro_monthly: {
     id: 'pro_monthly',
-    name: 'Pro Mensual',
+    name: 'Ferreret',
     description: 'Para restaurantes activos',
     limits: PLAN_LIMITS.pro_monthly,
     priceId: 'price_1ShbjSClyJbFQEQavF7mAwX9',
   },
   pro_annual: {
     id: 'pro_annual',
-    name: 'Pro Anual',
-    description: 'Ahorra 2 meses',
+    name: 'Myotragus',
+    description: 'Acceso ilimitado',
     limits: PLAN_LIMITS.pro_annual,
     priceId: 'price_1ShbkAClyJbFQEQa0JUtzEOp',
   },
   lifetime: {
     id: 'lifetime',
-    name: 'Lifetime',
+    name: 'Myotragus',
     description: 'Acceso de por vida',
     limits: PLAN_LIMITS.lifetime,
     priceId: 'price_1ShbkTClyJbFQEQaodGb9UEE',
