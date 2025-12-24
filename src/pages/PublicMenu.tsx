@@ -274,7 +274,7 @@ function MenuContent({ data }: { data: PublicMenuData }) {
 
       {/* Item Detail Modal */}
       <Dialog open={!!selectedItem} onOpenChange={(open) => !open && setSelectedItem(null)}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto p-0">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto p-4 sm:mx-0 w-[calc(100vw-2rem)] sm:w-full rounded-2xl">
           {selectedItem && (
             <>
               {/* Large Image */}
@@ -283,12 +283,12 @@ function MenuContent({ data }: { data: PublicMenuData }) {
                   <img 
                     src={selectedItem.photo_url} 
                     alt={getItemName(selectedItem)}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover rounded-t-2xl"
                   />
                 </div>
               )}
               
-              <div className="p-6">
+              <div className="p-4 sm:p-6">
                 {/* Header with name and price */}
                 <div className="flex items-start justify-between gap-4 mb-4">
                   <div>
