@@ -1,5 +1,7 @@
 import { NavLink } from '@/components/NavLink';
 import { Link, useLocation } from 'react-router-dom';
+import { useTranslation } from '@/hooks/useTranslation';
+import { LanguageSelector } from '@/components/LanguageSelector';
 import {
   Sidebar,
   SidebarContent,
@@ -29,21 +31,22 @@ import {
   Sparkles
 } from 'lucide-react';
 
-const navItems = [
-  { title: 'Overview', url: '/dashboard', icon: LayoutDashboard },
-  { title: 'Menu Editor', url: '/dashboard/editor', icon: FileText },
-  { title: 'QR Code', url: '/dashboard/qr', icon: QrCode },
-  { title: 'Analytics', url: '/dashboard/analytics', icon: BarChart3 },
-  { title: 'Settings', url: '/dashboard/settings', icon: Settings },
-  { title: 'Billing', url: '/dashboard/billing', icon: CreditCard },
-];
-
 export function DashboardSidebar() {
   const { state } = useSidebar();
   const collapsed = state === 'collapsed';
   const { signOut } = useAuth();
   const location = useLocation();
   const { plan, isPremium, loading } = useSubscriptionContext();
+  const { t } = useTranslation();
+
+  const navItems = [
+    { title: t('dashboard.title'), url: '/dashboard', icon: LayoutDashboard },
+    { title: 'Menu Editor', url: '/dashboard/editor', icon: FileText },
+    { title: t('dashboard.qrCode'), url: '/dashboard/qr', icon: QrCode },
+    { title: t('dashboard.analytics'), url: '/dashboard/analytics', icon: BarChart3 },
+    { title: t('dashboard.settings'), url: '/dashboard/settings', icon: Settings },
+    { title: t('dashboard.billing'), url: '/dashboard/billing', icon: CreditCard },
+  ];
 
   const planLabel = plan === 'lifetime' ? 'Myotragus' : 
                     plan === 'pro_annual' ? 'Ferreret anual' : 
@@ -84,6 +87,11 @@ export function DashboardSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="p-4 space-y-3">
+        {/* Language Selector */}
+        <div className={!collapsed ? "block" : "hidden"}>
+          <LanguageSelector className="w-full" />
+        </div>
+
         {/* Plan Badge */}
         {!loading && (
           <Link to="/dashboard/billing" className="block">
@@ -107,7 +115,7 @@ export function DashboardSidebar() {
                     </span>
                     {!isPremium && (
                       <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-                        Mejorar
+                        {t('pricing.monthly')}
                       </Badge>
                     )}
                   </div>
@@ -128,7 +136,7 @@ export function DashboardSidebar() {
           onClick={signOut}
         >
           <LogOut className="h-4 w-4" />
-          {!collapsed && <span>Sign Out</span>}
+          {!collapsed && <span>{t('auth.signOut')}</span>}
         </Button>
       </SidebarFooter>
     </Sidebar>

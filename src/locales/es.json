@@ -1,0 +1,156 @@
+{
+  "header": {
+    "signIn": "Iniciar sesión",
+    "startFree": "Empezar gratis"
+  },
+  "hero": {
+    "title": "Menús digitales que",
+    "highlight": "enamoran a tus clientes",
+    "description": "Crea menús atractivos, rápidos y adaptados a móvil. Sin descargas, sin esperas y sin complicaciones.",
+    "startButton": "Empezar gratis",
+    "demoButton": "Ver demo en vivo"
+  },
+  "features": {
+    "title": "Todo lo que necesitas para crecer",
+    "subtitle": "Herramientas potentes diseñadas para simplificar la gestión de tu restaurante.",
+    "qr": {
+      "title": "Códigos QR Inteligentes",
+      "desc": "Genera QRs únicos para mesas o marketing. Personalizables y siempre conectados."
+    },
+    "translation": {
+      "title": "Traducción Automática",
+      "desc": "Rompe barreras lingüísticas. Tu menú en múltiples idiomas al instante."
+    },
+    "analytics": {
+      "title": "Analíticas en Tiempo Real",
+      "desc": "Descubre qué platos triunfan y optimiza tu oferta basándote en datos reales."
+    }
+  },
+  "pricing": {
+    "title": "Precios transparentes",
+    "subtitle": "Elige el plan que mejor se adapte a tu etapa actual.",
+    "monthly": "Mensual",
+    "annual": "Anual",
+    "mostPopular": "Más popular",
+    "yourPlan": "Tu Plan",
+    "selectPlan": "Seleccionar plan",
+    "startFree": "Empezar gratis",
+    "plans": {
+      "sargantana": {
+        "name": "Sargantana",
+        "features": [
+          "1 menú digital",
+          "1 idioma",
+          "10 fotos",
+          "QR básico",
+          "Platos ilimitados",
+          "Soporte por email"
+        ]
+      },
+      "ferreret": {
+        "name": "Ferreret",
+        "features": [
+          "Menús ilimitados",
+          "3 idiomas automáticos",
+          "Fotos de alta calidad",
+          "Analíticas avanzadas",
+          "Personalización de marca",
+          "Soporte prioritario"
+        ]
+      },
+      "myotragus": {
+        "name": "Myotragus",
+        "features": [
+          "Todo lo incluido en Ferreret",
+          "Sin cuotas mensuales",
+          "Acceso de por vida",
+          "Soporte VIP"
+        ]
+      }
+    }
+  },
+  "footer": {
+    "copyright": "© {year} SaCarta. Fet des de sa illa."
+  },
+  "auth": {
+    "signIn": "Iniciar Sesión",
+    "signUp": "Registrarse",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "passwordPlaceholder": "••••••••",
+    "fullName": "Nombre Completo",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "noAccount": "¿No tienes una cuenta?",
+    "hasAccount": "¿Ya tienes una cuenta?",
+    "signOut": "Cerrar Sesión",
+    "magicLink": "Enviar Enlace Mágico",
+    "magicLinkSent": "¡Revisa tu correo para el enlace mágico!",
+    "createAccount": "Crear cuenta",
+    "sendMagicLink": "Enviar Enlace Mágico",
+    "checkEmail": "Revisa tu correo electrónico",
+    "magicLinkDescription": "Enviamos un enlace mágico a <strong>{email}</strong>. Haz clic en el enlace para iniciar sesión.",
+    "useDifferentEmail": "Usar un correo diferente",
+    "createYourAccount": "Crea tu cuenta",
+    "startCreating": "Comienza a crear menús digitales hermosos",
+    "welcomeBack": "Bienvenido de vuelta",
+    "signInToManage": "Inicia sesión para gestionar tus menús de restaurante",
+    "yourName": "Tu nombre",
+    "youAtExample": "tu@ejemplo.com",
+    "or": "O",
+    "signInWithMagicLink": "Iniciar sesión con Enlace Mágico",
+    "signInWithPassword": "Iniciar sesión con Contraseña",
+    "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+    "dontHaveAccount": "¿No tienes una cuenta?",
+    "checkEmailForMagicLink": "Revisa tu correo electrónico en busca del enlace mágico!",
+    "welcomeMessage": "¡Bienvenido!",
+    "accountCreated": "Tu cuenta ha sido creada.",
+    "errorTitle": "Error",
+    "checkYourEmail": "Revisa tu correo electrónico"
+  },
+  "dashboard": {
+    "title": "Panel",
+    "menus": "Menús",
+    "analytics": "Analíticas",
+    "settings": "Configuración",
+    "billing": "Facturación",
+    "qrCode": "Código QR",
+    "welcomeBack": "¡Bienvenido de vuelta!",
+    "overview": "Aquí está la descripción general de tu restaurante.",
+    "viewMenu": "Ver Menú",
+    "menuStatus": "Estado del Menú",
+    "published": "Publicado",
+    "draft": "Borrador",
+    "availableAt": "Tu menú está disponible en:",
+    "editMenu": "Editar Menú",
+    "downloadPrint": "Descargar e imprimir",
+    "paymentSuccess": "¡Plan actualizado!",
+    "paymentSuccessDesc": "Tu plan ha sido actualizado a {plan}.",
+    "syncingNotice": "Tu pago fue exitoso pero la sincronización puede tardar unos minutos.",
+    "paymentCanceled": "Pago cancelado",
+    "canceledDescription": "El proceso de pago ha sido cancelado. No se ha realizado ningún cargo a tu cuenta.",
+    "contactSupport": "Si has tenido algún problema durante el proceso de pago o tienes preguntas sobre los planes, no dudes en contactarnos.",
+    "backToPlans": "Volver a planes",
+    "backToDashboard": "Ir al dashboard"
+  },
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "add": "Añadir",
+    "loading": "Cargando...",
+    "error": "Algo salió mal",
+    "success": "¡Éxito!"
+  },
+  "menu": {
+    "featured": "Destacados",
+    "viewAll": "Ver Todo",
+    "allergens": "Alérgenos",
+    "vegetarian": "Vegetariano",
+    "vegan": "Vegano",
+    "spicy": "Picante",
+    "glutenFree": "Sin Gluten",
+    "noItems": "No hay artículos disponibles",
+    "unavailable": "Este menú no está disponible"
+  }
+}

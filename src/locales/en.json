@@ -1,0 +1,156 @@
+{
+  "header": {
+    "signIn": "Sign In",
+    "startFree": "Start Free"
+  },
+  "hero": {
+    "title": "Digital menus that",
+    "highlight": "captivate your customers",
+    "description": "Create beautiful, fast, and mobile-friendly menus. No downloads, no waiting, and no complications.",
+    "startButton": "Start Free",
+    "demoButton": "View Live Demo"
+  },
+  "features": {
+    "title": "Everything you need to grow",
+    "subtitle": "Powerful tools designed to simplify your restaurant management.",
+    "qr": {
+      "title": "Smart QR Codes",
+      "desc": "Generate unique QRs for tables or marketing. Customizable and always connected."
+    },
+    "translation": {
+      "title": "Automatic Translation",
+      "desc": "Break language barriers. Your menu in multiple languages instantly."
+    },
+    "analytics": {
+      "title": "Real-time Analytics",
+      "desc": "Discover which dishes are winning and optimize your offer based on real data."
+    }
+  },
+  "pricing": {
+    "title": "Transparent pricing",
+    "subtitle": "Choose the plan that best suits your current stage.",
+    "monthly": "Monthly",
+    "annual": "Annual",
+    "mostPopular": "Most Popular",
+    "yourPlan": "Your Plan",
+    "selectPlan": "Select Plan",
+    "startFree": "Start Free",
+    "plans": {
+      "sargantana": {
+        "name": "Sargantana",
+        "features": [
+          "1 digital menu",
+          "1 language",
+          "10 photos",
+          "Basic QR",
+          "Unlimited dishes",
+          "Email support"
+        ]
+      },
+      "ferreret": {
+        "name": "Ferreret",
+        "features": [
+          "Unlimited menus",
+          "3 automatic languages",
+          "High quality photos",
+          "Advanced analytics",
+          "Brand customization",
+          "Priority support"
+        ]
+      },
+      "myotragus": {
+        "name": "Myotragus",
+        "features": [
+          "Everything included in Ferreret",
+          "No monthly fees",
+          "Lifetime access",
+          "VIP support"
+        ]
+      }
+    }
+  },
+  "footer": {
+    "copyright": "© {year} SaCarta. Made from the island."
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "passwordPlaceholder": "••••••••",
+    "fullName": "Full Name",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "signOut": "Sign Out",
+    "magicLink": "Send Magic Link",
+    "magicLinkSent": "Check your email for the magic link!",
+    "createAccount": "Create Account",
+    "sendMagicLink": "Send Magic Link",
+    "checkEmail": "Check your email",
+    "magicLinkDescription": "We sent a magic link to <strong>{email}</strong>. Click the link to sign in.",
+    "useDifferentEmail": "Use a different email",
+    "createYourAccount": "Create your account",
+    "startCreating": "Start creating beautiful digital menus",
+    "welcomeBack": "Welcome back",
+    "signInToManage": "Sign in to manage your restaurant menus",
+    "yourName": "Your name",
+    "youAtExample": "you@example.com",
+    "or": "Or",
+    "signInWithMagicLink": "Sign in with Magic Link",
+    "signInWithPassword": "Sign in with Password",
+    "alreadyHaveAccount": "Already have an account?",
+    "dontHaveAccount": "Don't have an account?",
+    "checkEmailForMagicLink": "Check your email for the magic link!",
+    "welcomeMessage": "Welcome!",
+    "accountCreated": "Your account has been created.",
+    "errorTitle": "Error",
+    "checkYourEmail": "Check your email"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "menus": "Menus",
+    "analytics": "Analytics",
+    "settings": "Settings",
+    "billing": "Billing",
+    "qrCode": "QR Code",
+    "welcomeBack": "Welcome back!",
+    "overview": "Here's an overview of your restaurant.",
+    "viewMenu": "View Menu",
+    "menuStatus": "Menu Status",
+    "published": "Published",
+    "draft": "Draft",
+    "availableAt": "Your menu is available at:",
+    "editMenu": "Edit Menu",
+    "downloadPrint": "Download & print",
+    "paymentSuccess": "Plan updated!",
+    "paymentSuccessDesc": "Your plan has been updated to {plan}.",
+    "syncingNotice": "Your payment was successful but synchronization may take a few minutes.",
+    "paymentCanceled": "Payment canceled",
+    "canceledDescription": "The payment process has been canceled. No charge has been made to your account.",
+    "contactSupport": "If you had any problems during the payment process or have questions about the plans, feel free to contact us.",
+    "backToPlans": "Back to plans",
+    "backToDashboard": "Go to dashboard"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "success": "Success!"
+  },
+  "menu": {
+    "featured": "Featured",
+    "viewAll": "View All",
+    "allergens": "Allergens",
+    "vegetarian": "Vegetarian",
+    "vegan": "Vegan",
+    "spicy": "Spicy",
+    "glutenFree": "Gluten Free",
+    "noItems": "No items available",
+    "unavailable": "This menu is not available"
+  }
+}

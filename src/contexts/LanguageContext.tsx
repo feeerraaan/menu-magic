@@ -12,7 +12,7 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 export function LanguageProvider({ 
   children, 
   defaultLanguage,
-  supportedLanguages = ['en']
+  supportedLanguages = ['en', 'es', 'ca']
 }: { 
   children: React.ReactNode;
   defaultLanguage?: Language;

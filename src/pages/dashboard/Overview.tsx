@@ -1,4 +1,5 @@
 import { useOutletContext, Link } from 'react-router-dom';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Restaurant } from '@/types/database';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,6 +10,7 @@ import { FileText, QrCode, Eye, ExternalLink, Settings } from 'lucide-react';
 export default function DashboardOverview() {
   const { restaurant } = useOutletContext<{ restaurant: Restaurant }>();
   const { menus } = useMenus(restaurant.id);
+  const { t } = useTranslation();
 
   const menuUrl = `${window.location.origin}/m/${restaurant.slug}`;
 
@@ -16,14 +18,14 @@ export default function DashboardOverview() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-display text-2xl font-bold">Welcome back!</h2>
-          <p className="text-muted-foreground">Here's an overview of your restaurant.</p>
+          <h2 className="font-display text-2xl font-bold">{t('dashboard.welcomeBack')}</h2>
+          <p className="text-muted-foreground">{t('dashboard.overview')}</p>
         </div>
         <div className="flex gap-2">
           <Link to={`/m/${restaurant.slug}`} target="_blank">
             <Button variant="outline" size="sm">
               <ExternalLink className="mr-2 h-4 w-4" />
-              View Menu
+              {t('dashboard.viewMenu')}
             </Button>
           </Link>
         </div>
@@ -33,15 +35,15 @@ export default function DashboardOverview() {
       <Card>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg">Menu Status</CardTitle>
+            <CardTitle className="text-lg">{t('dashboard.menuStatus')}</CardTitle>
             <Badge variant={restaurant.is_published ? 'default' : 'secondary'}>
-              {restaurant.is_published ? 'Published' : 'Draft'}
+              {restaurant.is_published ? t('dashboard.published') : t('dashboard.draft')}
             </Badge>
           </div>
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <span>Your menu is available at:</span>
+            <span>{t('dashboard.availableAt')}</span>
             <code className="bg-muted px-2 py-1 rounded text-xs">{menuUrl}</code>
           </div>
         </CardContent>
@@ -57,7 +59,7 @@ export default function DashboardOverview() {
                   <FileText className="h-6 w-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold">Edit Menu</h3>
+                  <h3 className="font-semibold">{t('dashboard.editMenu')}</h3>
                   <p className="text-sm text-muted-foreground">
                     {menus.length} menu{menus.length !== 1 ? 's' : ''}
                   </p>
@@ -75,8 +77,8 @@ export default function DashboardOverview() {
                   <QrCode className="h-6 w-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold">QR Code</h3>
-                  <p className="text-sm text-muted-foreground">Download & print</p>
+                  <h3 className="font-semibold">{t('dashboard.qrCode')}</h3>
+                  <p className="text-sm text-muted-foreground">{t('dashboard.downloadPrint')}</p>
                 </div>
               </div>
             </CardContent>

@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface PricingCardProps {
   plan: {
@@ -35,6 +36,7 @@ export function PricingCard({
   isLifetime = false
 }: PricingCardProps) {
   const [isAnnual, setIsAnnual] = useState(false);
+  const { t } = useTranslation();
   
   // Normalize marketing ids (UI) to internal plan ids used by billing/subscriptions
   const normalizePlanId = (id: string) => {
@@ -82,14 +84,14 @@ export function PricingCard({
     <div className={`relative p-8 rounded-3xl border flex flex-col ${plan.popular ? 'border-primary shadow-xl shadow-primary/10 bg-card z-10' : 'border-border bg-card/50 hover:bg-card transition-colors'}`}>
       {plan.popular && !isCurrentPlan && (
         <div className="absolute -top-4 left-0 right-0 mx-auto w-fit px-4 py-1 rounded-full bg-primary text-primary-foreground text-sm font-medium shadow-sm">
-          Más popular
+          {t('pricing.mostPopular')}
         </div>
       )}
       
       {!isPublic && isCurrentPlan && (
         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
           <Badge variant="secondary" className="bg-primary text-white hover:bg-primary/20 border-primary/20">
-            Tu Plan
+            {t('pricing.yourPlan')}
           </Badge>
         </div>
       )}
@@ -105,7 +107,7 @@ export function PricingCard({
                 !isAnnual ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
               )}
             >
-              Mensual
+              {t('pricing.monthly')}
             </button>
             <button
               onClick={() => setIsAnnual(true)}
@@ -114,7 +116,7 @@ export function PricingCard({
                 isAnnual ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
               )}
             >
-              Anual
+              {t('pricing.annual')}
             </button>
           </div>
         )}
@@ -136,7 +138,7 @@ export function PricingCard({
       {isPublic ? (
         <Link to="/auth" className="block mt-auto">
           <Button className="w-full h-12 rounded-xl font-medium" variant={plan.popular ? 'default' : 'outline'}>
-            {plan.price === '0€' ? 'Empezar gratis' : 'Seleccionar plan'}
+            {plan.price === '0€' ? t('pricing.startFree') : t('pricing.selectPlan')}
           </Button>
         </Link>
       ) : (

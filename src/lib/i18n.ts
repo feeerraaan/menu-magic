@@ -1,12 +1,9 @@
-export type Language = 'en' | 'es' | 'fr' | 'de' | 'it' | 'pt';
+export type Language = 'en' | 'es' | 'fr' | 'de' | 'it' | 'pt' | 'ca';
 
 export const languages: { code: Language; name: string; flag: string }[] = [
   { code: 'en', name: 'English', flag: '🇬🇧' },
   { code: 'es', name: 'Español', flag: '🇪🇸' },
-  { code: 'fr', name: 'Français', flag: '🇫🇷' },
-  { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
-  { code: 'it', name: 'Italiano', flag: '🇮🇹' },
-  { code: 'pt', name: 'Português', flag: '🇵🇹' },
+  { code: 'ca', name: 'Català', flag: '🇪🇸' },
 ];
 
 const translations: Record<Language, Record<string, string>> = {
@@ -227,6 +224,42 @@ const translations: Record<Language, Record<string, string>> = {
     'common.loading': 'Carregando...',
     'common.error': 'Algo deu errado',
     'common.success': 'Sucesso!',
+  },
+  ca: {
+    // Catalan translations
+    'menu.featured': 'Destacats',
+    'menu.viewAll': 'Veure Tot',
+    'menu.allergens': 'Al·lèrgens',
+    'menu.vegetarian': 'Vegetarià',
+    'menu.vegan': 'Vegà',
+    'menu.spicy': 'Picant',
+    'menu.glutenFree': 'Sense Gluten',
+    'menu.noItems': 'No hi ha articles disponibles',
+    'menu.unavailable': 'Aquest menú no està disponible',
+    'auth.signIn': 'Iniciar Sessió',
+    'auth.signUp': 'Registrar-se',
+    'auth.email': 'Correu Electrònic',
+    'auth.password': 'Contrasenya',
+    'auth.forgotPassword': 'Has oblidat la contrasenya?',
+    'auth.noAccount': 'No tens compte?',
+    'auth.hasAccount': 'Ja tens compte?',
+    'auth.signOut': 'Tancar Sessió',
+    'auth.magicLink': 'Enviar Enllaç Màgic',
+    'auth.magicLinkSent': 'Revisa el teu correu per a l\'enllaç màgic!',
+    'dashboard.title': 'Panell',
+    'dashboard.menus': 'Menús',
+    'dashboard.analytics': 'Analítiques',
+    'dashboard.settings': 'Configuració',
+    'dashboard.billing': 'Facturació',
+    'dashboard.qrCode': 'Codi QR',
+    'common.save': 'Guardar',
+    'common.cancel': 'Cancel·lar',
+    'common.delete': 'Eliminar',
+    'common.edit': 'Editar',
+    'common.add': 'Afegir',
+    'common.loading': 'Carregant...',
+    'common.error': 'Quelcom ha anat malament',
+    'common.success': 'Èxit!',
   },
 };
 

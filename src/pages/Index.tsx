@@ -1,10 +1,13 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { QrCode, BarChart3, Globe, ArrowRight, Check } from 'lucide-react';
+import { QrCode, BarChart3, Globe, ArrowRight } from 'lucide-react';
 import { PRICING_PLANS } from '@/lib/constants';
 import { PricingCard } from '@/components/PricingCard';
+import { LanguageSelector } from '@/components/LanguageSelector';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function Index() {
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen bg-background font-sans selection:bg-primary/20">
       {/* Header */}
@@ -18,11 +21,12 @@ export default function Index() {
             </Link>
           </div>
           <div className="flex items-center gap-4">
+            <LanguageSelector className="w-[150px]" />
             <Link to="/auth?mode=signin">
-              <Button variant="ghost" className="font-medium hover:bg-primary/5 hover:text-primary">Iniciar sesión</Button>
+              <Button variant="ghost" className="font-medium hover:bg-primary/5 hover:text-primary">{t('header.signIn')}</Button>
             </Link>
             <Link to="/auth?mode=signup">
-              <Button className="rounded-full shadow-md shadow-primary/20">Empezar gratis</Button>
+              <Button className="rounded-full shadow-md shadow-primary/20">{t('header.startFree')}</Button>
             </Link>
           </div>
         </div>
@@ -37,10 +41,10 @@ export default function Index() {
         <div className="container mx-auto px-4 text-center">
           <div className="space-y-6 max-w-4xl mx-auto">
             <h1 className="font-display text-5xl md:text-7xl font-bold tracking-tight leading-[1.1]">
-              Menús digitales que <br />
+              {t('hero.title')} <br />
               <span className="relative inline-block mt-1 sm:mt-2">
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-orange-500 to-accent drop-shadow-sm">
-                  enamoran a tus clientes
+                  {t('hero.highlight')}
                 </span>
                 <svg className="absolute w-[110%] h-3 -bottom-2 -left-[5%] text-primary/30 hidden sm:block" viewBox="0 0 200 9" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M2.00025 6.99997C25.7501 2.49994 132.5 -1.49996 198 6.99997" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
@@ -48,18 +52,17 @@ export default function Index() {
               </span>
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              Crea menús atractivos, rápidos y adaptados a móvil. 
-              Sin descargas, sin esperas y sin complicaciones.
+              {t('hero.description')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Link to="/auth">
                 <Button size="lg" className="text-lg px-8 h-14 rounded-full shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-0.5">
-                  Empezar gratis <ArrowRight className="ml-2 h-5 w-5" />
+                  {t('hero.startButton')} <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
               <Link to="/m/demo">
                 <Button size="lg" variant="outline" className="text-lg px-8 h-14 rounded-full border-2 hover:bg-secondary/50 transition-all hover:-translate-y-0.5">
-                  Ver demo en vivo
+                  {t('hero.demoButton')}
                 </Button>
               </Link>
             </div>
@@ -72,18 +75,18 @@ export default function Index() {
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <h2 className="font-display text-4xl font-bold mb-4">
-              Todo lo que necesitas para crecer
+              {t('features.title')}
             </h2>
             <p className="text-muted-foreground text-lg">
-                Herramientas potentes diseñadas para simplificar la gestión de tu restaurante.
+              {t('features.subtitle')}
             </p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
             { [
-              { icon: QrCode, title: 'Códigos QR Inteligentes', desc: 'Genera QRs únicos para mesas o marketing. Personalizables y siempre conectados.' },
-              { icon: Globe, title: 'Traducción Automática', desc: 'Rompe barreras lingüísticas. Tu menú en múltiples idiomas al instante.' },
-              { icon: BarChart3, title: 'Analíticas en Tiempo Real', desc: 'Descubre qué platos triunfan y optimiza tu oferta basándote en datos reales.' },
+              { icon: QrCode, title: t('features.qr.title'), desc: t('features.qr.desc') },
+              { icon: Globe, title: t('features.translation.title'), desc: t('features.translation.desc') },
+              { icon: BarChart3, title: t('features.analytics.title'), desc: t('features.analytics.desc') },
             ].map((f, i) => (
               <div key={i} className="group bg-card hover:bg-card/50 p-8 rounded-2xl border border-border/50 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
                 <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
@@ -101,8 +104,8 @@ export default function Index() {
       <section className="py-24 relative">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="font-display text-4xl font-bold mb-4">Precios transparentes</h2>
-            <p className="text-muted-foreground text-lg">Elige el plan que mejor se adapte a tu etapa actual.</p>
+            <h2 className="font-display text-4xl font-bold mb-4">{t('pricing.title')}</h2>
+            <p className="text-muted-foreground text-lg">{t('pricing.subtitle')}</p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -121,7 +124,7 @@ export default function Index() {
       <footer className="border-t border-border/50 bg-secondary/20 py-8">
         <div className="container mx-auto px-4 text-center">
           <p className="text-muted-foreground text-sm">
-            © {new Date().getFullYear()} SaCarta. Fet des de sa illa.
+            {t('footer.copyright').replace('{year}', new Date().getFullYear().toString())}
           </p>
         </div>
       </footer>

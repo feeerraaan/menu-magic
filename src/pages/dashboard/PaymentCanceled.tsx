@@ -1,10 +1,12 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { XCircle, ArrowLeft, HelpCircle } from 'lucide-react';
 
 export default function PaymentCanceled() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <div className="min-h-[60vh] flex items-center justify-center p-4">
@@ -13,14 +15,14 @@ export default function PaymentCanceled() {
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
             <XCircle className="h-8 w-8 text-muted-foreground" />
           </div>
-          <CardTitle className="font-display text-2xl">Pago cancelado</CardTitle>
+          <CardTitle className="font-display text-2xl">{t('dashboard.paymentCanceled')}</CardTitle>
           <CardDescription>
-            El proceso de pago ha sido cancelado. No se ha realizado ningún cargo a tu cuenta.
+            {t('dashboard.canceledDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="p-4 bg-muted rounded-lg text-sm text-muted-foreground">
-            <p>Si has tenido algún problema durante el proceso de pago o tienes preguntas sobre los planes, no dudes en contactarnos.</p>
+            <p>{t('dashboard.contactSupport')}</p>
           </div>
           
           <Button 
@@ -28,7 +30,7 @@ export default function PaymentCanceled() {
             className="w-full"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Volver a planes
+            {t('dashboard.backToPlans')}
           </Button>
           
           <Button 
@@ -36,7 +38,7 @@ export default function PaymentCanceled() {
             onClick={() => navigate('/dashboard')}
             className="w-full"
           >
-            Ir al dashboard
+            {t('dashboard.backToDashboard')}
           </Button>
         </CardContent>
       </Card>

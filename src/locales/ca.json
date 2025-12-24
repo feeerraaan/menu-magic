@@ -1,0 +1,156 @@
+{
+  "header": {
+    "signIn": "Iniciar sessió",
+    "startFree": "Començar gratis"
+  },
+  "hero": {
+    "title": "Menús digitals que",
+    "highlight": "enamoren als teus clients",
+    "description": "Crea menús atractius, ràpids i adaptats a mòbil. Sense descàrregues, sense esperes i sense complicacions.",
+    "startButton": "Començar gratis",
+    "demoButton": "Veure demostració en directe"
+  },
+  "features": {
+    "title": "Tot el que necessites per créixer",
+    "subtitle": "Eines potents dissenyades per simplificar la gestió del teu restaurant.",
+    "qr": {
+      "title": "Codis QR Intel·ligents",
+      "desc": "Genera QR únics per a taules o màrqueting. Personalitzables i sempre connectats."
+    },
+    "translation": {
+      "title": "Traducció Automàtica",
+      "desc": "Trenca barreres lingüístiques. El teu menú en diversos idiomes al instant."
+    },
+    "analytics": {
+      "title": "Analítiques en Temps Real",
+      "desc": "Descobreix quins plats triomfen i optimitza la teva oferta basant-te en dades reals."
+    }
+  },
+  "pricing": {
+    "title": "Preus transparents",
+    "subtitle": "Tria el pla que millor s'adapti a la teva fase actual.",
+    "monthly": "Mensual",
+    "annual": "Anual",
+    "mostPopular": "Més popular",
+    "yourPlan": "El teu Pla",
+    "selectPlan": "Seleccionar pla",
+    "startFree": "Començar gratis",
+    "plans": {
+      "sargantana": {
+        "name": "Sargantana",
+        "features": [
+          "1 menú digital",
+          "1 idioma",
+          "10 fotos",
+          "QR bàsic",
+          "Plats il·limitats",
+          "Suport per correu electrònic"
+        ]
+      },
+      "ferreret": {
+        "name": "Ferreret",
+        "features": [
+          "Menús il·limitats",
+          "3 idiomes automàtics",
+          "Fotos d'alta qualitat",
+          "Analítiques avançades",
+          "Personalització de marca",
+          "Suport prioritari"
+        ]
+      },
+      "myotragus": {
+        "name": "Myotragus",
+        "features": [
+          "Tot inclòs a Ferreret",
+          "Sense quotes mensuals",
+          "Accés de per vida",
+          "Suport VIP"
+        ]
+      }
+    }
+  },
+  "footer": {
+    "copyright": "© {year} SaCarta. Fet des de sa illa."
+  },
+  "auth": {
+    "signIn": "Iniciar Sessió",
+    "signUp": "Registrar-se",
+    "email": "Correu Electrònic",
+    "password": "Contrasenya",
+    "passwordPlaceholder": "••••••••",
+    "fullName": "Nom Complet",
+    "forgotPassword": "Has oblidat la contrasenya?",
+    "noAccount": "No tens compte?",
+    "hasAccount": "Ja tens compte?",
+    "signOut": "Tancar Sessió",
+    "magicLink": "Enviar Enllaç Màgic",
+    "magicLinkSent": "Revisa el teu correu per a l'enllaç màgic!",
+    "createAccount": "Crear Compte",
+    "sendMagicLink": "Enviar Enllaç Màgic",
+    "checkEmail": "Revisa el teu correu electrònic",
+    "magicLinkDescription": "Vam enviar un enllaç màgic a <strong>{email}</strong>. Fes clic a l'enllaç per iniciar sessió.",
+    "useDifferentEmail": "Usar un correu diferent",
+    "createYourAccount": "Crea el teu compte",
+    "startCreating": "Comença a crear menús digitals hermosos",
+    "welcomeBack": "Benvingut de tornada",
+    "signInToManage": "Inicia sessió per gestionar els menús del teu restaurant",
+    "yourName": "El teu nom",
+    "youAtExample": "tu@exemple.com",
+    "or": "O",
+    "signInWithMagicLink": "Iniciar sessió amb Enllaç Màgic",
+    "signInWithPassword": "Iniciar sessió amb Contrasenya",
+    "alreadyHaveAccount": "Ja tens compte?",
+    "dontHaveAccount": "No tens compte?",
+    "checkEmailForMagicLink": "Revisa el teu correu en busca de l'enllaç màgic!",
+    "welcomeMessage": "¡Benvingut!",
+    "accountCreated": "El teu compte ha estat creat.",
+    "errorTitle": "Error",
+    "checkYourEmail": "Revisa el teu correu electrònic"
+  },
+  "dashboard": {
+    "title": "Panell",
+    "menus": "Menús",
+    "analytics": "Analítiques",
+    "settings": "Configuració",
+    "billing": "Facturació",
+    "qrCode": "Codi QR",
+    "welcomeBack": "¡Benvingut de tornada!",
+    "overview": "Aquí està la descripció general del teu restaurant.",
+    "viewMenu": "Veure Menú",
+    "menuStatus": "Estat del Menú",
+    "published": "Publicat",
+    "draft": "Esborrador",
+    "availableAt": "El teu menú està disponible a:",
+    "editMenu": "Editar Menú",
+    "downloadPrint": "Descarregar i imprimir",
+    "paymentSuccess": "¡Pla actualitzat!",
+    "paymentSuccessDesc": "El teu pla ha estat actualitzat a {plan}.",
+    "syncingNotice": "El teu pagament va tenir èxit però la sincronització pot tardar alguns minuts.",
+    "paymentCanceled": "Pagament cancel·lat",
+    "canceledDescription": "El procés de pagament ha estat cancel·lat. No s'ha realitzat cap càrrec al teu compte.",
+    "contactSupport": "Si has tingut algún problema durant el procés de pagament o tens preguntes sobre els plans, no dubtis en contactar-nos.",
+    "backToPlans": "Tornar als plans",
+    "backToDashboard": "Anar al panell"
+  },
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancel·lar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "add": "Afegir",
+    "loading": "Carregant...",
+    "error": "Quelcom ha anat malament",
+    "success": "¡Èxit!"
+  },
+  "menu": {
+    "featured": "Destacats",
+    "viewAll": "Veure Tot",
+    "allergens": "Al·lèrgens",
+    "vegetarian": "Vegetarià",
+    "vegan": "Vegà",
+    "spicy": "Picant",
+    "glutenFree": "Sense Gluten",
+    "noItems": "No hi ha articles disponibles",
+    "unavailable": "Aquest menú no està disponible"
+  }
+}

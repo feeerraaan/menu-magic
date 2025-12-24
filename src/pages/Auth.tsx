@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -23,10 +24,11 @@ export default function Auth() {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   // Validate redirect path to prevent open redirect attacks
   const from = (() => {
-    const statePath = (location.state as any)?.from?.pathname;
+    const statePath = (location.state as { from?: { pathname: string } } | null)?.from?.pathname;
     // Only allow internal paths that start with / but not // (protocol-relative)
     if (
       typeof statePath === 'string' &&
@@ -75,23 +77,23 @@ export default function Auth() {
       if (mode === 'magic-link') {
         const { error } = await signInWithMagicLink(email);
         if (error) {
-          toast({ title: 'Error', description: error.message, variant: 'destructive' });
+          toast({ title: t('auth.errorTitle'), description: error.message, variant: 'destructive' });
         } else {
           setMagicLinkSent(true);
-          toast({ title: 'Check your email', description: 'We sent you a magic link to sign in.' });
+          toast({ title: t('auth.checkYourEmail'), description: t('auth.magicLinkSent') });
         }
       } else if (mode === 'signup') {
         const { error } = await signUp(email, password, fullName);
         if (error) {
-          toast({ title: 'Error', description: error.message, variant: 'destructive' });
+          toast({ title: t('auth.errorTitle'), description: error.message, variant: 'destructive' });
         } else {
-          toast({ title: 'Welcome!', description: 'Your account has been created.' });
+          toast({ title: t('auth.welcomeMessage'), description: t('auth.accountCreated') });
           navigate(from, { replace: true });
         }
       } else {
         const { error } = await signInWithPassword(email, password);
         if (error) {
-          toast({ title: 'Error', description: error.message, variant: 'destructive' });
+          toast({ title: t('auth.errorTitle'), description: error.message, variant: 'destructive' });
         } else {
           navigate(from, { replace: true });
         }
@@ -109,9 +111,9 @@ export default function Auth() {
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
               <Mail className="h-8 w-8 text-primary" />
             </div>
-            <CardTitle className="font-display text-2xl">Check your email</CardTitle>
+            <CardTitle className="font-display text-2xl">{t('auth.checkEmail')}</CardTitle>
             <CardDescription>
-              We sent a magic link to <strong>{email}</strong>. Click the link to sign in.
+              {t('auth.magicLinkDescription').replace('{email}', email)}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -120,7 +122,7 @@ export default function Auth() {
               className="w-full"
               onClick={() => setMagicLinkSent(false)}
             >
-              Use a different email
+              {t('auth.useDifferentEmail')}
             </Button>
           </CardContent>
         </Card>
@@ -132,29 +134,29 @@ export default function Auth() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-secondary/20 to-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full gradient-primary">
-            <Utensils className="h-8 w-8 text-primary-foreground" />
+          <div className="mx-auto mb-4 flex h-28 w-28 items-center justify-center rounded-full">
+            <img src="/logo.png" alt="Logo SaCarta" />
           </div>
           <CardTitle className="font-display text-2xl">
-            {mode === 'signup' ? 'Create your account' : 'Welcome back'}
+            {mode === 'signup' ? t('auth.createYourAccount') : t('auth.welcomeBack')}
           </CardTitle>
           <CardDescription>
             {mode === 'signup' 
-              ? 'Start creating beautiful digital menus' 
-              : 'Sign in to manage your restaurant menus'}
+              ? t('auth.startCreating')
+              : t('auth.signInToManage')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             {mode === 'signup' && (
               <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name</Label>
+                <Label htmlFor="fullName">{t('auth.fullName')}</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="fullName"
                     type="text"
-                    placeholder="Your name"
+                    placeholder={t('auth.yourName')}
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     className="pl-10"
@@ -164,13 +166,13 @@ export default function Auth() {
             )}
             
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('auth.email')}</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="email"
                   type="email"
-                  placeholder="you@example.com"
+                  placeholder={t('auth.youAtExample')}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -181,13 +183,13 @@ export default function Auth() {
 
             {mode !== 'magic-link' && (
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{t('auth.password')}</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="password"
                     type="password"
-                    placeholder="••••••••"
+                    placeholder={t('auth.passwordPlaceholder')}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -200,7 +202,7 @@ export default function Auth() {
 
             <Button type="submit" className="w-full" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {mode === 'signup' ? 'Create Account' : mode === 'magic-link' ? 'Send Magic Link' : 'Sign In'}
+              {mode === 'signup' ? t('auth.createAccount') : mode === 'magic-link' ? t('auth.sendMagicLink') : t('auth.signIn')}
             </Button>
           </form>
 
@@ -210,7 +212,7 @@ export default function Auth() {
                 <span className="w-full border-t" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">Or</span>
+                <span className="bg-card px-2 text-muted-foreground">{t('auth.or')}</span>
               </div>
             </div>
 
@@ -221,7 +223,7 @@ export default function Auth() {
                 onClick={() => setMode('magic-link')}
               >
                 <Mail className="mr-2 h-4 w-4" />
-                Sign in with Magic Link
+                {t('auth.signInWithMagicLink')}
               </Button>
             )}
 
@@ -232,7 +234,7 @@ export default function Auth() {
                 onClick={() => setMode('signin')}
               >
                 <Lock className="mr-2 h-4 w-4" />
-                Sign in with Password
+                {t('auth.signInWithPassword')}
               </Button>
             )}
           </div>
@@ -240,24 +242,24 @@ export default function Auth() {
           <p className="mt-6 text-center text-sm text-muted-foreground">
             {mode === 'signup' ? (
               <>
-                Already have an account?{' '}
+                {t('auth.alreadyHaveAccount')}{' '}
                 <button
                   type="button"
                   onClick={() => setMode('signin')}
                   className="text-primary hover:underline font-medium"
                 >
-                  Sign in
+                  {t('auth.signIn')}
                 </button>
               </>
             ) : (
               <>
-                Don't have an account?{' '}
+                {t('auth.dontHaveAccount')}{' '}
                 <button
                   type="button"
                   onClick={() => setMode('signup')}
                   className="text-primary hover:underline font-medium"
                 >
-                  Sign up
+                  {t('auth.signUp')}
                 </button>
               </>
             )}

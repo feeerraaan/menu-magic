@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, Loader2, ArrowRight } from 'lucide-react';
@@ -11,6 +12,7 @@ export default function PaymentSuccess() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { refetch: refetchSubscription } = useSubscriptionContext();
+  const { t } = useTranslation();
   const [syncing, setSyncing] = useState(true);
   const [syncComplete, setSyncComplete] = useState(false);
 
@@ -26,14 +28,14 @@ export default function PaymentSuccess() {
         if (error) {
           console.error('Sync error:', error);
           toast({
-            title: 'Aviso',
-            description: 'Tu pago fue exitoso pero la sincronización puede tardar unos minutos.',
+            title: t('common.loading'),
+            description: t('dashboard.syncingNotice'),
             variant: 'default',
           });
         } else if (data?.success) {
           toast({
-            title: '¡Plan actualizado!',
-            description: `Tu plan ha sido actualizado a ${data.plan?.replace('_', ' ')}.`,
+            title: t('dashboard.paymentSuccess'),
+            description: t('dashboard.paymentSuccessDesc').replace('{plan}', data.plan?.replace('_', ' ') || ''),
           });
         }
         
@@ -49,7 +51,7 @@ export default function PaymentSuccess() {
     };
 
     syncSubscription();
-  }, [toast, refetchSubscription]);
+  }, [toast, refetchSubscription, t]);
 
   return (
     <div className="min-h-[60vh] flex items-center justify-center p-4">
@@ -63,11 +65,11 @@ export default function PaymentSuccess() {
             )}
           </div>
           <CardTitle className="font-display text-2xl">
-            {syncing ? 'Procesando...' : '¡Pago exitoso!'}
+            {syncing ? t('common.loading') : t('dashboard.paymentSuccess')}
           </CardTitle>
           <CardDescription>
             {syncing 
-              ? 'Estamos sincronizando tu suscripción, espera un momento...'
+              ? t('dashboard.syncingNotice')
               : 'Tu suscripción ha sido activada correctamente. Ya puedes disfrutar de todas las funciones Pro.'
             }
           </CardDescription>
@@ -89,7 +91,7 @@ export default function PaymentSuccess() {
                 onClick={() => navigate('/dashboard/billing')}
                 className="w-full"
               >
-                Ver mi suscripción
+                {t('dashboard.billing')}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
               <Button 
@@ -97,7 +99,7 @@ export default function PaymentSuccess() {
                 onClick={() => navigate('/dashboard/editor')}
                 className="w-full"
               >
-                Ir al editor de menús
+                {t('dashboard.editMenu')}
               </Button>
             </>
           )}
