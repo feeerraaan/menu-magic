@@ -436,7 +436,7 @@ function FeaturedItemCard({ item, getName, getDescription, formatPrice, restaura
           
           {/* Description */}
           {description && (
-            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{description}</p>
+            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-5">{description}</p>
           )}
           
           {/* Allergens */}
