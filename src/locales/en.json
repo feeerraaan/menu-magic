@@ -110,10 +110,13 @@
   "dashboard": {
     "title": "Dashboard",
     "menus": "Menus",
+    "menuEditor": "Menu Editor",
     "analytics": "Analytics",
     "settings": "Settings",
     "billing": "Billing",
     "qrCode": "QR Code",
+    "unlockAllFeatures": "Unlock all features",
+    "closingSession": "Closing session...",
     "welcomeBack": "Welcome back!",
     "overview": "Here's an overview of your restaurant.",
     "viewMenu": "View Menu",

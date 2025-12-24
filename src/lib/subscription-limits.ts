@@ -36,7 +36,7 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
     languages: 1,
     menus: 1,
     categories: 5,
-    items: 20,
+    items: 50,
     schedules: false,
     analytics: false,
     customDomain: false,
@@ -58,7 +58,7 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
     languages: 3,
     menus: 5,
     categories: 50,
-    items: 500,
+    items: 750,
     schedules: true,
     analytics: true,
     customDomain: true,
@@ -83,7 +83,7 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
 export const PLANS: Record<PlanType, PlanInfo> = {
   free: {
     id: 'free',
-    name: 'Free',
+    name: 'Sargantana',
     description: 'Para empezar',
     limits: PLAN_LIMITS.free,
   },

@@ -110,10 +110,13 @@
   "dashboard": {
     "title": "Panell",
     "menus": "Menús",
+    "menuEditor": "Editor de Menú",
     "analytics": "Analítiques",
     "settings": "Configuració",
     "billing": "Facturació",
     "qrCode": "Codi QR",
+    "unlockAllFeatures": "Desbloqueja totes les funcions",
+    "closingSession": "Tancant sessió...",
     "welcomeBack": "¡Benvingut de tornada!",
     "overview": "Aquí està la descripció general del teu restaurant.",
     "viewMenu": "Veure Menú",

@@ -57,7 +57,7 @@ export function DashboardSidebar() {
 
   const navItems = [
     { title: t('dashboard.title'), url: '/dashboard', icon: LayoutDashboard },
-    { title: 'Menu Editor', url: '/dashboard/editor', icon: FileText },
+    { title: t('dashboard.menuEditor'), url: '/dashboard/editor', icon: FileText },
     { title: t('dashboard.qrCode'), url: '/dashboard/qr', icon: QrCode },
     { title: t('dashboard.analytics'), url: '/dashboard/analytics', icon: BarChart3 },
     { title: t('dashboard.settings'), url: '/dashboard/settings', icon: Settings },
@@ -129,15 +129,10 @@ export function DashboardSidebar() {
                     <span className={`text-sm font-medium ${isPremium ? 'text-amber-600 dark:text-amber-400' : 'text-foreground'}`}>
                       {planLabel}
                     </span>
-                    {!isPremium && (
-                      <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-                        {t('pricing.monthly')}
-                      </Badge>
-                    )}
                   </div>
                   {!isPremium && (
                     <p className="text-[10px] text-muted-foreground truncate">
-                      Desbloquea todas las funciones
+                      {t('dashboard.unlockAllFeatures')}
                     </p>
                   )}
                 </div>
@@ -153,7 +148,7 @@ export function DashboardSidebar() {
           disabled={isLoggingOut}
         >
           <LogOut className="h-4 w-4" />
-          {!collapsed && <span>{isLoggingOut ? 'Cerrando...' : t('auth.signOut')}</span>}
+          {!collapsed && <span>{isLoggingOut ? t('dashboard.closingSession') : t('auth.signOut')}</span>}
         </Button>
       </SidebarFooter>
     </Sidebar>

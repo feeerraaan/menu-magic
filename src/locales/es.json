@@ -110,10 +110,13 @@
   "dashboard": {
     "title": "Panel",
     "menus": "Menús",
+    "menuEditor": "Editor de Menú",
     "analytics": "Analíticas",
     "settings": "Configuración",
     "billing": "Facturación",
     "qrCode": "Código QR",
+    "unlockAllFeatures": "Desbloquea todas las funciones",
+    "closingSession": "Cerrando sesión...",
     "welcomeBack": "¡Bienvenido de vuelta!",
     "overview": "Aquí está la descripción general de tu restaurante.",
     "viewMenu": "Ver Menú",
