@@ -489,7 +489,7 @@ export default function PublicMenu() {
         // Fetch restaurant - explicitly select public fields only (exclude owner_id, custom_domain)
         const { data: restaurant, error: restError } = await supabase
           .from('restaurants')
-          .select('id, name, slug, logo_url, address, phone, _url, currency, default_language, supported_languages, hide_prices, theme, is_published, onboarding_completed, created_at, updated_at')
+          .select('id, name, slug, logo_url, address, phone, instagram_url, website_url, currency, default_language, supported_languages, hide_prices, theme, is_published, onboarding_completed, created_at, updated_at, template')
           .eq('slug', slug)
           .eq('is_published', true)
           .maybeSingle();
@@ -502,7 +502,25 @@ export default function PublicMenu() {
         }
         
         // Cast to Restaurant type with owner_id as undefined (not used in public view)
-        const restaurantData = { ...restaurant, owner_id: '' } as Restaurant;
+        const restaurantData: Restaurant = {
+          id: restaurant.id,
+          owner_id: '',
+          name: restaurant.name,
+          slug: restaurant.slug,
+          logo_url: restaurant.logo_url,
+          address: restaurant.address,
+          phone: restaurant.phone,
+          currency: restaurant.currency,
+          default_language: restaurant.default_language,
+          supported_languages: restaurant.supported_languages,
+          hide_prices: restaurant.hide_prices,
+          theme: restaurant.theme as 'light' | 'dark',
+          custom_domain: null,
+          is_published: restaurant.is_published,
+          onboarding_completed: restaurant.onboarding_completed,
+          created_at: restaurant.created_at,
+          updated_at: restaurant.updated_at,
+        };
 
         // Fetch active menus
         const { data: menus, error: menuError } = await supabase

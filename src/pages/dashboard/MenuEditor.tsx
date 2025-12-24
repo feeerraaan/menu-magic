@@ -347,10 +347,24 @@ export default function MenuEditor() {
         }));
         toast({ title: t('menuEditor.itemUpdated') });
       } else if (categoryId) {
-        const insertData = { ...data, category_id: categoryId, display_order: (itemsByCategory[categoryId]?.length || 0) };
+        const insertData = {
+          category_id: categoryId,
+          name: data.name || 'New Item',
+          description: data.description ?? null,
+          price: data.price ?? null,
+          photo_url: data.photo_url ?? null,
+          is_active: data.is_active ?? true,
+          is_featured: data.is_featured ?? false,
+          is_vegetarian: data.is_vegetarian ?? false,
+          is_vegan: data.is_vegan ?? false,
+          is_spicy: data.is_spicy ?? false,
+          is_gluten_free: data.is_gluten_free ?? false,
+          allergens: data.allergens ?? [],
+          display_order: itemsByCategory[categoryId]?.length || 0,
+        };
         const { data: newItem } = await supabase
           .from('items')
-          .insert([insertData as unknown as Record<string, unknown>])
+          .insert([insertData])
           .select()
           .single();
         if (newItem) {
