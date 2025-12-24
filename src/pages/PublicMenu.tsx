@@ -247,9 +247,9 @@ function MenuContent({ data }: { data: PublicMenuData }) {
           <section
             key={category.id}
             ref={(el) => { if (el) categoryRefs.current[category.id] = el; }}
-            className="mb-8"
+            className="mb-8 scroll-mt-24"
           >
-            <h2 className="font-display text-xl font-bold mb-4 sticky top-[60px] bg-background/95 backdrop-blur-sm py-2 -mx-4 px-4 z-20">
+            <h2 className="font-display text-xl font-bold mb-4 py-2">
               {getCategoryName(category)}
             </h2>
             <div className="space-y-3">
