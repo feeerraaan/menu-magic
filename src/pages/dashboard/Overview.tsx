@@ -101,29 +101,6 @@ export default function DashboardOverview() {
           </Card>
         </Link>
       </div>
-
-      {/* Restaurant Info */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Restaurant Info</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <dl className="grid gap-3 text-sm">
-            <div className="flex justify-between">
-              <dt className="text-muted-foreground">Slug</dt>
-              <dd className="font-medium">{restaurant.slug}</dd>
-            </div>
-            <div className="flex justify-between">
-              <dt className="text-muted-foreground">Currency</dt>
-              <dd className="font-medium">{restaurant.currency}</dd>
-            </div>
-            <div className="flex justify-between">
-              <dt className="text-muted-foreground">Languages</dt>
-              <dd className="font-medium">{restaurant.supported_languages.join(', ')}</dd>
-            </div>
-          </dl>
-        </CardContent>
-      </Card>
     </div>
   );
 }

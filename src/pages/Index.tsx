@@ -20,20 +20,20 @@ export default function Index() {
               </div>
             </Link>
           </div>
-          <div className="flex items-center gap-4">
-            <LanguageSelector className="w-[150px]" />
+          <div className="flex items-center gap-2 sm:gap-4">
+            <LanguageSelector className="w-[120px] sm:w-[150px]" />
             <Link to="/auth?mode=signin">
-              <Button variant="ghost" className="font-medium hover:bg-primary/5 hover:text-primary">{t('header.signIn')}</Button>
+              <Button variant="ghost" className="hidden sm:block font-medium hover:bg-primary/5 hover:text-primary">{t('header.signIn')}</Button>
             </Link>
             <Link to="/auth?mode=signup">
-              <Button className="rounded-full shadow-md shadow-primary/20">{t('header.startFree')}</Button>
+              <Button className="rounded-full shadow-md shadow-primary/20 text-sm sm:text-base px-3 sm:px-6">{t('header.startFree')}</Button>
             </Link>
           </div>
         </div>
       </header>
 
       {/* Hero */}
-      <section className="relative overflow-hidden pt-32 pb-20 lg:pb-32">
+      <section className="relative overflow-hidden pt-8 sm:pt-20 md:pt-32 pb-20 lg:pb-32">
         {/* Background decoration */}
         <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
         <div className="absolute left-0 right-0 top-0 -z-10 m-auto h-[310px] w-[310px] rounded-full bg-primary/20 opacity-20 blur-[100px]"></div>
