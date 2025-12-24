@@ -3,6 +3,7 @@ import { useOutletContext } from 'react-router-dom';
 import { Restaurant } from '@/types/database';
 import { useRestaurant } from '@/hooks/useRestaurant';
 import { useSubscriptionContext } from '@/contexts/SubscriptionContext';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -32,6 +33,7 @@ export default function Settings() {
   const { restaurant } = useOutletContext<{ restaurant: Restaurant }>();
   const { update } = useRestaurant();
   const { toast } = useToast();
+  const { t } = useTranslation();
   
   const [loading, setLoading] = useState(false);
   const [logoUrl, setLogoUrl] = useState<string | null>(restaurant.logo_url);
@@ -50,7 +52,7 @@ export default function Settings() {
     is_published: restaurant.is_published,
   });
 
-  const updateField = (field: string, value: any) => {
+  const updateField = (field: string, value: unknown) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -72,8 +74,8 @@ export default function Settings() {
       // Check limit before adding
       if (current.length >= languagesLimit) {
         toast({ 
-          title: 'Límite alcanzado', 
-          description: `Tu plan permite máximo ${languagesLimit} idioma${languagesLimit > 1 ? 's' : ''}. Mejora tu plan para añadir más.`,
+          title: t('settings.languageLimit'), 
+          description: t('settings.languageLimitMsg'),
           variant: 'destructive' 
         });
         return;
@@ -100,9 +102,10 @@ export default function Settings() {
         hide_prices: formData.hide_prices,
         is_published: formData.is_published,
       });
-      toast({ title: 'Settings saved' });
-    } catch (e: any) {
-      toast({ title: 'Error', description: e.message, variant: 'destructive' });
+      toast({ title: t('settings.settingsSaved') });
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : 'Unknown error';
+      toast({ title: t('common.error'), description: errorMessage, variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -112,12 +115,12 @@ export default function Settings() {
     <div className="space-y-6 max-w-2xl">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-display text-2xl font-bold">Settings</h2>
-          <p className="text-muted-foreground">Manage your restaurant settings</p>
+          <h2 className="font-display text-2xl font-bold">{t('settings.title')}</h2>
+          <p className="text-muted-foreground">{t('settings.subtitle')}</p>
         </div>
         <Button onClick={handleSave} disabled={loading}>
           {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-          Save Changes
+          {t('settings.saveChanges')}
         </Button>
       </div>
 
@@ -126,9 +129,9 @@ export default function Settings() {
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <ImageIcon className="h-5 w-5" />
-            Restaurant Logo
+            {t('settings.logo')}
           </CardTitle>
-          <CardDescription>Upload your restaurant logo (auto-compressed)</CardDescription>
+          <CardDescription>{t('settings.logoDesc')}</CardDescription>
         </CardHeader>
         <CardContent>
           <ImageUpload
@@ -146,11 +149,11 @@ export default function Settings() {
       {/* Basic Info */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Basic Information</CardTitle>
+          <CardTitle className="text-lg">{t('settings.basicInfo')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Restaurant Name</Label>
+            <Label htmlFor="name">{t('settings.restaurantName')}</Label>
             <Input
               id="name"
               value={formData.name}
@@ -158,31 +161,31 @@ export default function Settings() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="address">Address</Label>
+            <Label htmlFor="address">{t('settings.address')}</Label>
             <Input
               id="address"
               value={formData.address}
               onChange={(e) => updateField('address', e.target.value)}
-              placeholder="123 Main St, City"
+              placeholder={t('settings.addressPlaceholder')}
             />
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone</Label>
+              <Label htmlFor="phone">{t('settings.phone')}</Label>
               <Input
                 id="phone"
                 value={formData.phone}
                 onChange={(e) => updateField('phone', e.target.value)}
-                placeholder="+1 234 567 890"
+                placeholder={t('settings.phonePlaceholder')}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="instagram">Instagram</Label>
+              <Label htmlFor="instagram">{t('settings.instagram')}</Label>
               <Input
                 id="instagram"
                 value={formData.instagram_url}
                 onChange={(e) => updateField('instagram_url', e.target.value)}
-                placeholder="https://instagram.com/..."
+                placeholder={t('settings.instagramPlaceholder')}
               />
             </div>
           </div>
@@ -194,12 +197,12 @@ export default function Settings() {
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <Globe className="h-5 w-5" />
-            Language & Currency
+            {t('settings.languageCurrency')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label>Currency</Label>
+            <Label>{t('settings.currency')}</Label>
             <Select value={formData.currency} onValueChange={(v) => updateField('currency', v)}>
               <SelectTrigger>
                 <SelectValue />
@@ -216,7 +219,7 @@ export default function Settings() {
           
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label>Menu Languages</Label>
+              <Label>{t('settings.menuLanguages')}</Label>
               <LimitIndicator feature="languages" current={currentLanguagesCount} limit={languagesLimit} showProgress={false} size="sm" />
             </div>
             <div className="flex flex-wrap gap-2">
@@ -241,13 +244,13 @@ export default function Settings() {
             </div>
             {isAtLanguageLimit && (
               <p className="text-xs text-muted-foreground">
-                Has alcanzado el límite de idiomas de tu plan. <a href="/dashboard/billing" className="text-primary underline">Mejora tu plan</a> para añadir más.
+                {t('settings.languageLimitMsg')} <a href="/dashboard/billing" className="text-primary underline">{t('settings.upgradeLink')}</a>.
               </p>
             )}
           </div>
           
           <div className="space-y-2">
-            <Label>Default Language</Label>
+            <Label>{t('settings.defaultLanguage')}</Label>
             <Select 
               value={formData.default_language} 
               onValueChange={(v) => updateField('default_language', v)}
@@ -274,12 +277,12 @@ export default function Settings() {
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <Palette className="h-5 w-5" />
-            Appearance
+            {t('settings.appearance')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label>Template</Label>
+            <Label>{t('settings.template')}</Label>
             <Select value={formData.template} onValueChange={(v) => updateField('template', v)}>
               <SelectTrigger>
                 <SelectValue />
@@ -293,14 +296,14 @@ export default function Settings() {
           </div>
           
           <div className="space-y-2">
-            <Label>Theme</Label>
+            <Label>{t('settings.theme')}</Label>
             <Select value={formData.theme} onValueChange={(v) => updateField('theme', v)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="light">Light</SelectItem>
-                <SelectItem value="dark">Dark</SelectItem>
+                <SelectItem value="light">{t('settings.light')}</SelectItem>
+                <SelectItem value="dark">{t('settings.dark')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -312,13 +315,13 @@ export default function Settings() {
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <Eye className="h-5 w-5" />
-            Display Options
+            {t('settings.visibility')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-medium">Hide Prices</p>
+              <p className="font-medium">{t('settings.hideAllPrices')}</p>
               <p className="text-sm text-muted-foreground">Don't show prices on the public menu</p>
             </div>
             <Switch
@@ -329,7 +332,7 @@ export default function Settings() {
           
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-medium">Published</p>
+              <p className="font-medium">{t('settings.publishMenu')}</p>
               <p className="text-sm text-muted-foreground">Make your menu visible to customers</p>
             </div>
             <Switch

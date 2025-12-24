@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { Restaurant } from '@/types/database';
 import { useSubscriptionContext } from '@/contexts/SubscriptionContext';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -23,6 +24,7 @@ export default function Billing() {
   const { restaurant } = useOutletContext<{ restaurant: Restaurant }>();
   const { subscription, plan: globalPlan, limits, refetch: refetchSubscription } = useSubscriptionContext();
   const { toast } = useToast();
+  const { t } = useTranslation();
   
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [stripeStatus, setStripeStatus] = useState<StripeSubscriptionStatus | null>(null);
@@ -46,8 +48,22 @@ export default function Billing() {
 
   // Check subscription on mount
   useEffect(() => {
-    checkSubscription();
-  }, []);
+    const check = async () => {
+      setCheckingStatus(true);
+      try {
+        const { data, error } = await supabase.functions.invoke('check-subscription');
+        if (error) throw error;
+        setStripeStatus(data);
+        // Also refresh global subscription state
+        await refetchSubscription();
+      } catch (error) {
+        console.error('Error checking subscription:', error);
+      } finally {
+        setCheckingStatus(false);
+      }
+    };
+    check();
+  }, [refetchSubscription]);
 
   const handleUpgrade = async (planId: string, mode: string = 'subscription') => {
     if (planId === 'free') return;
@@ -66,10 +82,11 @@ export default function Billing() {
       if (data?.url) {
         window.open(data.url, '_blank');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to start checkout';
       toast({
-        title: 'Error',
-        description: error.message || 'Failed to start checkout',
+        title: t('billing.error'),
+        description: errorMessage,
         variant: 'destructive',
       });
     } finally {
@@ -87,10 +104,11 @@ export default function Billing() {
       if (data?.url) {
         window.open(data.url, '_blank');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to open customer portal';
       toast({
-        title: 'Error',
-        description: error.message || 'Failed to open customer portal',
+        title: t('billing.error'),
+        description: errorMessage,
         variant: 'destructive',
       });
     } finally {
@@ -105,8 +123,8 @@ export default function Billing() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="font-display text-2xl font-bold">Facturación</h2>
-        <p className="text-muted-foreground">Gestiona tu plan de suscripción</p>
+        <h2 className="font-display text-2xl font-bold">{t('billing.title')}</h2>
+        <p className="text-muted-foreground">{t('billing.subtitle')}</p>
       </div>
 
       {/* Current Plan */}
@@ -115,7 +133,7 @@ export default function Billing() {
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg flex items-center gap-2">
               <CreditCard className="h-5 w-5" />
-              Plan Actual
+              {t('billing.currentPlan')}
             </CardTitle>
             <div className="flex items-center gap-2">
               <Badge variant={currentPlan === 'free' ? 'secondary' : 'default'} className="capitalize">
@@ -135,17 +153,17 @@ export default function Billing() {
         <CardContent>
           <div className="grid gap-4 sm:grid-cols-3">
             <div>
-              <p className="text-sm text-muted-foreground">Límite de Fotos</p>
+              <p className="text-sm text-muted-foreground">{t('billing.photoLimit')}</p>
               <p className="font-semibold">{subscription?.photos_limit || 0}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Límite de Idiomas</p>
+              <p className="text-sm text-muted-foreground">{t('billing.languageLimit')}</p>
               <p className="font-semibold">{subscription?.languages_limit || 1}</p>
             </div>
             {stripeStatus?.subscription_end && (
               <div>
                 <p className="text-sm text-muted-foreground">
-                  {stripeStatus.cancel_at_period_end ? 'Expira' : 'Renueva'}
+                  {stripeStatus.cancel_at_period_end ? t('billing.expires') : t('billing.renews')}
                 </p>
                 <p className="font-semibold">
                   {new Date(stripeStatus.subscription_end).toLocaleDateString()}
@@ -154,8 +172,8 @@ export default function Billing() {
             )}
             {stripeStatus?.is_lifetime && (
               <div>
-                <p className="text-sm text-muted-foreground">Estado</p>
-                <p className="font-semibold text-primary">Acceso Lifetime</p>
+                <p className="text-sm text-muted-foreground">{t('common.status')}</p>
+                <p className="font-semibold text-primary">{t('billing.lifetime')}</p>
               </div>
             )}
           </div>
@@ -172,7 +190,7 @@ export default function Billing() {
               ) : (
                 <ExternalLink className="mr-2 h-4 w-4" />
               )}
-              Gestionar Suscripción
+              {t('billing.manageSubscription')}
             </Button>
           )}
         </CardContent>
@@ -180,7 +198,7 @@ export default function Billing() {
 
       {/* Available Plans */}
       <div>
-        <h3 className="font-display text-lg font-semibold mb-4">Planes Disponibles</h3>
+        <h3 className="font-display text-lg font-semibold mb-4">{t('billing.availablePlans')}</h3>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {PRICING_PLANS.map(plan => (
             <PricingCard 
@@ -198,13 +216,12 @@ export default function Billing() {
       {/* Info */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Información de Pago</CardTitle>
-          <CardDescription>Pagos seguros procesados por Stripe</CardDescription>
+          <CardTitle className="text-lg">{t('billing.paymentInfo')}</CardTitle>
+          <CardDescription>{t('billing.paymentInfoDesc')}</CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
-            Todos los pagos se procesan de forma segura a través de Stripe. Puedes gestionar tu suscripción,
-            actualizar métodos de pago o cancelar en cualquier momento a través del portal de cliente.
+            {t('billing.paymentDesc')}
           </p>
         </CardContent>
       </Card>

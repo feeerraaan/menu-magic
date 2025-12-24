@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { Restaurant } from '@/types/database';
+import { useTranslation } from '@/hooks/useTranslation';
 import { QRCodeSVG, QRCodeCanvas } from 'qrcode.react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,7 @@ import { Download, FileImage, FileText, Printer, Copy, Check } from 'lucide-reac
 
 export default function QRCodePage() {
   const { restaurant } = useOutletContext<{ restaurant: Restaurant }>();
+  const { t } = useTranslation();
   const [size, setSize] = useState(256);
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
@@ -22,7 +24,7 @@ export default function QRCodePage() {
   const handleCopyUrl = async () => {
     await navigator.clipboard.writeText(menuUrl);
     setCopied(true);
-    toast({ title: 'URL copied to clipboard' });
+    toast({ title: t('qrCode.copiedClipboard') });
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -34,7 +36,7 @@ export default function QRCodePage() {
     link.download = `${restaurant.slug}-qr-code.png`;
     link.href = canvas.toDataURL('image/png');
     link.click();
-    toast({ title: 'QR Code downloaded as PNG' });
+    toast({ title: t('qrCode.downloadedPNG') });
   };
 
   const downloadSVG = () => {
@@ -47,14 +49,14 @@ export default function QRCodePage() {
     link.download = `${restaurant.slug}-qr-code.svg`;
     link.href = URL.createObjectURL(blob);
     link.click();
-    toast({ title: 'QR Code downloaded as SVG' });
+    toast({ title: t('qrCode.downloadedSVG') });
   };
 
   const downloadPDF = () => {
     // Create printable PDF layout
     const printWindow = window.open('', '_blank');
     if (!printWindow) {
-      toast({ title: 'Please allow popups to download PDF', variant: 'destructive' });
+      toast({ title: t('qrCode.popupError'), variant: 'destructive' });
       return;
     }
 
@@ -105,20 +107,21 @@ export default function QRCodePage() {
         <div class="qr-container">
           ${svgData}
         </div>
-        <p class="instructions">Scan to view our menu</p>
+        <p class="instructions">${t('qrCode.scanToView')}</p>
         <p class="url">${menuUrl}</p>
         <script>window.onload = function() { window.print(); }</script>
       </body>
       </html>
     `);
     printWindow.document.close();
+    toast({ title: t('qrCode.downloadedPDF') });
   };
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
       <div>
-        <h2 className="font-display text-2xl font-bold">QR Code</h2>
-        <p className="text-muted-foreground">Generate and download your menu QR code</p>
+        <h2 className="font-display text-2xl font-bold">{t('qrCode.title')}</h2>
+        <p className="text-muted-foreground">{t('qrCode.subtitle')}</p>
       </div>
 
       <Card>
@@ -149,7 +152,7 @@ export default function QRCodePage() {
 
             {/* URL Display */}
             <div className="w-full">
-              <Label className="mb-2 block">Menu URL</Label>
+              <Label className="mb-2 block">{t('qrCode.menuURL')}</Label>
               <div className="flex gap-2">
                 <Input value={menuUrl} readOnly className="font-mono text-sm" />
                 <Button variant="outline" onClick={handleCopyUrl}>
@@ -161,7 +164,7 @@ export default function QRCodePage() {
             {/* Size Slider */}
             <div className="w-full space-y-2">
               <div className="flex items-center justify-between">
-                <Label>Preview Size</Label>
+                <Label>{t('qrCode.previewSize')}</Label>
                 <span className="text-sm text-muted-foreground">{size}px</span>
               </div>
               <Slider
@@ -179,25 +182,25 @@ export default function QRCodePage() {
       {/* Download Options */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Download</CardTitle>
-          <CardDescription>Choose your preferred format</CardDescription>
+          <CardTitle className="text-lg">{t('qrCode.download')}</CardTitle>
+          <CardDescription>{t('qrCode.downloadDesc')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-3 sm:grid-cols-3">
             <Button variant="outline" className="h-auto py-4 flex-col gap-2" onClick={downloadPNG}>
               <FileImage className="h-6 w-6" />
-              <span>PNG Image</span>
-              <span className="text-xs text-muted-foreground">Best for digital use</span>
+              <span>{t('qrCode.png')}</span>
+              <span className="text-xs text-muted-foreground">{t('qrCode.pngDesc')}</span>
             </Button>
             <Button variant="outline" className="h-auto py-4 flex-col gap-2" onClick={downloadSVG}>
               <FileText className="h-6 w-6" />
-              <span>SVG Vector</span>
-              <span className="text-xs text-muted-foreground">Scalable, best for print</span>
+              <span>{t('qrCode.svg')}</span>
+              <span className="text-xs text-muted-foreground">{t('qrCode.svgDesc')}</span>
             </Button>
             <Button variant="outline" className="h-auto py-4 flex-col gap-2" onClick={downloadPDF}>
               <Printer className="h-6 w-6" />
-              <span>Print PDF</span>
-              <span className="text-xs text-muted-foreground">A4 with restaurant name</span>
+              <span>{t('qrCode.pdf')}</span>
+              <span className="text-xs text-muted-foreground">{t('qrCode.pdfDesc')}</span>
             </Button>
           </div>
         </CardContent>
@@ -206,14 +209,14 @@ export default function QRCodePage() {
       {/* Tips */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Tips for using your QR code</CardTitle>
+          <CardTitle className="text-lg">{t('qrCode.tips')}</CardTitle>
         </CardHeader>
         <CardContent>
           <ul className="space-y-2 text-sm text-muted-foreground">
-            <li>• Place QR codes on tables, menus, or at the entrance</li>
-            <li>• Use the SVG format for large prints to maintain quality</li>
-            <li>• Test the QR code with your phone before printing</li>
-            <li>• Consider adding a small instruction like "Scan for menu"</li>
+            <li>• {t('qrCode.tip1')}</li>
+            <li>• {t('qrCode.tip2')}</li>
+            <li>• {t('qrCode.tip3')}</li>
+            <li>• {t('qrCode.tip4')}</li>
           </ul>
         </CardContent>
       </Card>

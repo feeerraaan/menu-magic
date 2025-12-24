@@ -1,17 +1,19 @@
 import { useOutletContext } from 'react-router-dom';
 import { Restaurant } from '@/types/database';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { BarChart3, Eye, Globe, TrendingUp } from 'lucide-react';
 
 export default function Analytics() {
   const { restaurant } = useOutletContext<{ restaurant: Restaurant }>();
+  const { t } = useTranslation();
 
   // Placeholder for analytics - would be fetched from menu_views table
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="font-display text-2xl font-bold">Analytics</h2>
-        <p className="text-muted-foreground">Track your menu performance</p>
+        <h2 className="font-display text-2xl font-bold">{t('analytics.title')}</h2>
+        <p className="text-muted-foreground">{t('analytics.subtitle')}</p>
       </div>
 
       {/* Stats Overview */}
@@ -24,7 +26,7 @@ export default function Analytics() {
               </div>
               <div>
                 <p className="text-2xl font-bold">0</p>
-                <p className="text-sm text-muted-foreground">Total Views</p>
+                <p className="text-sm text-muted-foreground">{t('analytics.totalViews')}</p>
               </div>
             </div>
           </CardContent>
@@ -38,7 +40,7 @@ export default function Analytics() {
               </div>
               <div>
                 <p className="text-2xl font-bold">0</p>
-                <p className="text-sm text-muted-foreground">Today</p>
+                <p className="text-sm text-muted-foreground">{t('analytics.today')}</p>
               </div>
             </div>
           </CardContent>
@@ -52,7 +54,7 @@ export default function Analytics() {
               </div>
               <div>
                 <p className="text-2xl font-bold">{restaurant.supported_languages.length}</p>
-                <p className="text-sm text-muted-foreground">Languages</p>
+                <p className="text-sm text-muted-foreground">{t('analytics.languages')}</p>
               </div>
             </div>
           </CardContent>
@@ -64,13 +66,13 @@ export default function Analytics() {
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <BarChart3 className="h-5 w-5" />
-            Views Over Time
+            {t('analytics.viewsOverTime')}
           </CardTitle>
-          <CardDescription>Menu views in the last 30 days</CardDescription>
+          <CardDescription>{t('analytics.viewsOverTimeDesc')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-64 flex items-center justify-center text-muted-foreground">
-            <p>Analytics will appear here once your menu receives views.</p>
+            <p>{t('analytics.analyticsMessage')}</p>
           </div>
         </CardContent>
       </Card>
@@ -78,12 +80,12 @@ export default function Analytics() {
       {/* Top Items Placeholder */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Most Viewed Items</CardTitle>
-          <CardDescription>Items that customers look at most</CardDescription>
+          <CardTitle className="text-lg">{t('analytics.topItems')}</CardTitle>
+          <CardDescription>{t('analytics.topItemsDesc')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-32 flex items-center justify-center text-muted-foreground">
-            <p>No item views recorded yet.</p>
+            <p>{t('analytics.noViews')}</p>
           </div>
         </CardContent>
       </Card>

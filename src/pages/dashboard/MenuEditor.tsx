@@ -3,6 +3,7 @@ import { useOutletContext } from 'react-router-dom';
 import { Restaurant, Category, Item, Menu, ScheduleRule } from '@/types/database';
 import { useMenus, useCategories, useItems } from '@/hooks/useRestaurant';
 import { useSubscriptionContext } from '@/contexts/SubscriptionContext';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -219,6 +220,7 @@ export default function MenuEditor() {
   const { restaurant } = useOutletContext<{ restaurant: Restaurant }>();
   const { menus, loading: menusLoading, refetch: refetchMenus } = useMenus(restaurant.id);
   const { subscription, plan: currentPlan, limits: planLimits, isPremium } = useSubscriptionContext();
+  const { t } = useTranslation();
   const [selectedMenuId, setSelectedMenuId] = useState<string | null>(null);
   const { categories, create: createCategory, update: updateCategory, remove: removeCategory, reorder: reorderCategories, setCategories } = useCategories(selectedMenuId || undefined);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
@@ -311,23 +313,25 @@ export default function MenuEditor() {
     try {
       if (category) {
         await updateCategory(category.id, { name, description: description || null });
-        toast({ title: 'Category updated' });
+        toast({ title: t('menuEditor.categoryUpdated') });
       } else {
         await createCategory(name);
-        toast({ title: 'Category created' });
+        toast({ title: t('menuEditor.categoryCreated') });
       }
       setCategoryDialog({ open: false });
-    } catch (e: any) {
-      toast({ title: 'Error', description: e.message, variant: 'destructive' });
+    } catch (e: unknown) {
+      const errorMsg = e instanceof Error ? e.message : 'Unknown error';
+      toast({ title: t('common.error'), description: errorMsg, variant: 'destructive' });
     }
   };
 
   const handleDeleteCategory = async (id: string) => {
     try {
       await removeCategory(id);
-      toast({ title: 'Category deleted' });
-    } catch (e: any) {
-      toast({ title: 'Error', description: e.message, variant: 'destructive' });
+      toast({ title: t('menuEditor.categoryDeleted') });
+    } catch (e: unknown) {
+      const errorMsg = e instanceof Error ? e.message : 'Unknown error';
+      toast({ title: t('common.error'), description: errorMsg, variant: 'destructive' });
     }
     setDeleteConfirm(null);
   };
@@ -341,12 +345,12 @@ export default function MenuEditor() {
           ...prev,
           [item.category_id]: prev[item.category_id].map(i => i.id === item.id ? { ...i, ...data } : i),
         }));
-        toast({ title: 'Item updated' });
+        toast({ title: t('menuEditor.itemUpdated') });
       } else if (categoryId) {
         const insertData = { ...data, category_id: categoryId, display_order: (itemsByCategory[categoryId]?.length || 0) };
         const { data: newItem } = await supabase
           .from('items')
-          .insert([insertData as any])
+          .insert([insertData as unknown as Record<string, unknown>])
           .select()
           .single();
         if (newItem) {
@@ -355,11 +359,12 @@ export default function MenuEditor() {
             [categoryId]: [...(prev[categoryId] || []), newItem as Item],
           }));
         }
-        toast({ title: 'Item created' });
+        toast({ title: t('menuEditor.itemCreated') });
       }
       setItemDialog({ open: false });
-    } catch (e: any) {
-      toast({ title: 'Error', description: e.message, variant: 'destructive' });
+    } catch (e: unknown) {
+      const errorMsg = e instanceof Error ? e.message : 'Unknown error';
+      toast({ title: t('common.error'), description: errorMsg, variant: 'destructive' });
     }
   };
 
@@ -371,9 +376,10 @@ export default function MenuEditor() {
         ...prev,
         [categoryId]: prev[categoryId].filter(i => i.id !== id),
       }));
-      toast({ title: 'Item deleted' });
-    } catch (e: any) {
-      toast({ title: 'Error', description: e.message, variant: 'destructive' });
+      toast({ title: t('menuEditor.itemDeleted') });
+    } catch (e: unknown) {
+      const errorMsg = e instanceof Error ? e.message : 'Unknown error';
+      toast({ title: t('common.error'), description: errorMsg, variant: 'destructive' });
     }
     setDeleteConfirm(null);
   };
@@ -405,10 +411,11 @@ export default function MenuEditor() {
           ...prev,
           [item.category_id]: [...(prev[item.category_id] || []), newItem as Item],
         }));
-        toast({ title: 'Item duplicated' });
+        toast({ title: t('menuEditor.itemDuplicated') });
       }
-    } catch (e: any) {
-      toast({ title: 'Error', description: e.message, variant: 'destructive' });
+    } catch (e: unknown) {
+      const errorMsg = e instanceof Error ? e.message : 'Unknown error';
+      toast({ title: t('common.error'), description: errorMsg, variant: 'destructive' });
     }
   };
 
