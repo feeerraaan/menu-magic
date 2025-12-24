@@ -3,24 +3,23 @@ import { useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Restaurant, Menu, Category, Item, ScheduleRule } from '@/types/database';
 import { LanguageProvider, useLanguage } from '@/contexts/LanguageContext';
-import { Language, languages, getBrowserLanguage, t } from '@/lib/i18n';
+import { Language, languages, t } from '@/lib/i18n';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useTranslation } from '@/hooks/useTranslation';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { isMenuAvailable } from '@/components/dashboard/MenuScheduleEditor';
 import { 
   Leaf, 
   Flame, 
   Wheat, 
-  Star, 
   MapPin, 
-  Phone, 
-  Globe,
+  Phone,
   ChevronDown,
   AlertCircle,
-  X,
-  Clock
+  ChefHat,
+  Wine
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -32,11 +31,12 @@ interface PublicMenuData {
 
 function MenuContent({ data }: { data: PublicMenuData }) {
   const { restaurant, categories } = data;
-  const { language, setLanguage, t } = useLanguage();
+  const { language, setLanguage } = useLanguage();
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const categoryRefs = useRef<Record<string, HTMLElement | null>>({});
+  const { t } = useTranslation();
   const navRef = useRef<HTMLElement>(null);
 
   // Track view with throttling to prevent analytics abuse
@@ -118,96 +118,91 @@ function MenuContent({ data }: { data: PublicMenuData }) {
 
   return (
     <div className={cn(
-      'min-h-screen',
-      restaurant.theme === 'dark' ? 'dark bg-background text-foreground' : 'bg-background text-foreground'
+      'min-h-screen bg-white dark:bg-slate-950',
+      restaurant.theme === 'dark' && 'dark'
     )}>
-      {/* Header */}
-      <header className="relative bg-card border-b border-border">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              {restaurant.logo_url && (
-                <img 
-                  src={restaurant.logo_url} 
-                  alt={restaurant.name} 
-                  className="h-12 w-12 rounded-full object-cover"
-                />
-              )}
-              <div>
-                <h1 className="font-display text-2xl font-bold">{restaurant.name}</h1>
-                {restaurant.address && (
-                  <p className="text-sm text-muted-foreground flex items-center gap-1">
-                    <MapPin className="h-3 w-3" /> {restaurant.address}
-                  </p>
-                )}
-              </div>
-            </div>
-            
-            {/* Language Selector */}
-            {supportedLangs.length > 1 && (
-              <div className="relative">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowLanguageMenu(!showLanguageMenu)}
-                  className="gap-2"
-                >
-                  <span className="hidden sm:inline">{currentLang?.name}</span>
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-                {showLanguageMenu && (
-                  <>
-                    <div className="fixed inset-0 z-40" onClick={() => setShowLanguageMenu(false)} />
-                    <div className="absolute right-0 top-full mt-2 z-50 bg-card border border-border rounded-lg shadow-lg py-1 min-w-[140px]">
-                      {supportedLangs.map(lang => (
-                        <button
-                          key={lang.code}
-                          onClick={() => {
-                            setLanguage(lang.code);
-                            setShowLanguageMenu(false);
-                          }}
-                          className={cn(
-                            'w-full px-4 py-2 text-left flex items-center gap-2 hover:bg-accent transition-colors',
-                            language === lang.code && 'bg-accent'
-                          )}
-                        >
-                          <span>{lang.name}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </>
-                )}
-              </div>
+      {/* Elegant Header */}
+      <header className="border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
+        <div className="container mx-auto px-4 py-8 sm:py-12">
+          {/* Logo and Restaurant Info */}
+          <div className="max-w-2xl">
+            {restaurant.logo_url && (
+              <img 
+                src={restaurant.logo_url} 
+                alt={restaurant.name} 
+                className="h-16 w-16 rounded-lg object-cover mb-4"
+              />
+            )}
+            <h1 className="font-serif text-4xl sm:text-5xl font-light text-slate-900 dark:text-white mb-2">
+              {restaurant.name}
+            </h1>
+            {restaurant.address && (
+              <p className="text-slate-600 dark:text-slate-400 flex items-center gap-2 mb-3">
+                <MapPin className="h-4 w-4" /> {restaurant.address}
+              </p>
+            )}
+            {restaurant.phone && (
+              <p className="text-slate-600 dark:text-slate-400 flex items-center gap-2 mb-4">
+                <Phone className="h-4 w-4" /> {restaurant.phone}
+              </p>
             )}
           </div>
           
-          {/* Contact Links */}
-          <div className="flex gap-4 mt-4">
-            {restaurant.phone && (
-              <a href={`tel:${restaurant.phone}`} className="text-muted-foreground hover:text-primary transition-colors">
-                <Phone className="h-5 w-5" />
-              </a>
-            )}
-          </div>
+          {/* Language Selector - Bottom Right */}
+          {supportedLangs.length > 1 && (
+            <div className="relative mt-4 w-fit">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowLanguageMenu(!showLanguageMenu)}
+                className="text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              >
+                {currentLang?.name}
+                <ChevronDown className="h-3 w-3 ml-1" />
+              </Button>
+              {showLanguageMenu && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setShowLanguageMenu(false)} />
+                  <div className="absolute top-full mt-1 z-50 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-lg py-1">
+                    {supportedLangs.map(lang => (
+                      <button
+                        key={lang.code}
+                        onClick={() => {
+                          setLanguage(lang.code);
+                          setShowLanguageMenu(false);
+                        }}
+                        className={cn(
+                          'w-full px-4 py-2 text-left text-sm transition-colors hover:bg-slate-100 dark:hover:bg-slate-800',
+                          language === lang.code && 'bg-slate-100 dark:bg-slate-800 font-medium'
+                        )}
+                      >
+                        {lang.name}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          )}
         </div>
       </header>
 
-      {/* Sticky Category Navigation */}
+      {/* Sticky Category Navigation - Minimalist */}
       <nav 
         ref={navRef}
-        className="sticky top-0 z-30 bg-card/95 backdrop-blur-sm border-b border-border"
+        className="sticky top-0 z-30 bg-white/95 dark:bg-slate-950/95 backdrop-blur-sm border-b border-slate-200 dark:border-slate-800"
       >
         <div className="container mx-auto px-4">
-          <div className="flex gap-2 py-3 overflow-x-auto scrollbar-hide">
+          <div className="flex gap-6 py-4 overflow-x-auto scrollbar-hide">
             {categories.filter(c => c.is_active).map(category => (
               <button
                 key={category.id}
                 onClick={() => scrollToCategory(category.id)}
                 className={cn(
-                  'px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all',
+                  'text-sm font-medium whitespace-nowrap transition-colors pb-3 border-b-2 -mb-4',
                   activeCategory === category.id
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                    ? 'text-slate-900 dark:text-white border-slate-900 dark:border-white'
+                    : 'text-slate-500 dark:text-slate-400 border-transparent hover:text-slate-700 dark:hover:text-slate-300'
                 )}
               >
                 {getCategoryName(category)}
@@ -217,17 +212,18 @@ function MenuContent({ data }: { data: PublicMenuData }) {
         </div>
       </nav>
 
-      <main className="container mx-auto px-4 py-6 pb-safe-bottom overflow-x-hidden">
+      <main className="container mx-auto px-4 py-12 pb-safe-bottom overflow-x-hidden max-w-4xl">
         {/* Featured Items */}
         {featuredItems.length > 0 && (
-          <section className="mb-8">
-            <h2 className="font-display text-xl font-bold mb-4 flex items-center gap-2">
-              <Star className="h-5 w-5 text-warning fill-warning" />
-              {t('menu.featured')}
-            </h2>
-            <div className="grid gap-4 sm:grid-cols-2">
+          <section className="mb-16">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="h-px flex-1 bg-slate-300 dark:bg-slate-700"></div>
+              <h2 className="font-serif text-2xl text-slate-900 dark:text-white">Destacados</h2>
+              <div className="h-px flex-1 bg-slate-300 dark:bg-slate-700"></div>
+            </div>
+            <div className="grid gap-4 md:gap-6">
               {featuredItems.map(item => (
-                <ItemCard 
+                <FeaturedItemCard 
                   key={item.id} 
                   item={item} 
                   getName={getItemName}
@@ -235,7 +231,6 @@ function MenuContent({ data }: { data: PublicMenuData }) {
                   formatPrice={formatPrice}
                   restaurantId={restaurant.id}
                   onSelect={() => setSelectedItem(item)}
-                  featured
                 />
               ))}
             </div>
@@ -247,14 +242,14 @@ function MenuContent({ data }: { data: PublicMenuData }) {
           <section
             key={category.id}
             ref={(el) => { if (el) categoryRefs.current[category.id] = el; }}
-            className="mb-8 scroll-mt-24"
+            className="mb-16 scroll-mt-32"
           >
-            <h2 className="font-display text-xl font-bold mb-4 py-2">
+            <h2 className="font-serif text-2xl text-slate-900 dark:text-white mb-6 pb-3 border-b border-slate-200 dark:border-slate-800">
               {getCategoryName(category)}
             </h2>
-            <div className="space-y-3">
+            <div className="space-y-6">
               {category.items.filter(i => i.is_active).map(item => (
-                <ItemCard 
+                <MenuItemCard 
                   key={item.id} 
                   item={item}
                   getName={getItemName}
@@ -265,7 +260,7 @@ function MenuContent({ data }: { data: PublicMenuData }) {
                 />
               ))}
               {category.items.filter(i => i.is_active).length === 0 && (
-                <p className="text-muted-foreground text-center py-4">{t('menu.noItems')}</p>
+                <p className="text-slate-500 dark:text-slate-400 text-center py-4">Sin items</p>
               )}
             </div>
           </section>
@@ -274,7 +269,7 @@ function MenuContent({ data }: { data: PublicMenuData }) {
 
       {/* Item Detail Modal */}
       <Dialog open={!!selectedItem} onOpenChange={(open) => !open && setSelectedItem(null)}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto p-4 sm:mx-0 w-[calc(100vw-2rem)] sm:w-full rounded-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-0 rounded-2xl bg-white dark:bg-slate-950">
           {selectedItem && (
             <>
               {/* Large Image */}
@@ -283,50 +278,45 @@ function MenuContent({ data }: { data: PublicMenuData }) {
                   <img 
                     src={selectedItem.photo_url} 
                     alt={getItemName(selectedItem)}
-                    className="w-full h-full object-cover rounded-t-2xl"
+                    className="w-full h-full object-cover"
                   />
                 </div>
               )}
               
-              <div className="p-4 sm:p-6">
+              <div className="p-6 sm:p-8">
                 {/* Header with name and price */}
-                <div className="flex items-start justify-between gap-4 mb-4">
-                  <div>
-                    <h2 className="font-display text-2xl font-bold">{getItemName(selectedItem)}</h2>
-                    
-                    {/* Dietary badges */}
-                    <div className="flex flex-wrap items-center gap-2 mt-2">
-                      {selectedItem.is_vegetarian && (
-                        <Badge variant="secondary" className="gap-1 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
-                          <Leaf className="h-3 w-3" /> Vegetariano
-                        </Badge>
-                      )}
-                      {selectedItem.is_vegan && (
-                        <Badge variant="secondary" className="gap-1 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
-                          <Leaf className="h-3 w-3 fill-current" /> Vegano
-                        </Badge>
-                      )}
-                      {selectedItem.is_spicy && (
-                        <Badge variant="secondary" className="gap-1 bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
-                          <Flame className="h-3 w-3" /> Picante
-                        </Badge>
-                      )}
-                      {selectedItem.is_gluten_free && (
-                        <Badge variant="secondary" className="gap-1 bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
-                          <Wheat className="h-3 w-3" /> Sin Gluten
-                        </Badge>
-                      )}
-                      {selectedItem.is_featured && (
-                        <Badge variant="secondary" className="gap-1 bg-warning/20 text-warning">
-                          <Star className="h-3 w-3 fill-current" /> Destacado
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
+                <div className="mb-6">
+                  <h2 className="font-serif text-3xl font-light text-slate-900 dark:text-white mb-4">
+                    {getItemName(selectedItem)}
+                  </h2>
                   
+                  {/* Dietary badges */}
+                  <div className="flex flex-wrap items-center gap-2 mb-4">
+                    {selectedItem.is_vegetarian && (
+                      <Badge variant="outline" className="gap-1 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800">
+                        <Leaf className="h-3 w-3" /> {t('menu:vegetarian')}
+                      </Badge>
+                    )}
+                    {selectedItem.is_vegan && (
+                      <Badge variant="outline" className="gap-1 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800">
+                        <Leaf className="h-3 w-3 fill-current" /> {t('menu:vegan')}
+                      </Badge>
+                    )}
+                    {selectedItem.is_spicy && (
+                      <Badge variant="outline" className="gap-1 bg-orange-50 dark:bg-orange-950/30 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-800">
+                        <Flame className="h-3 w-3" /> {t('menu:spicy')}
+                      </Badge>
+                    )}
+                    {selectedItem.is_gluten_free && (
+                      <Badge variant="outline" className="gap-1 bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800">
+                        <Wheat className="h-3 w-3" /> {t('menu:glutenFree')}
+                      </Badge>
+                    )}
+                  </div>
+
                   {/* Price */}
                   {formatPrice(selectedItem.price) && (
-                    <span className="font-bold text-primary text-2xl shrink-0">
+                    <span className="font-serif text-3xl font-light text-slate-900 dark:text-white">
                       {formatPrice(selectedItem.price)}
                     </span>
                   )}
@@ -334,18 +324,18 @@ function MenuContent({ data }: { data: PublicMenuData }) {
                 
                 {/* Description */}
                 {getItemDescription(selectedItem) && (
-                  <p className="text-muted-foreground leading-relaxed mb-4">
+                  <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-6 text-base">
                     {getItemDescription(selectedItem)}
                   </p>
                 )}
                 
                 {/* Allergens */}
                 {selectedItem.allergens && selectedItem.allergens.length > 0 && (
-                  <div className="flex items-start gap-2 p-3 rounded-lg bg-muted/50 border border-border">
-                    <AlertCircle className="h-4 w-4 mt-0.5 text-warning shrink-0" />
+                  <div className="flex items-start gap-3 p-4 rounded-lg bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 mb-4">
+                    <AlertCircle className="h-5 w-5 mt-0.5 text-orange-600 dark:text-orange-400 shrink-0" />
                     <div>
-                      <p className="text-sm font-medium">Alérgenos</p>
-                      <p className="text-sm text-muted-foreground">{selectedItem.allergens.join(', ')}</p>
+                      <p className="text-sm font-medium text-slate-900 dark:text-white">Alérgenos</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">{selectedItem.allergens.join(', ')}</p>
                     </div>
                   </div>
                 )}
@@ -356,8 +346,8 @@ function MenuContent({ data }: { data: PublicMenuData }) {
       </Dialog>
 
       {/* Footer */}
-      <footer className="border-t border-border py-6 text-center text-sm text-muted-foreground">
-        <p>Powered by SaCarta</p>
+      <footer className="border-t border-slate-200 dark:border-slate-800 py-8 text-center text-xs text-slate-500 dark:text-slate-400 mt-16">
+        <p>Powered by Menu Magic</p>
       </footer>
     </div>
   );
@@ -370,17 +360,16 @@ interface ItemCardProps {
   formatPrice: (price: number | null) => string | null;
   restaurantId: string;
   onSelect?: () => void;
-  featured?: boolean;
 }
 
 // Use a module-level set to track viewed items across all ItemCard instances
 const trackedItemViews = new Set<string>();
 
-function ItemCard({ item, getName, getDescription, formatPrice, restaurantId, onSelect, featured }: ItemCardProps) {
+// Featured Item Card - Horizontal layout with emphasis
+function FeaturedItemCard({ item, getName, getDescription, formatPrice, restaurantId, onSelect }: ItemCardProps) {
   const price = formatPrice(item.price);
   const description = getDescription(item);
 
-  // Track item view with throttling and open modal
   const handleClick = () => {
     const viewKey = `${restaurantId}-${item.id}`;
     if (!trackedItemViews.has(viewKey)) {
@@ -396,77 +385,160 @@ function ItemCard({ item, getName, getDescription, formatPrice, restaurantId, on
   return (
     <div 
       onClick={handleClick}
-      className={cn(
-        'bg-card rounded-xl border border-border p-4 transition-all hover:shadow-md cursor-pointer',
-        featured && 'ring-2 ring-warning/20 bg-warning/5'
-      )}
+      className="bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-6 transition-all hover:shadow-md cursor-pointer hover:border-slate-300 dark:hover:border-slate-700"
     >
-      <div className="flex gap-4">
+      <div className="flex gap-6">
         {/* Photo */}
         {item.photo_url && (
           <div className="shrink-0">
             <img 
               src={item.photo_url} 
               alt={getName(item)}
-              className="h-20 w-20 rounded-lg object-cover"
+              className="h-32 w-32 rounded-lg object-cover"
             />
           </div>
         )}
         
         {/* Content */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-2">
-            <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-base leading-tight">
-                {getName(item)}
-                {featured && <Star className="inline ml-1 h-3 w-3 text-warning fill-warning" />}
-              </h3>
-              
-              {/* Dietary Icons */}
-              <div className="flex items-center gap-1.5 mt-1">
-                {item.is_vegetarian && (
-                  <Badge variant="secondary" className="h-5 px-1.5 text-xs gap-0.5 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
-                    <Leaf className="h-3 w-3" /> V
-                  </Badge>
-                )}
-                {item.is_vegan && (
-                  <Badge variant="secondary" className="h-5 px-1.5 text-xs gap-0.5 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
-                    <Leaf className="h-3 w-3 fill-current" /> VG
-                  </Badge>
-                )}
-                {item.is_spicy && (
-                  <Badge variant="secondary" className="h-5 px-1.5 text-xs gap-0.5 bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
-                    <Flame className="h-3 w-3" />
-                  </Badge>
-                )}
-                {item.is_gluten_free && (
-                  <Badge variant="secondary" className="h-5 px-1.5 text-xs gap-0.5 bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
-                    <Wheat className="h-3 w-3" /> GF
-                  </Badge>
-                )}
-              </div>
-            </div>
-            
-            {/* Price */}
+        <div className="flex-1">
+          <div className="flex items-start justify-between gap-4 mb-2">
+            <h3 className="font-serif text-xl font-light text-slate-900 dark:text-white">
+              {getName(item)}
+            </h3>
             {price && (
-              <span className="font-bold text-primary text-lg shrink-0">{price}</span>
+              <span className="font-serif text-lg text-slate-900 dark:text-white shrink-0">{price}</span>
+            )}
+          </div>
+          
+          {/* Dietary Icons */}
+          <div className="flex items-center gap-1.5 mb-3">
+            {item.is_vegetarian && (
+              <Badge variant="outline" className="h-5 px-1.5 text-xs gap-0.5 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800">
+                <Leaf className="h-3 w-3" />
+              </Badge>
+            )}
+            {item.is_vegan && (
+              <Badge variant="outline" className="h-5 px-1.5 text-xs gap-0.5 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800">
+                <Leaf className="h-3 w-3 fill-current" /> 
+              </Badge>
+            )}
+            {item.is_spicy && (
+              <Badge variant="outline" className="h-5 px-1.5 text-xs gap-0.5 bg-orange-50 dark:bg-orange-950/30 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-800">
+                <Flame className="h-3 w-3" />
+              </Badge>
+            )}
+            {item.is_gluten_free && (
+              <Badge variant="outline" className="h-5 px-1.5 text-xs gap-0.5 bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800">
+                <Wheat className="h-3 w-3" />
+              </Badge>
             )}
           </div>
           
           {/* Description */}
           {description && (
-            <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{description}</p>
+            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{description}</p>
           )}
           
           {/* Allergens */}
           {item.allergens && item.allergens.length > 0 && (
-            <div className="flex items-center gap-1 mt-2 text-xs text-muted-foreground">
-              <AlertCircle className="h-3 w-3" />
-              <span>{item.allergens.join(', ')}</span>
+            <div className="flex flex-wrap items-center gap-2 mt-4">
+              {item.allergens.map((allergen) => (
+                <Badge 
+                  key={allergen} 
+                  variant="outline" 
+                  className="bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800 text-sm py-1.5"
+                >
+                  ⚠️ {allergen}
+                </Badge>
+              ))}
             </div>
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+// Menu Item Card - Compact layout
+function MenuItemCard({ item, getName, getDescription, formatPrice, restaurantId, onSelect }: ItemCardProps) {
+  const price = formatPrice(item.price);
+  const description = getDescription(item);
+
+  const handleClick = () => {
+    const viewKey = `${restaurantId}-${item.id}`;
+    if (!trackedItemViews.has(viewKey)) {
+      supabase.from('menu_views').insert({
+        restaurant_id: restaurantId,
+        item_id: item.id,
+      }).then(() => {});
+      trackedItemViews.add(viewKey);
+    }
+    onSelect?.();
+  };
+
+  return (
+    <div 
+      onClick={handleClick}
+      className="group transition-all hover:bg-slate-50 dark:hover:bg-slate-900/50 p-4 -mx-4 rounded-lg cursor-pointer"
+    >
+      <div className="flex items-start justify-between gap-4 mb-2">
+        <div className="flex-1">
+          <h3 className="font-serif text-lg text-slate-900 dark:text-white group-hover:text-slate-700 dark:group-hover:text-slate-200 transition-colors">
+            {getName(item)}
+          </h3>
+          
+          {/* Dietary Icons - Compact */}
+          {(item.is_vegetarian || item.is_vegan || item.is_spicy || item.is_gluten_free) && (
+            <div className="flex items-center gap-1 mt-1.5">
+              {item.is_vegetarian && (
+                <Badge variant="outline" className="h-5 px-1.5 text-xs gap-0.5 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800">
+                  <Leaf className="h-3 w-3" />
+                </Badge>
+              )}
+              {item.is_vegan && (
+                <Badge variant="outline" className="h-5 px-1.5 text-xs gap-0.5 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800">
+                  <Leaf className="h-3 w-3 fill-current" />
+                </Badge>
+              )}
+              {item.is_spicy && (
+                <Badge variant="outline" className="h-5 px-1.5 text-xs gap-0.5 bg-orange-50 dark:bg-orange-950/30 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-800">
+                  <Flame className="h-3 w-3" />
+                </Badge>
+              )}
+              {item.is_gluten_free && (
+                <Badge variant="outline" className="h-5 px-1.5 text-xs gap-0.5 bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800">
+                  <Wheat className="h-3 w-3" />
+                </Badge>
+              )}
+            </div>
+          )}
+        </div>
+        
+        {/* Price */}
+        {price && (
+          <span className="font-serif text-lg text-slate-900 dark:text-white shrink-0">{price}</span>
+        )}
+      </div>
+      
+      {/* Description */}
+      {description && (
+        <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-2">{description}</p>
+      )}
+      
+      {/* Allergens */}
+      {item.allergens && item.allergens.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2 mt-3">
+          {item.allergens.map((allergen) => (
+            <Badge 
+              key={allergen} 
+              variant="outline" 
+              className="bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800 text-xs py-1"
+            >
+              ⚠️ {allergen}
+            </Badge>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -575,12 +647,9 @@ export default function PublicMenu() {
           ...cat,
           translations: cat.category_translations,
           items: (cat.items || [])
-            .filter((i: any) => i.is_active)
-            .sort((a: any, b: any) => a.display_order - b.display_order)
-            .map((item: any) => ({
-              ...item,
-              translations: item.item_translations,
-            })),
+            .filter((i: Item) => i.is_active)
+            .sort((a: Item, b: Item) => a.display_order - b.display_order)
+            .map((item: Item) => item),
         })) as (Category & { items: Item[] })[];
 
         setData({
@@ -588,7 +657,7 @@ export default function PublicMenu() {
           menu: menu as unknown as Menu,
           categories,
         });
-      } catch (e: any) {
+      } catch (e: unknown) {
         if (import.meta.env.DEV) {
           console.error('Error fetching menu:', e);
         }
