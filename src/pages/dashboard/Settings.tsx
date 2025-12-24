@@ -23,12 +23,6 @@ const CURRENCIES = [
   { code: 'MXN', symbol: '$', name: 'Mexican Peso' },
 ];
 
-const TEMPLATES = [
-  { id: 'classic', name: 'Classic' },
-  { id: 'modern', name: 'Modern' },
-  { id: 'minimal', name: 'Minimal' },
-];
-
 export default function Settings() {
   const { restaurant } = useOutletContext<{ restaurant: Restaurant }>();
   const { update } = useRestaurant();
@@ -45,7 +39,6 @@ export default function Settings() {
     default_language: restaurant.default_language,
     supported_languages: restaurant.supported_languages,
     theme: restaurant.theme,
-    template: restaurant.template,
     hide_prices: restaurant.hide_prices,
     is_published: restaurant.is_published,
   });
@@ -94,7 +87,6 @@ export default function Settings() {
         default_language: formData.default_language,
         supported_languages: formData.supported_languages,
         theme: formData.theme as 'light' | 'dark',
-        template: formData.template as 'classic' | 'modern' | 'minimal',
         hide_prices: formData.hide_prices,
         is_published: formData.is_published,
       });
@@ -224,7 +216,7 @@ export default function Settings() {
                     className={isDisabled ? 'opacity-50' : ''}
                   >
                     {isDisabled && <Crown className="h-3 w-3 mr-1 text-amber-500" />}
-                    {lang.flag} {lang.name}
+                    {lang.name}
                   </Button>
                 );
               })}
@@ -250,7 +242,7 @@ export default function Settings() {
                   .filter(l => formData.supported_languages.includes(l.code))
                   .map(l => (
                     <SelectItem key={l.code} value={l.code}>
-                      {l.flag} {l.name}
+                      {l.name}
                     </SelectItem>
                   ))}
               </SelectContent>
@@ -258,45 +250,7 @@ export default function Settings() {
           </div>
         </CardContent>
       </Card>
-
-      {/* Appearance */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Palette className="h-5 w-5" />
-            {t('settings.appearance')}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label>{t('settings.template')}</Label>
-            <Select value={formData.template} onValueChange={(v) => updateField('template', v)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {TEMPLATES.map(t => (
-                  <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div className="space-y-2">
-            <Label>{t('settings.theme')}</Label>
-            <Select value={formData.theme} onValueChange={(v) => updateField('theme', v)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="light">{t('settings.light')}</SelectItem>
-                <SelectItem value="dark">{t('settings.dark')}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
-
+      
       {/* Display Options */}
       <Card>
         <CardHeader>

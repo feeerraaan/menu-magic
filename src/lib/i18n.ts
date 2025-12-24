@@ -276,7 +276,3 @@ export function t(key: string, lang: Language = 'en'): string {
 export function getLanguageName(code: Language): string {
   return languages.find(l => l.code === code)?.name || code;
 }
-
-export function getLanguageFlag(code: Language): string {
-  return languages.find(l => l.code === code)?.flag || '🌐';
-}

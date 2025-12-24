@@ -14,13 +14,6 @@ const CURRENCIES = [
   { code: 'EUR', symbol: '€', name: 'Euro' },
   { code: 'USD', symbol: '$', name: 'US Dollar' },
   { code: 'GBP', symbol: '£', name: 'British Pound' },
-  { code: 'MXN', symbol: '$', name: 'Mexican Peso' },
-];
-
-const TEMPLATES = [
-  { id: 'classic', name: 'Classic', desc: 'Elegant and timeless' },
-  { id: 'modern', name: 'Modern', desc: 'Clean and minimal' },
-  { id: 'minimal', name: 'Minimal', desc: 'Simple and focused' },
 ];
 
 interface OnboardingWizardProps {
@@ -39,9 +32,8 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
     address: '',
     phone: '',
     currency: 'EUR',
-    default_language: 'en',
-    supported_languages: ['en'],
-    template: 'classic',
+    default_language: 'ca',
+    supported_languages: ['ca'],
   });
 
   const updateField = (field: string, value: any) => {
@@ -82,7 +74,6 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
         currency: formData.currency,
         default_language: formData.default_language,
         supported_languages: formData.supported_languages,
-        template: formData.template as 'classic' | 'modern' | 'minimal',
         onboarding_completed: true,
       });
       toast({ title: 'Welcome to SaCarta!', description: 'Your restaurant is ready.' });
@@ -132,7 +123,6 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
             {step === 1 && 'What\'s your restaurant called?'}
             {step === 2 && 'Help customers find you (optional)'}
             {step === 3 && 'Configure your menu settings'}
-            {step === 4 && 'Pick a template for your menu'}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -215,7 +205,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                       size="sm"
                       onClick={() => toggleLanguage(lang.code)}
                     >
-                      {lang.flag} {lang.name}
+                      {lang.name}
                     </Button>
                   ))}
                 </div>
@@ -234,40 +224,11 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                       .filter(l => formData.supported_languages.includes(l.code))
                       .map(l => (
                         <SelectItem key={l.code} value={l.code}>
-                          {l.flag} {l.name}
+                          {l.name}
                         </SelectItem>
                       ))}
                   </SelectContent>
                 </Select>
-              </div>
-            </div>
-          )}
-
-          {step === 4 && (
-            <div className="space-y-4">
-              <div className="grid gap-3">
-                {TEMPLATES.map(template => (
-                  <button
-                    key={template.id}
-                    type="button"
-                    onClick={() => updateField('template', template.id)}
-                    className={`p-4 rounded-lg border-2 text-left transition-all ${
-                      formData.template === template.id
-                        ? 'border-primary bg-primary/5'
-                        : 'border-border hover:border-primary/50'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium">{template.name}</p>
-                        <p className="text-sm text-muted-foreground">{template.desc}</p>
-                      </div>
-                      {formData.template === template.id && (
-                        <Check className="h-5 w-5 text-primary" />
-                      )}
-                    </div>
-                  </button>
-                ))}
               </div>
             </div>
           )}

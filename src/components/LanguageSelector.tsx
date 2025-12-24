@@ -23,7 +23,6 @@ export function LanguageSelector({ className }: LanguageSelectorProps) {
       <SelectContent>
         {languages.map((lang) => (
           <SelectItem key={lang.code} value={lang.code}>
-            <span className="mr-2">{lang.flag}</span>
             {lang.name}
           </SelectItem>
         ))}

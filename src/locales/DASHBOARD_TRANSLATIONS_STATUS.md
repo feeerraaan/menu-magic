@@ -67,7 +67,6 @@
 - restaurantName, address, addressPlaceholder
 - languageCurrency, currency, menuLanguages, languageLimit
 - defaultLanguage, languageLimitMsg, upgradeLink
-- appearance, template, theme
 - visibility, hideAllPrices, publishMenu, settingsSaved
 - light, dark, website
 

@@ -152,7 +152,6 @@ function MenuContent({ data }: { data: PublicMenuData }) {
                   onClick={() => setShowLanguageMenu(!showLanguageMenu)}
                   className="gap-2"
                 >
-                  <span>{currentLang?.flag}</span>
                   <span className="hidden sm:inline">{currentLang?.name}</span>
                   <ChevronDown className="h-4 w-4" />
                 </Button>
@@ -172,7 +171,6 @@ function MenuContent({ data }: { data: PublicMenuData }) {
                             language === lang.code && 'bg-accent'
                           )}
                         >
-                          <span>{lang.flag}</span>
                           <span>{lang.name}</span>
                         </button>
                       ))}
@@ -491,7 +489,7 @@ export default function PublicMenu() {
         // Fetch restaurant - explicitly select public fields only (exclude owner_id, custom_domain)
         const { data: restaurant, error: restError } = await supabase
           .from('restaurants')
-          .select('id, name, slug, logo_url, address, phone, _url, currency, default_language, supported_languages, hide_prices, theme, template, is_published, onboarding_completed, created_at, updated_at')
+          .select('id, name, slug, logo_url, address, phone, _url, currency, default_language, supported_languages, hide_prices, theme, is_published, onboarding_completed, created_at, updated_at')
           .eq('slug', slug)
           .eq('is_published', true)
           .maybeSingle();

@@ -23,7 +23,7 @@ interface SubscriptionProviderProps {
 const PLAN_NAMES: Record<PlanType, string> = {
   free: 'Free',
   pro_monthly: 'Ferreret',
-  pro_annual: 'Myotragus',
+  pro_annual: 'Ferreret Anual',
   lifetime: 'Myotragus',
 };
 

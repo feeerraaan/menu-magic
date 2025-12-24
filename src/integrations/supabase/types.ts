@@ -320,7 +320,6 @@ export type Database = {
           phone: string | null
           slug: string
           supported_languages: string[]
-          template: string
           theme: string
           updated_at: string
         }
@@ -340,7 +339,6 @@ export type Database = {
           phone?: string | null
           slug: string
           supported_languages?: string[]
-          template?: string
           theme?: string
           updated_at?: string
         }
@@ -360,7 +358,6 @@ export type Database = {
           phone?: string | null
           slug?: string
           supported_languages?: string[]
-          template?: string
           theme?: string
           updated_at?: string
         }

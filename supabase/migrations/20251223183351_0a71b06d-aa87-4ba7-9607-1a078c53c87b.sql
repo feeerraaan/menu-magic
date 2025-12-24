@@ -71,7 +71,6 @@ CREATE TABLE public.restaurants (
   supported_languages TEXT[] NOT NULL DEFAULT ARRAY['en'],
   hide_prices BOOLEAN NOT NULL DEFAULT false,
   theme TEXT NOT NULL DEFAULT 'light',
-  template TEXT NOT NULL DEFAULT 'classic',
   custom_domain TEXT,
   is_published BOOLEAN NOT NULL DEFAULT false,
   onboarding_completed BOOLEAN NOT NULL DEFAULT false,

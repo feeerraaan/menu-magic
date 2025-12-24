@@ -121,10 +121,6 @@ export default function DashboardOverview() {
               <dt className="text-muted-foreground">Languages</dt>
               <dd className="font-medium">{restaurant.supported_languages.join(', ')}</dd>
             </div>
-            <div className="flex justify-between">
-              <dt className="text-muted-foreground">Template</dt>
-              <dd className="font-medium capitalize">{restaurant.template}</dd>
-            </div>
           </dl>
         </CardContent>
       </Card>

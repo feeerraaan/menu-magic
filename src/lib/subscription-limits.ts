@@ -14,7 +14,6 @@ export interface PlanLimits {
   categories: number;
   items: number;
   schedules: boolean;
-  templates: string[];
   analytics: boolean;
   customDomain: boolean;
   qrCustomization: boolean;
@@ -39,7 +38,6 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
     categories: 5,
     items: 20,
     schedules: false,
-    templates: ['classic'],
     analytics: false,
     customDomain: false,
     qrCustomization: false,
@@ -47,23 +45,21 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
   pro_monthly: {
     photos: 50,
     languages: 3,
-    menus: 10,
+    menus: 2,
     categories: 50,
     items: 500,
     schedules: true,
-    templates: ['classic', 'modern', 'minimal'],
     analytics: true,
     customDomain: true,
     qrCustomization: true,
   },
   pro_annual: {
     photos: 50,
-    languages: 999,
-    menus: 10,
+    languages: 3,
+    menus: 5,
     categories: 50,
     items: 500,
     schedules: true,
-    templates: ['classic', 'modern', 'minimal'],
     analytics: true,
     customDomain: true,
     qrCustomization: true,
@@ -75,7 +71,6 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
     categories: 100,
     items: 1000,
     schedules: true,
-    templates: ['classic', 'modern', 'minimal'],
     analytics: true,
     customDomain: true,
     qrCustomization: true,
@@ -101,7 +96,7 @@ export const PLANS: Record<PlanType, PlanInfo> = {
   },
   pro_annual: {
     id: 'pro_annual',
-    name: 'Myotragus',
+    name: 'Ferreret Anual',
     description: 'Acceso ilimitado',
     limits: PLAN_LIMITS.pro_annual,
     priceId: 'price_1ShbkAClyJbFQEQa0JUtzEOp',
@@ -125,7 +120,6 @@ export const LIMIT_LABELS: Record<keyof PlanLimits, string> = {
   categories: 'Categorías',
   items: 'Items',
   schedules: 'Horarios',
-  templates: 'Plantillas',
   analytics: 'Analytics',
   customDomain: 'Dominio personalizado',
   qrCustomization: 'QR personalizado',
