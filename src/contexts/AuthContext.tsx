@@ -67,7 +67,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    try {
+      // Primero limpiamos el estado local
+      setUser(null);
+      setSession(null);
+      
+      // Luego llamamos a Supabase para cerrar la sesión
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        console.error('Error signing out from Supabase:', error);
+        throw error;
+      }
+      
+      // Pequeño delay para asegurar que todo se propague
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Verificar que la sesión se limpió correctamente
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      if (currentSession) {
+        console.warn('Session still exists after signOut attempt');
+      }
+    } catch (error) {
+      console.error('Error signing out:', error);
+      throw error;
+    }
   };
 
   return (

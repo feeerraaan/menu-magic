@@ -1,5 +1,6 @@
+import React, { useState } from 'react';
 import { NavLink } from '@/components/NavLink';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from '@/hooks/useTranslation';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import {
@@ -36,8 +37,23 @@ export function DashboardSidebar() {
   const collapsed = state === 'collapsed';
   const { signOut } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const { plan, isPremium, loading } = useSubscriptionContext();
   const { t } = useTranslation();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true);
+      await signOut();
+      // Pequeño delay antes de navegar
+      await new Promise(resolve => setTimeout(resolve, 200));
+      navigate('/', { replace: true });
+    } catch (error) {
+      console.error('Error logging out:', error);
+      setIsLoggingOut(false);
+    }
+  };
 
   const navItems = [
     { title: t('dashboard.title'), url: '/dashboard', icon: LayoutDashboard },
@@ -133,10 +149,11 @@ export function DashboardSidebar() {
         <Button 
           variant="ghost" 
           className="w-full justify-start gap-3" 
-          onClick={signOut}
+          onClick={handleLogout}
+          disabled={isLoggingOut}
         >
           <LogOut className="h-4 w-4" />
-          {!collapsed && <span>{t('auth.signOut')}</span>}
+          {!collapsed && <span>{isLoggingOut ? 'Cerrando...' : t('auth.signOut')}</span>}
         </Button>
       </SidebarFooter>
     </Sidebar>

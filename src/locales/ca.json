@@ -280,5 +280,30 @@
     "newMenu": "Nou Menú",
     "menuName": "Nom del Menú",
     "noMenus": "Sense menús encara. Crea'n un per començar."
+  },
+  "onboarding": {
+    "step1Title": "Comencem",
+    "step1Description": "Com es diu el teu restaurant?",
+    "step2Title": "Dades de contacte",
+    "step2Description": "Ajuda els clients a trobar-te (opcional)",
+    "step3Title": "Idioma i Moneda",
+    "step3Description": "Configura els paràmetres del teu menú",
+    "step4Title": "Tria el teu estil",
+    "restaurantName": "Nom del Restaurant",
+    "restaurantNamePlaceholder": "p.ex., La Bella Italia",
+    "address": "Adreça",
+    "addressPlaceholder": "Carrer Principal 123, Ciutat",
+    "phone": "Telèfon",
+    "phonePlaceholder": "+34 123 456 789",
+    "currency": "Moneda",
+    "menuLanguages": "Idiomes del Menú",
+    "selectLanguages": "Selecciona els idiomes del teu menú",
+    "defaultLanguage": "Idioma per Defecte",
+    "back": "Enrere",
+    "next": "Següent",
+    "finishSetup": "Finalitzar Configuració",
+    "welcomeMessage": "Benvingut a SaCarta!",
+    "welcomeDescription": "El teu restaurant està preparat.",
+    "pleaseEnterName": "Si us plau, introdueix el nom del teu restaurant"
   }
 }

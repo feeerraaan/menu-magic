@@ -280,5 +280,30 @@
     "newMenu": "Nuevo Menú",
     "menuName": "Nombre del Menú",
     "noMenus": "Sin menús aún. Crea uno para comenzar."
+  },
+  "onboarding": {
+    "step1Title": "Empecemos",
+    "step1Description": "¿Cómo se llama tu restaurante?",
+    "step2Title": "Datos de contacto",
+    "step2Description": "Ayuda a los clientes a encontrarte (opcional)",
+    "step3Title": "Idioma y Moneda",
+    "step3Description": "Configura los parámetros de tu menú",
+    "step4Title": "Elige tu estilo",
+    "restaurantName": "Nombre del Restaurante",
+    "restaurantNamePlaceholder": "p.ej., La Bella Italia",
+    "address": "Dirección",
+    "addressPlaceholder": "Calle Principal 123, Ciudad",
+    "phone": "Teléfono",
+    "phonePlaceholder": "+34 123 456 789",
+    "currency": "Moneda",
+    "menuLanguages": "Idiomas del Menú",
+    "selectLanguages": "Selecciona los idiomas de tu menú",
+    "defaultLanguage": "Idioma por Defecto",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "finishSetup": "Finalizar Configuración",
+    "welcomeMessage": "¡Bienvenido a SaCarta!",
+    "welcomeDescription": "Tu restaurante está listo.",
+    "pleaseEnterName": "Por favor, introduce el nombre de tu restaurante"
   }
 }
