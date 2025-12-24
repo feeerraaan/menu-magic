@@ -38,7 +38,6 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
     name: '',
     address: '',
     phone: '',
-    instagram_url: '',
     currency: 'EUR',
     default_language: 'en',
     supported_languages: ['en'],
@@ -80,7 +79,6 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
       await update({
         address: formData.address || null,
         phone: formData.phone || null,
-        instagram_url: formData.instagram_url || null,
         currency: formData.currency,
         default_language: formData.default_language,
         supported_languages: formData.supported_languages,
@@ -181,19 +179,6 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                     placeholder="+1 234 567 890"
                     value={formData.phone}
                     onChange={(e) => updateField('phone', e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="instagram">Instagram</Label>
-                <div className="relative">
-                  <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="instagram"
-                    placeholder="https://instagram.com/yourrestaurant"
-                    value={formData.instagram_url}
-                    onChange={(e) => updateField('instagram_url', e.target.value)}
                     className="pl-10"
                   />
                 </div>

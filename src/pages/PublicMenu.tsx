@@ -16,7 +16,6 @@ import {
   Star, 
   MapPin, 
   Phone, 
-  Instagram, 
   Globe,
   ChevronDown,
   AlertCircle,
@@ -189,16 +188,6 @@ function MenuContent({ data }: { data: PublicMenuData }) {
             {restaurant.phone && (
               <a href={`tel:${restaurant.phone}`} className="text-muted-foreground hover:text-primary transition-colors">
                 <Phone className="h-5 w-5" />
-              </a>
-            )}
-            {restaurant.instagram_url && (
-              <a href={restaurant.instagram_url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
-                <Instagram className="h-5 w-5" />
-              </a>
-            )}
-            {restaurant.website_url && (
-              <a href={restaurant.website_url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
-                <Globe className="h-5 w-5" />
               </a>
             )}
           </div>
@@ -502,7 +491,7 @@ export default function PublicMenu() {
         // Fetch restaurant - explicitly select public fields only (exclude owner_id, custom_domain)
         const { data: restaurant, error: restError } = await supabase
           .from('restaurants')
-          .select('id, name, slug, logo_url, address, phone, instagram_url, website_url, currency, default_language, supported_languages, hide_prices, theme, template, is_published, onboarding_completed, created_at, updated_at')
+          .select('id, name, slug, logo_url, address, phone, _url, currency, default_language, supported_languages, hide_prices, theme, template, is_published, onboarding_completed, created_at, updated_at')
           .eq('slug', slug)
           .eq('is_published', true)
           .maybeSingle();

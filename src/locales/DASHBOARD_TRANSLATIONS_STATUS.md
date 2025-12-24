@@ -65,7 +65,6 @@
 - title, subtitle, saveChanges
 - logo, logoDesc, basicInfo
 - restaurantName, address, addressPlaceholder
-- phone, phonePlaceholder, instagram, instagramPlaceholder
 - languageCurrency, currency, menuLanguages, languageLimit
 - defaultLanguage, languageLimitMsg, upgradeLink
 - appearance, template, theme

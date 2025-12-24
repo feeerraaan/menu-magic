@@ -312,7 +312,6 @@ export type Database = {
           default_language: string
           hide_prices: boolean
           id: string
-          instagram_url: string | null
           is_published: boolean
           logo_url: string | null
           name: string
@@ -324,7 +323,6 @@ export type Database = {
           template: string
           theme: string
           updated_at: string
-          website_url: string | null
         }
         Insert: {
           address?: string | null
@@ -334,7 +332,6 @@ export type Database = {
           default_language?: string
           hide_prices?: boolean
           id?: string
-          instagram_url?: string | null
           is_published?: boolean
           logo_url?: string | null
           name: string
@@ -346,7 +343,6 @@ export type Database = {
           template?: string
           theme?: string
           updated_at?: string
-          website_url?: string | null
         }
         Update: {
           address?: string | null
@@ -356,7 +352,6 @@ export type Database = {
           default_language?: string
           hide_prices?: boolean
           id?: string
-          instagram_url?: string | null
           is_published?: boolean
           logo_url?: string | null
           name?: string
@@ -368,7 +363,6 @@ export type Database = {
           template?: string
           theme?: string
           updated_at?: string
-          website_url?: string | null
         }
         Relationships: []
       }

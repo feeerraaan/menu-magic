@@ -16,7 +16,7 @@ He completado las traducciones para los siguientes archivos del dashboard:
 
 2. **Settings.tsx** (`/dashboard/settings`)
    - Título y configuración general
-   - Información del restaurante (nombre, dirección, teléfono, Instagram)
+   - Información del restaurante (nombre, dirección, teléfono)
    - Configuración de moneda e idiomas
    - Límites de idiomas con validación
    - Apariencia (plantilla, tema)

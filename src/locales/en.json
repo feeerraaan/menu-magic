@@ -183,8 +183,6 @@
     "addressPlaceholder": "123 Main St, City",
     "phone": "Phone",
     "phonePlaceholder": "+1 234 567 890",
-    "instagram": "Instagram",
-    "instagramPlaceholder": "https://instagram.com/...",
     "languageCurrency": "Language & Currency",
     "currency": "Currency",
     "menuLanguages": "Menu Languages",
@@ -200,8 +198,7 @@
     "publishMenu": "Publish menu",
     "settingsSaved": "Settings saved",
     "light": "Light",
-    "dark": "Dark",
-    "website": "Website"
+    "dark": "Dark"
   },
   "analytics": {
     "title": "Analytics",

@@ -6,8 +6,6 @@ export interface Restaurant {
   logo_url: string | null;
   address: string | null;
   phone: string | null;
-  instagram_url: string | null;
-  website_url: string | null;
   currency: string;
   default_language: string;
   supported_languages: string[];

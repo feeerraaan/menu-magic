@@ -183,8 +183,6 @@
     "addressPlaceholder": "123 Carrer Principal, Ciutat",
     "phone": "Telèfon",
     "phonePlaceholder": "+34 123 456 789",
-    "instagram": "Instagram",
-    "instagramPlaceholder": "https://instagram.com/...",
     "languageCurrency": "Idioma i Moneda",
     "currency": "Moneda",
     "menuLanguages": "Idiomes del Menú",
@@ -200,8 +198,7 @@
     "publishMenu": "Publicar menú",
     "settingsSaved": "Configuració guardada",
     "light": "Clar",
-    "dark": "Fosc",
-    "website": "Lloc Web"
+    "dark": "Fosc"
   },
   "analytics": {
     "title": "Analítiques",

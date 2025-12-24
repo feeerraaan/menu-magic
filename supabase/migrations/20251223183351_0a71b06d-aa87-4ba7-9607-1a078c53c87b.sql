@@ -66,8 +66,6 @@ CREATE TABLE public.restaurants (
   logo_url TEXT,
   address TEXT,
   phone TEXT,
-  instagram_url TEXT,
-  website_url TEXT,
   currency TEXT NOT NULL DEFAULT 'EUR',
   default_language TEXT NOT NULL DEFAULT 'en',
   supported_languages TEXT[] NOT NULL DEFAULT ARRAY['en'],

@@ -41,8 +41,6 @@ export default function Settings() {
     name: restaurant.name,
     address: restaurant.address || '',
     phone: restaurant.phone || '',
-    instagram_url: restaurant.instagram_url || '',
-    website_url: restaurant.website_url || '',
     currency: restaurant.currency,
     default_language: restaurant.default_language,
     supported_languages: restaurant.supported_languages,
@@ -92,8 +90,6 @@ export default function Settings() {
         logo_url: logoUrl,
         address: formData.address || null,
         phone: formData.phone || null,
-        instagram_url: formData.instagram_url || null,
-        website_url: formData.website_url || null,
         currency: formData.currency,
         default_language: formData.default_language,
         supported_languages: formData.supported_languages,
@@ -177,15 +173,6 @@ export default function Settings() {
                 value={formData.phone}
                 onChange={(e) => updateField('phone', e.target.value)}
                 placeholder={t('settings.phonePlaceholder')}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="instagram">{t('settings.instagram')}</Label>
-              <Input
-                id="instagram"
-                value={formData.instagram_url}
-                onChange={(e) => updateField('instagram_url', e.target.value)}
-                placeholder={t('settings.instagramPlaceholder')}
               />
             </div>
           </div>

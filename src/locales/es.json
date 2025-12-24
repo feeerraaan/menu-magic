@@ -183,8 +183,6 @@
     "addressPlaceholder": "123 Calle Principal, Ciudad",
     "phone": "Teléfono",
     "phonePlaceholder": "+34 123 456 789",
-    "instagram": "Instagram",
-    "instagramPlaceholder": "https://instagram.com/...",
     "languageCurrency": "Idioma y Moneda",
     "currency": "Moneda",
     "menuLanguages": "Idiomas del Menú",
@@ -200,8 +198,7 @@
     "publishMenu": "Publicar menú",
     "settingsSaved": "Configuración guardada",
     "light": "Claro",
-    "dark": "Oscuro",
-    "website": "Sitio Web"
+    "dark": "Oscuro"
   },
   "analytics": {
     "title": "Analíticas",
