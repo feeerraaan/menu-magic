@@ -34,8 +34,8 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
     address: '',
     phone: '',
     currency: 'EUR',
-    default_language: 'es',
-    supported_languages: ['es'],
+    default_language: 'ca',
+    supported_languages: ['ca', 'es', 'en'],
   });
 
   const updateField = (field: string, value: any) => {
@@ -196,23 +196,6 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                     ))}
                   </SelectContent>
                 </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>{t('onboarding.menuLanguages')}</Label>
-                <p className="text-sm text-muted-foreground">{t('onboarding.selectLanguages')}</p>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {languages.map(lang => (
-                    <Button
-                      key={lang.code}
-                      type="button"
-                      variant={formData.supported_languages.includes(lang.code) ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => toggleLanguage(lang.code)}
-                    >
-                      {lang.name}
-                    </Button>
-                  ))}
-                </div>
               </div>
               <div className="space-y-2">
                 <Label>{t('onboarding.defaultLanguage')}</Label>

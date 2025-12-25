@@ -203,7 +203,7 @@ export default function Settings() {
             </div>
             <div className="flex flex-wrap gap-2">
               {languages.map(lang => {
-                const isSelected = formData.supported_languages.includes(lang.code);
+                const isSelected = formData.default_language === lang.code;
                 const isDisabled = !isSelected && isAtLanguageLimit;
                 return (
                   <Button
