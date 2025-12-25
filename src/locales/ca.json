@@ -207,13 +207,20 @@
     "statsOverview": "Resum d'Estadístiques",
     "totalViews": "Visions Totals",
     "today": "Avui",
+    "thisWeek": "Aquesta setmana",
     "languages": "Idiomes",
+    "views": "Visions",
     "viewsOverTime": "Visions al Llarg del Temps",
-    "viewsOverTimeDesc": "Visions del menú en els últims 30 dies",
+    "viewsOverTimeDesc": "Visions del menú en els últims 7 dies",
     "analyticsMessage": "Les analítiques apareixeran aquí una vegada que el teu menú rebi visions.",
     "topItems": "Articles Més Vistos",
     "topItemsDesc": "Articles que els clients veuen més",
-    "noViews": "Encara no hi ha visions d'articles."
+    "noViews": "Encara no hi ha visions",
+    "startSharing": "Comparteix el teu menú per començar a veure estadístiques",
+    "byLanguage": "Per Idioma",
+    "byLanguageDesc": "Distribució de visions per idioma",
+    "noLanguageData": "Sense dades d'idioma encara",
+    "noItemViews": "Sense visions d'articles encara"
   },
   "qrCode": {
     "title": "Codi QR",
