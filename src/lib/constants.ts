@@ -37,5 +37,5 @@ export const PRICING_PLANS = [
 export const STRIPE_PRICES = {
   pro_monthly: 'price_1SheAFCgFIHkYWstnfLIdA3W',
   pro_annual: 'price_1SheAQCgFIHkYWstrVsgPJQN',
-  lifetime: 'price_1SheAjCgFIHkYWstGofwVV2K',
+  lifetime: 'price_1ShbkTClyJbFQEQaodGb9UEE',
 };
