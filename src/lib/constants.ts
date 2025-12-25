@@ -29,7 +29,7 @@ export const PRICING_PLANS = [
     price: '139.99€', 
     period: ' pago único', 
     features: ['Todo lo incluido en Ferreret', 'Sin cuotas mensuales', 'Acceso de por vida', 'Soporte VIP'],
-    stripeId: 'price_1ShbkTClyJbFQEQaodGb9UEE',
+    stripeId: 'price_1SheAjCgFIHkYWstGofwVV2K',
     mode: 'payment'
   },
 ];
@@ -37,5 +37,5 @@ export const PRICING_PLANS = [
 export const STRIPE_PRICES = {
   pro_monthly: 'price_1SheAFCgFIHkYWstnfLIdA3W',
   pro_annual: 'price_1SheAQCgFIHkYWstrVsgPJQN',
-  lifetime: 'price_1ShbkTClyJbFQEQaodGb9UEE',
+  lifetime: 'price_1SheAjCgFIHkYWstGofwVV2K',
 };
