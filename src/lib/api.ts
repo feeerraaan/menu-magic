@@ -19,7 +19,7 @@ export async function createRestaurant(data: Partial<Restaurant> & { owner_id: s
   
   const { data: restaurant, error } = await supabase
     .from('restaurants')
-    .insert({ ...data, slug: slugData })
+    .insert({ ...data, slug: slugData, is_published: true })
     .select()
     .single();
   
