@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { Restaurant } from '@/types/database';
 import { useRestaurant } from '@/hooks/useRestaurant';
@@ -28,7 +28,7 @@ export default function Settings() {
   const { update } = useRestaurant();
   const { toast } = useToast();
   const { t } = useTranslation();
-  
+
   const [loading, setLoading] = useState(false);
   const [logoUrl, setLogoUrl] = useState<string | null>(restaurant.logo_url);
   const [formData, setFormData] = useState({
@@ -47,10 +47,22 @@ export default function Settings() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const { limits } = useSubscriptionContext();
-  const languagesLimit = limits.languages;
+  const { limits, subscription, loading: subscriptionLoading, plan } = useSubscriptionContext();
+
+  // While subscription is loading, don't block interactions with a stale "free" limit.
+  const languagesLimit = subscriptionLoading ? Number.POSITIVE_INFINITY : (subscription?.languages_limit ?? limits.languages);
   const currentLanguagesCount = formData.supported_languages.length;
   const isAtLanguageLimit = currentLanguagesCount >= languagesLimit;
+
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      console.log('[Settings] subscriptionLoading:', subscriptionLoading);
+      console.log('[Settings] plan:', plan);
+      console.log('[Settings] subscription.languages_limit:', subscription?.languages_limit);
+      console.log('[Settings] computed languagesLimit:', languagesLimit);
+      console.log('[Settings] currentLanguagesCount:', currentLanguagesCount);
+    }
+  }, [subscriptionLoading, plan, subscription?.languages_limit, languagesLimit, currentLanguagesCount]);
 
   const toggleLanguage = (lang: string) => {
     const current = formData.supported_languages;
@@ -204,7 +216,7 @@ export default function Settings() {
             <div className="flex flex-wrap gap-2">
               {languages.map(lang => {
                 const isSelected = formData.default_language === lang.code;
-                const isDisabled = !isSelected && isAtLanguageLimit;
+                const isDisabled = !subscriptionLoading && !isSelected && isAtLanguageLimit;
                 return (
                   <Button
                     key={lang.code}
@@ -221,10 +233,13 @@ export default function Settings() {
                 );
               })}
             </div>
-            {isAtLanguageLimit && (
+            {!subscriptionLoading && isAtLanguageLimit && (
               <p className="text-xs text-muted-foreground">
                 {t('settings.languageLimitMsg')} <a href="/dashboard/billing" className="text-primary underline">{t('settings.upgradeLink')}</a>.
               </p>
+            )}
+            {subscriptionLoading && (
+              <p className="text-xs text-muted-foreground">Cargando tu plan…</p>
             )}
           </div>
           
