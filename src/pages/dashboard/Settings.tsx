@@ -215,13 +215,14 @@ export default function Settings() {
             </div>
             <div className="flex flex-wrap gap-2">
               {languages.map(lang => {
-                const isSelected = formData.default_language === lang.code;
-                const isDisabled = !subscriptionLoading && !isSelected && isAtLanguageLimit;
+                const isInSupported = formData.supported_languages.includes(lang.code);
+                const isDefault = formData.default_language === lang.code;
+                const isDisabled = !subscriptionLoading && !isInSupported && isAtLanguageLimit;
                 return (
                   <Button
                     key={lang.code}
                     type="button"
-                    variant={isSelected ? 'default' : 'outline'}
+                    variant={isInSupported ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => toggleLanguage(lang.code)}
                     disabled={isDisabled}
@@ -229,6 +230,7 @@ export default function Settings() {
                   >
                     {isDisabled && <Crown className="h-3 w-3 mr-1 text-amber-500" />}
                     {lang.name}
+                    {isDefault && <span className="ml-1 text-xs opacity-70">★</span>}
                   </Button>
                 );
               })}
