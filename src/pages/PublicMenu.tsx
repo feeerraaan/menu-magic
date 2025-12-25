@@ -151,22 +151,26 @@ function MenuContent({ data }: { data: PublicMenuData }) {
             )}
           </div>
           
-          {/* Language Selector - Bottom Right */}
+          {/* Language Selector - Prominent Position */}
           {supportedLangs.length > 1 && (
-            <div className="relative mt-4 w-fit">
+            <div className="relative mt-6 w-fit">
               <Button
-                variant="ghost"
-                size="sm"
+                variant="outline"
+                size="default"
                 onClick={() => setShowLanguageMenu(!showLanguageMenu)}
-                className="text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                className="gap-2 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
               >
-                {currentLang?.name}
-                <ChevronDown className="h-3 w-3 ml-1" />
+                <span className="text-lg">🌐</span>
+                <span className="font-medium">{currentLang?.name}</span>
+                <ChevronDown className={cn(
+                  "h-4 w-4 transition-transform",
+                  showLanguageMenu && "rotate-180"
+                )} />
               </Button>
               {showLanguageMenu && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setShowLanguageMenu(false)} />
-                  <div className="absolute top-full mt-1 z-50 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-lg py-1">
+                  <div className="absolute top-full left-0 mt-2 z-50 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl py-2 min-w-[160px]">
                     {supportedLangs.map(lang => (
                       <button
                         key={lang.code}
@@ -175,11 +179,12 @@ function MenuContent({ data }: { data: PublicMenuData }) {
                           setShowLanguageMenu(false);
                         }}
                         className={cn(
-                          'w-full px-4 py-2 text-left text-sm transition-colors hover:bg-slate-100 dark:hover:bg-slate-800',
-                          language === lang.code && 'bg-slate-100 dark:bg-slate-800 font-medium'
+                          'w-full px-4 py-3 text-left text-sm transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-3',
+                          language === lang.code && 'bg-slate-100 dark:bg-slate-800 font-semibold text-slate-900 dark:text-white'
                         )}
                       >
-                        {lang.name}
+                        {language === lang.code && <span className="text-emerald-500">✓</span>}
+                        <span className={language !== lang.code ? 'ml-6' : ''}>{lang.name}</span>
                       </button>
                     ))}
                   </div>
@@ -658,17 +663,9 @@ export default function PublicMenu() {
             })),
         })) as (Category & { items: Item[] })[];
 
-        // Check if plan allows multiple languages (fetch subscription)
-        const { data: subscription } = await supabase
-          .from('subscriptions')
-          .select('plan, languages_limit')
-          .eq('restaurant_id', restaurantData.id)
-          .maybeSingle();
-
-        // Show language selector only if plan allows more than 1 language AND restaurant has multiple languages
-        const canShowLanguageSelector = 
-          (subscription?.languages_limit ?? 1) > 1 && 
-          restaurantData.supported_languages.length > 1;
+        // Show language selector if restaurant has multiple languages configured
+        // (The plan check is done in settings - if they have multiple languages, the plan allows it)
+        const canShowLanguageSelector = restaurantData.supported_languages.length > 1;
 
         setData({
           restaurant: restaurantData,
