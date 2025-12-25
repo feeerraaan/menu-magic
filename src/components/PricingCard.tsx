@@ -127,9 +127,9 @@ export function PricingCard({
         )}
       </div>
 
-      <div className="flex items-baseline gap-1 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 mb-6">
           <span className="text-4xl font-bold">{displayPrice}</span>
-          <span className="text-muted-foreground">{displayPeriod}</span>
+          <span className="text-muted-foreground text-sm sm:text-base">{displayPeriod}</span>
       </div>
       <ul className="space-y-4 mb-8 flex-grow">
         {plan.features.map((f, j) => (
