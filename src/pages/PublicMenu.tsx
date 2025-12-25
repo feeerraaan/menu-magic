@@ -27,10 +27,11 @@ interface PublicMenuData {
   restaurant: Restaurant;
   menu: Menu;
   categories: (Category & { items: Item[] })[];
+  canShowLanguageSelector: boolean; // true if plan supports multiple languages
 }
 
 function MenuContent({ data }: { data: PublicMenuData }) {
-  const { restaurant, categories } = data;
+  const { restaurant, categories, canShowLanguageSelector } = data;
   const { language, setLanguage } = useLanguage();
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
@@ -113,7 +114,9 @@ function MenuContent({ data }: { data: PublicMenuData }) {
     return `${symbol}${price.toFixed(2)}`;
   };
 
-  const supportedLangs = languages.filter(l => restaurant.supported_languages.includes(l.code));
+  const supportedLangs = canShowLanguageSelector 
+    ? languages.filter(l => restaurant.supported_languages.includes(l.code))
+    : [];
   const currentLang = languages.find(l => l.code === language);
 
   return (
@@ -646,16 +649,32 @@ export default function PublicMenu() {
         const categories = (categoriesData || []).map(cat => ({
           ...cat,
           translations: cat.category_translations,
-          items: (cat.items || [])
-            .filter((i: Item) => i.is_active)
-            .sort((a: Item, b: Item) => a.display_order - b.display_order)
-            .map((item: Item) => item),
+          items: ((cat.items as any[]) || [])
+            .filter((i: any) => i.is_active)
+            .sort((a: any, b: any) => a.display_order - b.display_order)
+            .map((item: any) => ({
+              ...item,
+              translations: item.item_translations,
+            })),
         })) as (Category & { items: Item[] })[];
+
+        // Check if plan allows multiple languages (fetch subscription)
+        const { data: subscription } = await supabase
+          .from('subscriptions')
+          .select('plan, languages_limit')
+          .eq('restaurant_id', restaurantData.id)
+          .maybeSingle();
+
+        // Show language selector only if plan allows more than 1 language AND restaurant has multiple languages
+        const canShowLanguageSelector = 
+          (subscription?.languages_limit ?? 1) > 1 && 
+          restaurantData.supported_languages.length > 1;
 
         setData({
           restaurant: restaurantData,
           menu: menu as unknown as Menu,
           categories,
+          canShowLanguageSelector,
         });
       } catch (e: unknown) {
         if (import.meta.env.DEV) {
