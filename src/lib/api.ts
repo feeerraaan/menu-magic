@@ -245,13 +245,10 @@ export async function fetchSubscription(restaurantId: string): Promise<Subscript
     .from('subscriptions')
     .select('*')
     .eq('restaurant_id', restaurantId)
-    .single();
-  
-  if (error) {
-    console.error('Error fetching subscription:', error);
-    return null;
-  }
-  return data as Subscription | null;
+    .maybeSingle();
+
+  if (error) throw error;
+  return (data as Subscription | null) ?? null;
 }
 
 // Image upload
