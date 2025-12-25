@@ -50,10 +50,13 @@ export function PricingCard({
 
   const displayPrice = isAnnual && plan.priceAnnual ? plan.priceAnnual : plan.price;
   const displayPeriod = isAnnual && plan.periodAnnual ? plan.periodAnnual : plan.period;
+
+  // Plan id that Billing understands (free / pro_monthly / pro_annual / lifetime)
   const targetPlanId = isAnnual && plan.planIdAnnual ? plan.planIdAnnual : (plan.planIdMonthly || plan.id);
+  const upgradePlanId = normalizePlanId(targetPlanId);
 
   const normalizedCurrentPlan = normalizePlanId(currentPlan || 'free');
-  const normalizedTargetPlan = normalizePlanId(targetPlanId);
+  const normalizedTargetPlan = upgradePlanId;
 
   // Determine if this card represents the current plan
   const isCurrentPlan =
@@ -145,10 +148,10 @@ export function PricingCard({
         <Button 
           className="w-full mt-auto h-12 rounded-xl font-medium" 
           variant={isCurrentPlan ? 'outline' : plan.popular ? 'default' : 'outline'}
-          disabled={!canUpgrade || loadingPlan === targetPlanId || isDowngrade}
-          onClick={() => onUpgrade && plan.mode && onUpgrade(targetPlanId, plan.mode)}
+          disabled={!canUpgrade || loadingPlan === upgradePlanId || isDowngrade}
+          onClick={() => onUpgrade && plan.mode && onUpgrade(upgradePlanId, plan.mode)}
         >
-          {loadingPlan === targetPlanId ? (
+          {loadingPlan === upgradePlanId ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : isCurrentPlan ? (
             'Plan Actual'
