@@ -294,22 +294,22 @@ function MenuContent({ data }: { data: PublicMenuData }) {
                   <div className="flex flex-wrap items-center gap-2 mb-4">
                     {selectedItem.is_vegetarian && (
                       <Badge variant="outline" className="gap-1 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800">
-                        <Leaf className="h-3 w-3" /> {t('menu:vegetarian')}
+                        <Leaf className="h-3 w-3" /> {t('menu.vegetarian')}
                       </Badge>
                     )}
                     {selectedItem.is_vegan && (
                       <Badge variant="outline" className="gap-1 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800">
-                        <Leaf className="h-3 w-3 fill-current" /> {t('menu:vegan')}
+                        <Leaf className="h-3 w-3 fill-current" /> {t('menu.vegan')}
                       </Badge>
                     )}
                     {selectedItem.is_spicy && (
                       <Badge variant="outline" className="gap-1 bg-orange-50 dark:bg-orange-950/30 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-800">
-                        <Flame className="h-3 w-3" /> {t('menu:spicy')}
+                        <Flame className="h-3 w-3" /> {t('menu.spicy')}
                       </Badge>
                     )}
                     {selectedItem.is_gluten_free && (
                       <Badge variant="outline" className="gap-1 bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800">
-                        <Wheat className="h-3 w-3" /> {t('menu:glutenFree')}
+                        <Wheat className="h-3 w-3" /> {t('menu.glutenFree')}
                       </Badge>
                     )}
                   </div>
