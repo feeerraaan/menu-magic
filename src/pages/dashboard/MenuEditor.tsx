@@ -15,6 +15,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { MenuScheduleEditor } from '@/components/dashboard/MenuScheduleEditor';
 import { UpgradeBanner, LimitIndicator } from '@/components/subscription';
+import { CategoryDialogWithTranslations } from '@/components/dashboard/CategoryDialogWithTranslations';
+import { ItemDialogWithTranslations } from '@/components/dashboard/ItemDialogWithTranslations';
 import { 
   DndContext, 
   closestCenter, 
@@ -55,6 +57,7 @@ import {
 import { cn } from '@/lib/utils';
 import { ImageUpload } from '@/components/ui/image-upload';
 import { Badge } from '@/components/ui/badge';
+import { supabase } from '@/integrations/supabase/client';
 
 interface SortableItemProps {
   id: string;
@@ -261,7 +264,7 @@ export default function MenuEditor() {
     }
   }, [menus, selectedMenuId]);
 
-  // Fetch items for all categories
+  // Fetch items for all categories (with translations)
   useEffect(() => {
     const fetchItems = async () => {
       if (!categories.length) {
@@ -269,12 +272,11 @@ export default function MenuEditor() {
         return;
       }
       try {
-        const { supabase } = await import('@/integrations/supabase/client');
         const items: Record<string, Item[]> = {};
         for (const cat of categories) {
           const { data, error } = await supabase
             .from('items')
-            .select('*')
+            .select('*, item_translations(*)')
             .eq('category_id', cat.id)
             .order('display_order');
           
@@ -283,7 +285,10 @@ export default function MenuEditor() {
               console.error('Error fetching items for category', cat.id, error);
             }
           }
-          items[cat.id] = (data || []) as Item[];
+          items[cat.id] = (data || []).map(item => ({
+            ...item,
+            translations: item.item_translations,
+          })) as Item[];
         }
         setItemsByCategory(items);
       } catch (e) {
@@ -663,25 +668,60 @@ export default function MenuEditor() {
       )}
 
       {/* Category Dialog */}
-      <CategoryDialog
+      <CategoryDialogWithTranslations
         open={categoryDialog.open}
         category={categoryDialog.category}
+        supportedLanguages={restaurant.supported_languages}
+        defaultLanguage={restaurant.default_language}
+        menuId={selectedMenuId || ''}
         onClose={() => setCategoryDialog({ open: false })}
-        onSave={handleSaveCategory}
+        onSave={async () => {
+          // Refetch categories to get updated translations
+          const { data } = await supabase
+            .from('categories')
+            .select('*, category_translations(*)')
+            .eq('menu_id', selectedMenuId)
+            .order('display_order');
+          if (data) {
+            setCategories(data.map(cat => ({
+              ...cat,
+              translations: cat.category_translations,
+            })) as Category[]);
+          }
+        }}
       />
 
       {/* Item Dialog */}
-      <ItemDialog
+      <ItemDialogWithTranslations
         open={itemDialog.open}
         item={itemDialog.item}
         categoryId={itemDialog.categoryId}
         currency={restaurant.currency}
         restaurantId={restaurant.id}
+        supportedLanguages={restaurant.supported_languages}
+        defaultLanguage={restaurant.default_language}
         canAddPhoto={canAddPhoto}
         photosUsed={totalPhotos}
         photosLimit={planLimits.photos}
         onClose={() => setItemDialog({ open: false })}
-        onSave={handleSaveItem}
+        onSave={async () => {
+          // Refetch items with translations
+          if (categories.length) {
+            const items: Record<string, Item[]> = {};
+            for (const cat of categories) {
+              const { data } = await supabase
+                .from('items')
+                .select('*, item_translations(*)')
+                .eq('category_id', cat.id)
+                .order('display_order');
+              items[cat.id] = (data || []).map(item => ({
+                ...item,
+                translations: item.item_translations,
+              })) as Item[];
+            }
+            setItemsByCategory(items);
+          }
+        }}
       />
 
       {/* Delete Confirmation */}

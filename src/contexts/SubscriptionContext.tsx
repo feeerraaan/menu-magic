@@ -106,7 +106,16 @@ export function SubscriptionProvider({ restaurantId, children }: SubscriptionPro
   }, [refetch]);
 
   const plan: PlanType = (subscription?.plan || 'free') as PlanType;
-  const limits = getPlanLimits(plan);
+  const defaultLimits = getPlanLimits(plan);
+  
+  // Use actual limits from subscription if available, fallback to plan defaults
+  const limits: PlanLimits = {
+    ...defaultLimits,
+    // Override with actual values from subscription if they exist
+    languages: subscription?.languages_limit ?? defaultLimits.languages,
+    photos: subscription?.photos_limit ?? defaultLimits.photos,
+  };
+  
   const isPremium = isPremiumPlan(plan);
 
   return (
