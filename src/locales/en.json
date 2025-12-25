@@ -207,13 +207,20 @@
     "statsOverview": "Stats Overview",
     "totalViews": "Total Views",
     "today": "Today",
+    "thisWeek": "This week",
     "languages": "Languages",
+    "views": "Views",
     "viewsOverTime": "Views Over Time",
-    "viewsOverTimeDesc": "Menu views in the last 30 days",
+    "viewsOverTimeDesc": "Menu views in the last 7 days",
     "analyticsMessage": "Analytics will appear here once your menu receives views.",
     "topItems": "Most Viewed Items",
     "topItemsDesc": "Items that customers look at most",
-    "noViews": "No item views recorded yet."
+    "noViews": "No views yet",
+    "startSharing": "Share your menu to start seeing stats",
+    "byLanguage": "By Language",
+    "byLanguageDesc": "Views distribution by language",
+    "noLanguageData": "No language data yet",
+    "noItemViews": "No item views yet"
   },
   "qrCode": {
     "title": "QR Code",

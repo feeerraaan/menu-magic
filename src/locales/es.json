@@ -207,13 +207,20 @@
     "statsOverview": "Resumen de Estadísticas",
     "totalViews": "Visualizaciones Totales",
     "today": "Hoy",
+    "thisWeek": "Esta semana",
     "languages": "Idiomas",
+    "views": "Visualizaciones",
     "viewsOverTime": "Visualizaciones en el Tiempo",
-    "viewsOverTimeDesc": "Visualizaciones del menú en los últimos 30 días",
+    "viewsOverTimeDesc": "Visualizaciones del menú en los últimos 7 días",
     "analyticsMessage": "Las analíticas aparecerán aquí una vez que tu menú reciba visualizaciones.",
     "topItems": "Artículos Más Vistos",
     "topItemsDesc": "Artículos que los clientes ven más",
-    "noViews": "Aún no hay visualizaciones de artículos."
+    "noViews": "Aún no hay visualizaciones",
+    "startSharing": "Comparte tu menú para empezar a ver estadísticas",
+    "byLanguage": "Por Idioma",
+    "byLanguageDesc": "Distribución de visualizaciones por idioma",
+    "noLanguageData": "Sin datos de idioma aún",
+    "noItemViews": "Sin visualizaciones de artículos aún"
   },
   "qrCode": {
     "title": "Código QR",
