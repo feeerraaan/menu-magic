@@ -99,14 +99,16 @@ export function PricingCard({
         </div>
       )}
 
-      <div className="flex justify-between items-start mb-2">
-        <h3 className="font-display text-2xl font-bold">{plan.name}</h3>
+      <div className="flex flex-col gap-3 mb-2">
+        <div className="flex justify-between items-start">
+          <h3 className="font-display text-2xl font-bold">{plan.name}</h3>
+        </div>
         {plan.priceAnnual && (
-          <div className="flex items-center p-1 bg-muted/50 rounded-lg border border-border/50">
+          <div className="flex items-center p-1 bg-muted/50 rounded-lg border border-border/50 w-fit">
             <button
               onClick={() => setIsAnnual(false)}
               className={cn(
-                "px-3 py-1 text-xs font-medium rounded-md transition-all duration-200",
+                "px-2 sm:px-3 py-1 text-xs font-medium rounded-md transition-all duration-200 whitespace-nowrap",
                 !isAnnual ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
               )}
             >
@@ -115,7 +117,7 @@ export function PricingCard({
             <button
               onClick={() => setIsAnnual(true)}
               className={cn(
-                "px-3 py-1 text-xs font-medium rounded-md transition-all duration-200",
+                "px-2 sm:px-3 py-1 text-xs font-medium rounded-md transition-all duration-200 whitespace-nowrap",
                 isAnnual ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
               )}
             >
