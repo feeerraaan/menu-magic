@@ -31,7 +31,7 @@ const handler = async (req: Request): Promise<Response> => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "SaCarta <onboarding@resend.dev>",
+        from: "SaCarta <sacarta.azpy.es>",
         to: [email],
         subject: "¡Bienvenido a SaCarta! 🎉 Tu menú digital te espera",
         html: `
