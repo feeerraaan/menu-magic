@@ -50,8 +50,10 @@ const handler = async (req: Request): Promise<Response> => {
           
           <!-- Header with brand colors -->
           <tr>
-            <td style="background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); padding: 40px 30px; text-align: center;">
-              <img src="https://sacarta.azpy.es/logo.png" alt="SaCarta Logo" style="width: 120px; height: auto; margin-bottom: 20px;">
+            <td style="background: linear-gradient(135deg, #CC5C3D 0%, #B84A2E 100%); padding: 40px 30px; text-align: center;">
+              <div style="background-color: #f76201; border-radius: 50%; width: 160px; height: 160px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                <img src="https://sacarta.azpy.es/logo.png" alt="SaCarta Logo" style="width: 140px; height: 140px;">
+              </div>
               <h1 style="color: #ffffff; margin: 0; font-size: 32px; font-weight: 700;">¡Bienvenido a SaCarta!</h1>
             </td>
           </tr>
@@ -60,7 +62,7 @@ const handler = async (req: Request): Promise<Response> => {
           <tr>
             <td style="padding: 40px 30px;">
               <p style="color: #374151; font-size: 18px; line-height: 1.6; margin: 0 0 20px;">
-                Hola <strong style="color: #16a34a;">${name || 'Chef'}</strong>,
+                Hola <strong style="color: #CC5C3D;">${name || 'Chef'}</strong>,
               </p>
               <p style="color: #6b7280; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
                 ¡Gracias por unirte a SaCarta! Estamos encantados de tenerte con nosotros. Ahora puedes crear tu menú digital profesional en minutos.
@@ -107,7 +109,7 @@ const handler = async (req: Request): Promise<Response> => {
           <!-- CTA Button -->
           <tr>
             <td style="padding: 0 30px 40px; text-align: center;">
-              <a href="https://sacarta.azpy.es/auth" style="display: inline-block; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-size: 16px; font-weight: 600; box-shadow: 0 4px 14px rgba(22, 163, 74, 0.4);">
+              <a href="https://sacarta.azpy.es/auth" style="display: inline-block; background: linear-gradient(135deg, #CC5C3D 0%, #B84A2E 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-size: 16px; font-weight: 600; box-shadow: 0 4px 14px rgba(204, 92, 61, 0.4);">
                 Crear mi menú ahora →
               </a>
             </td>
