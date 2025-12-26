@@ -18,8 +18,8 @@ export const PRICING_PLANS = [
     features: ['3 menús digitales', '2 idiomas', '50 fotos', '7 categorías', '50 platos', 'Horarios', 'Analíticas avanzadas', 'Personalización de marca', 'Soporte prioritario'], 
     featuresAnnual: ['5 menús digitales', '3 idiomas', '100 fotos', '10 categorías', '100 platos', 'Horarios', 'Analíticas avanzadas', 'Personalización de marca', 'Soporte prioritario'],
     popular: true,
-    stripeId: 'price_1SheAFCgFIHkYWstnfLIdA3W',
-    stripeIdAnnual: 'price_1SheAQCgFIHkYWstrVsgPJQN',
+    stripeId: 'price_1SikkXCZS330jw8u1e7cOKrQ',
+    stripeIdAnnual: 'price_1SikkrCZS330jw8uTxFrG8c3',
     planIdMonthly: 'pro_monthly',
     planIdAnnual: 'pro_annual',
     mode: 'subscription'
@@ -30,13 +30,13 @@ export const PRICING_PLANS = [
     price: '139.99€', 
     period: ' pago único', 
     features: ['10 menús digitales', 'Idiomas ilimitados', '1000 fotos', '100 categorías', '1000 platos', 'Horarios', 'Analíticas avanzadas', 'Personalización de marca', 'Sin cuotas mensuales', 'Acceso de por vida', 'Soporte VIP', 'Configuración manual del menú por nosotros'],
-    stripeId: 'price_1SheAjCgFIHkYWstGofwVV2K',
+    stripeId: 'price_1Sikn6CZS330jw8uv7g6gUs9',
     mode: 'payment'
   },
 ];
 
 export const STRIPE_PRICES = {
-  pro_monthly: 'price_1SheAFCgFIHkYWstnfLIdA3W',
-  pro_annual: 'price_1SheAQCgFIHkYWstrVsgPJQN',
-  lifetime: 'price_1SheAjCgFIHkYWstGofwVV2K',
+  pro_monthly: 'price_1SikkXCZS330jw8u1e7cOKrQ',
+  pro_annual: 'price_1SikkrCZS330jw8uTxFrG8c3',
+  lifetime: 'price_1Sikn6CZS330jw8uv7g6gUs9',
 };
