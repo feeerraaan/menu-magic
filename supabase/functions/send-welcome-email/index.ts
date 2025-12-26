@@ -1,7 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY"); 
-
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -12,7 +11,65 @@ interface WelcomeEmailRequest {
   email: string;
   name: string;
   restaurantName?: string;
+  language?: string;
 }
+
+const translations: Record<string, Record<string, string>> = {
+  es: {
+    welcome: "¡Bienvenido a SaCarta! 🎉 Tu menú digital te espera",
+    greeting: "Hola",
+    thanks: "¡Gracias por unirte a SaCarta! Estamos encantados de tenerte con nosotros. Ahora puedes crear tu menú digital profesional en minutos.",
+    features: "Con SaCarta podrás:",
+    feature1: "✨ Crear menús digitales atractivos",
+    feature2: "🌍 Traducir tu menú a múltiples idiomas",
+    feature3: "📱 Generar códigos QR personalizados",
+    feature4: "📊 Analizar las visitas a tu carta",
+    offer: "🎁 Oferta Exclusiva de Bienvenida",
+    discount: "10% DE DESCUENTO",
+    discountText: "en tu primera suscripción",
+    codeText: "Usa este código al suscribirte",
+    ctaDefault: "Crear mi menú ahora",
+    ctaRestaurant: "Crear menú para",
+    help: "¿Necesitas ayuda? Estamos aquí para ti.",
+    copyright: "© 2025 SaCarta. Todos los derechos reservados.",
+  },
+  en: {
+    welcome: "Welcome to SaCarta! 🎉 Your digital menu awaits",
+    greeting: "Hello",
+    thanks: "Thank you for joining SaCarta! We're delighted to have you with us. Now you can create your professional digital menu in minutes.",
+    features: "With SaCarta you can:",
+    feature1: "✨ Create attractive digital menus",
+    feature2: "🌍 Translate your menu into multiple languages",
+    feature3: "📱 Generate personalized QR codes",
+    feature4: "📊 Analyze visits to your menu",
+    offer: "🎁 Exclusive Welcome Offer",
+    discount: "10% DISCOUNT",
+    discountText: "on your first subscription",
+    codeText: "Use this code when subscribing",
+    ctaDefault: "Create my menu now",
+    ctaRestaurant: "Create menu for",
+    help: "Need help? We're here for you.",
+    copyright: "© 2025 SaCarta. All rights reserved.",
+  },
+  ca: {
+    welcome: "¡Benvingut a SaCarta! 🎉 El teu menú digital t'espera",
+    greeting: "Hola",
+    thanks: "Gràcies per unir-te a SaCarta! Estem encantats de tenir-te amb nosaltres. Ara pots crear el teu menú digital professional en minuts.",
+    features: "Amb SaCarta podràs:",
+    feature1: "✨ Crear menús digitals atractius",
+    feature2: "🌍 Traduir el teu menú a múltiples idiomes",
+    feature3: "📱 Generar codis QR personalitzats",
+    feature4: "📊 Analitzar les visites a la teva carta",
+    offer: "🎁 Oferta Exclusiva de Benvinguda",
+    discount: "10% DE DESCOMPTE",
+    discountText: "en la teva primera subscripció",
+    codeText: "Utilitza aquest codi al subscriure't",
+    ctaDefault: "Crear el meu menú ara",
+    ctaRestaurant: "Crear menú per a",
+    help: "¿Necessites ajuda? Estem aquí per a tu.",
+    copyright: "© 2025 SaCarta. Tots els drets reservats.",
+  },
+};
 
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
@@ -21,9 +78,12 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { email, name, restaurantName }: WelcomeEmailRequest = await req.json();
+    const { email, name, restaurantName, language = 'es' }: WelcomeEmailRequest = await req.json();
 
     console.log(`Sending welcome email to ${email} (${name})`);
+
+    const t = translations[language] || translations['es'];
+    const htmlLang = language === 'ca' ? 'ca' : language === 'en' ? 'en' : 'es';
 
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -34,14 +94,14 @@ const handler = async (req: Request): Promise<Response> => {
       body: JSON.stringify({
         from: "SaCarta <no-reply@sacarta.azpy.es>",
         to: [email],
-        subject: "¡Tu menú digital te espera! 🎉",
+        subject: t.welcome,
         html: `
 <!DOCTYPE html>
-<html lang="es">
+<html lang="${htmlLang}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bienvenido a SaCarta</title>
+  <title>${language === 'en' ? 'Welcome to SaCarta' : language === 'ca' ? 'Benvingut a SaCarta' : 'Bienvenido a SaCarta'}</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f5;">
   <table role="presentation" style="width: 100%; border-collapse: collapse;">
@@ -59,7 +119,7 @@ const handler = async (req: Request): Promise<Response> => {
                   </td>
                 </tr>
               </table>
-              <h1 style="color: #ffffff; margin: 0; font-size: 32px; font-weight: 700;">¡Bienvenido a SaCarta!</h1>
+              <h1 style="color: #ffffff; margin: 0; font-size: 32px; font-weight: 700;">${language === 'en' ? 'Welcome to SaCarta!' : language === 'ca' ? '¡Benvingut a SaCarta!' : '¡Bienvenido a SaCarta!'}</h1>
             </td>
           </tr>
           
@@ -67,19 +127,19 @@ const handler = async (req: Request): Promise<Response> => {
           <tr>
             <td style="padding: 40px 30px;">
               <p style="color: #374151; font-size: 18px; line-height: 1.6; margin: 0 0 20px;">
-                Hola <strong style="color: #f76201;">${name || "Chef"}</strong>,
+                ${t.greeting} <strong style="color: #f76201;">${name || (language === 'en' ? 'Chef' : language === 'ca' ? 'Xef' : 'Chef')}</strong>,
               </p>
               <p style="color: #6b7280; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
-                ¡Gracias por unirte a SaCarta! Estamos encantados de tenerte con nosotros. Ahora puedes crear tu menú digital profesional en minutos.
+                ${t.thanks}
               </p>
               <p style="color: #6b7280; font-size: 16px; line-height: 1.6; margin: 0 0 30px;">
-                Con SaCarta podrás:
+                ${t.features}
               </p>
               <ul style="color: #6b7280; font-size: 16px; line-height: 1.8; margin: 0 0 30px; padding-left: 20px;">
-                <li>✨ Crear menús digitales atractivos</li>
-                <li>🌍 Traducir tu menú a múltiples idiomas</li>
-                <li>📱 Generar códigos QR personalizados</li>
-                <li>📊 Analizar las visitas a tu carta</li>
+                <li>${t.feature1}</li>
+                <li>${t.feature2}</li>
+                <li>${t.feature3}</li>
+                <li>${t.feature4}</li>
               </ul>
             </td>
           </tr>
@@ -91,19 +151,19 @@ const handler = async (req: Request): Promise<Response> => {
                 <tr>
                   <td style="padding: 25px; text-align: center;">
                     <p style="color: #92400e; font-size: 14px; font-weight: 600; margin: 0 0 8px; text-transform: uppercase; letter-spacing: 1px;">
-                      🎁 Oferta Exclusiva de Bienvenida
+                      ${t.offer}
                     </p>
                     <p style="color: #78350f; font-size: 24px; font-weight: 700; margin: 0 0 10px;">
-                      10% DE DESCUENTO
+                      ${t.discount}
                     </p>
                     <p style="color: #92400e; font-size: 14px; margin: 0 0 15px;">
-                      en tu primera suscripción
+                      ${t.discountText}
                     </p>
                     <div style="background-color: #ffffff; display: inline-block; padding: 12px 30px; border-radius: 8px; border: 2px solid #f59e0b;">
                       <span style="color: #d97706; font-size: 24px; font-weight: 800; letter-spacing: 3px;">SACARTA</span>
                     </div>
                     <p style="color: #92400e; font-size: 12px; margin: 15px 0 0;">
-                      Usa este código al suscribirte
+                      ${t.codeText}
                     </p>
                   </td>
                 </tr>
@@ -115,7 +175,7 @@ const handler = async (req: Request): Promise<Response> => {
           <tr>
             <td style="padding: 0 30px 40px; text-align: center;">
               <a href="https://sacarta.azpy.es/dashboard/editor" style="display: inline-block; background: linear-gradient(135deg, #f76201 0%, #e65d01ff 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-size: 14px; font-weight: 600; box-shadow: 0 4px 14px rgba(204, 92, 61, 0.4);">
-                ${restaurantName ? `Crear menú para ${restaurantName}` : 'Crear mi menú ahora'} →
+                ${restaurantName ? `${t.ctaRestaurant} ${restaurantName}` : t.ctaDefault} →
               </a>
             </td>
           </tr>
@@ -124,10 +184,10 @@ const handler = async (req: Request): Promise<Response> => {
           <tr>
             <td style="background-color: #f9fafb; padding: 30px; text-align: center; border-top: 1px solid #e5e7eb;">
               <p style="color: #9ca3af; font-size: 14px; margin: 0 0 10px;">
-                ¿Necesitas ayuda? Estamos aquí para ti.
+                ${t.help}
               </p>
               <p style="color: #9ca3af; font-size: 12px; margin: 0;">
-                © 2025 SaCarta. Todos los derechos reservados.
+                ${t.copyright}
               </p>
             </td>
           </tr>

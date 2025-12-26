@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRestaurant } from '@/hooks/useRestaurant';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { Utensils, MapPin, Phone, Globe, ArrowRight, ArrowLeft, Check, Loader2 } from 'lucide-react';
 import { languages } from '@/lib/i18n';
+import { supabase } from '@/integrations/supabase/client';
 
 const CURRENCIES = [
   { code: 'EUR', symbol: '€', name: 'Euro' },
@@ -25,6 +27,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const { create, update, restaurant } = useRestaurant();
+  const { user } = useAuth();
   const { toast } = useToast();
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -79,6 +82,24 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
         supported_languages: formData.supported_languages,
         onboarding_completed: true,
       });
+
+      // Send welcome email with restaurant name
+      if (user?.email && formData.name) {
+        try {
+          await supabase.functions.invoke('send-welcome-email', {
+            body: {
+              email: user.email,
+              name: user.user_metadata?.full_name || 'Chef',
+              restaurantName: formData.name,
+              language: formData.default_language
+            }
+          });
+        } catch (emailError) {
+          console.error('Error sending welcome email:', emailError);
+          // Don't fail if email fails
+        }
+      }
+
       toast({ title: t('onboarding.welcomeMessage'), description: t('onboarding.welcomeDescription') });
       onComplete();
     } catch (e) {
