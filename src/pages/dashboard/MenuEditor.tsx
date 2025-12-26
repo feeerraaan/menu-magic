@@ -792,15 +792,6 @@ export default function MenuEditor() {
           try {
             const { supabase } = await import('@/integrations/supabase/client');
             
-            // If setting this menu as active, deactivate all others
-            if (data.is_active) {
-              await supabase
-                .from('menus')
-                .update({ is_active: false })
-                .eq('restaurant_id', restaurant.id)
-                .neq('id', menu?.id || '');
-            }
-            
             if (menu) {
               // Update existing menu
               await supabase
@@ -814,14 +805,6 @@ export default function MenuEditor() {
                 .eq('id', menu.id);
               toast({ title: 'Menú actualizado' });
             } else {
-              // Create new menu - if it's active, deactivate others first
-              if (data.is_active) {
-                await supabase
-                  .from('menus')
-                  .update({ is_active: false })
-                  .eq('restaurant_id', restaurant.id);
-              }
-              
               const { data: newMenu, error } = await supabase
                 .from('menus')
                 .insert({
@@ -1137,7 +1120,34 @@ function MenuEditDialog({
   const [scheduleRules, setScheduleRules] = useState<ScheduleRule[] | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const hasOtherActiveMenu = menus.some(m => m.is_active && m.id !== menu?.id);
+  const overlappingMenu = useMemo(() => {
+    if (!isActive) return null;
+    
+    return menus.find(m => {
+      if (m.id === menu?.id || !m.is_active) return false;
+      
+      // If both are active, check for schedule overlap
+      const r1 = (!scheduleRules || scheduleRules.length === 0) 
+        ? [{ days: [0, 1, 2, 3, 4, 5, 6], start_time: '00:00', end_time: '23:59' }] 
+        : scheduleRules;
+      const r2 = (!m.schedule_rules || (m.schedule_rules as any).length === 0) 
+        ? [{ days: [0, 1, 2, 3, 4, 5, 6], start_time: '00:00', end_time: '23:59' }] 
+        : m.schedule_rules as any as ScheduleRule[];
+
+      for (const rule1 of r1) {
+        for (const rule2 of r2) {
+          const commonDays = rule1.days.filter(d => rule2.days.includes(d));
+          if (commonDays.length > 0) {
+            // Simple overlap check (doesn't handle overnight perfectly but covers most cases)
+            if (rule1.start_time < rule2.end_time && rule2.start_time < rule1.end_time) {
+              return true;
+            }
+          }
+        }
+      }
+      return false;
+    });
+  }, [isActive, scheduleRules, menus, menu?.id]);
 
   useEffect(() => {
     if (open) {
@@ -1149,14 +1159,14 @@ function MenuEditDialog({
       } else {
         setName('');
         setDescription('');
-        setIsActive(menus.length === 0); // First menu is active by default
+        setIsActive(true); // Default to active for new menus
         setScheduleRules(null);
       }
     }
-  }, [menu, open, menus.length]);
+  }, [menu, open]);
 
   const handleSave = async () => {
-    if (!name.trim()) return;
+    if (!name.trim() || overlappingMenu) return;
     setLoading(true);
     await onSave({
       name: name.trim(),
@@ -1165,6 +1175,18 @@ function MenuEditDialog({
       schedule_rules: canUseSchedules ? scheduleRules : null,
     }, menu);
     setLoading(false);
+  };
+
+  const formatSchedule = (rules: ScheduleRule[] | null) => {
+    if (!rules || rules.length === 0) return "Siempre activo";
+    return rules.map(r => {
+      const days = r.days.length === 0
+        ? 'Sin días'
+        : r.days.length === 7 
+          ? 'Todos los días' 
+          : r.days.map(d => ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'][d]).join(', ');
+      return `${days} (${r.start_time} - ${r.end_time})`;
+    }).join('; ');
   };
 
   return (
@@ -1198,7 +1220,7 @@ function MenuEditDialog({
             <div className="space-y-0.5">
               <Label>Menú activo</Label>
               <p className="text-xs text-muted-foreground">
-                Solo un menú puede estar activo a la vez
+                Puedes tener varios menús activos con diferentes horarios
               </p>
             </div>
             <Switch
@@ -1207,11 +1229,19 @@ function MenuEditDialog({
             />
           </div>
           
-          {isActive && hasOtherActiveMenu && (
-            <p className="text-xs text-warning flex items-center gap-1">
-              <AlertTriangle className="h-3 w-3" />
-              Al activar este menú, el menú activo actual se desactivará
-            </p>
+          {overlappingMenu && (
+            <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive space-y-1">
+              <p className="text-xs font-medium flex items-center gap-1">
+                <AlertTriangle className="h-3 w-3" />
+                Conflicto de horario
+              </p>
+              <p className="text-xs">
+                Este horario se solapa con el menú <strong>{overlappingMenu.name}</strong>:
+              </p>
+              <p className="text-[10px] opacity-80">
+                {formatSchedule(overlappingMenu.schedule_rules)}
+              </p>
+            </div>
           )}
           
           {/* Schedule */}
@@ -1233,7 +1263,7 @@ function MenuEditDialog({
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancelar</Button>
-          <Button onClick={handleSave} disabled={loading || !name.trim()}>
+          <Button onClick={handleSave} disabled={loading || !name.trim() || !!overlappingMenu}>
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {menu ? 'Guardar' : 'Crear'}
           </Button>
