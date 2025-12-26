@@ -16,7 +16,7 @@ interface WelcomeEmailRequest {
 
 const translations: Record<string, Record<string, string>> = {
   es: {
-    welcome: "¡Bienvenido a SaCarta! 🎉 Tu menú digital te espera",
+    welcome: "Tu menú digital te espera 🎉",
     greeting: "Hola",
     thanks: "¡Gracias por unirte a SaCarta! Estamos encantados de tenerte con nosotros. Ahora puedes crear tu menú digital profesional en minutos.",
     features: "Con SaCarta podrás:",
@@ -34,7 +34,7 @@ const translations: Record<string, Record<string, string>> = {
     copyright: "© 2025 SaCarta. Todos los derechos reservados.",
   },
   en: {
-    welcome: "Welcome to SaCarta! 🎉 Your digital menu awaits",
+    welcome: "Your digital menu awaits 🎉",
     greeting: "Hello",
     thanks: "Thank you for joining SaCarta! We're delighted to have you with us. Now you can create your professional digital menu in minutes.",
     features: "With SaCarta you can:",
@@ -52,7 +52,7 @@ const translations: Record<string, Record<string, string>> = {
     copyright: "© 2025 SaCarta. All rights reserved.",
   },
   ca: {
-    welcome: "¡Benvingut a SaCarta! 🎉 El teu menú digital t'espera",
+    welcome: "El teu menú digital t'espera 🎉",
     greeting: "Hola",
     thanks: "Gràcies per unir-te a SaCarta! Estem encantats de tenir-te amb nosaltres. Ara pots crear el teu menú digital professional en minuts.",
     features: "Amb SaCarta podràs:",
