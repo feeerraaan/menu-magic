@@ -53,7 +53,7 @@ const handler = async (req: Request): Promise<Response> => {
               <table role="presentation" style="margin: 0 auto 20px; border-collapse: collapse;">
                 <tr>
                   <td style="background-color: #ffffff; border-radius: 50%; width: 140px; height: 140px; text-align: center; vertical-align: middle;">
-                    <img src="https://sacarta.azpy.es/logo.png" alt="SaCarta Logo" style="width: 100px; height: 100px; display: block; margin: 0 auto;">
+                    <img src="https://sacarta.azpy.es/logo.png" alt="SaCarta Logo" style="width: 120px; height: 120px; display: block; margin: 10px auto; object-fit: contain;" />
                   </td>
                 </tr>
               </table>
