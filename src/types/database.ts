@@ -128,7 +128,7 @@ export type PlanType = 'free' | 'pro_monthly' | 'pro_annual' | 'lifetime';
 
 export const PLAN_LIMITS: Record<PlanType, { photos: number; languages: number; menus: number; schedules: boolean; }> = {
   free: { photos: 0, languages: 1, menus: 1, schedules: false },
-  pro_monthly: { photos: 50, languages: 2, menus: 2, schedules: true },
-  pro_annual: { photos: 50, languages: 3, menus: 5, schedules: true },
-  lifetime: { photos: 100, languages: 10, menus: 20, schedules: true },
+  pro_monthly: { photos: 50, languages: 2, menus: 3, schedules: true },
+  pro_annual: { photos: 100, languages: 3, menus: 5, schedules: true },
+  lifetime: { photos: 1000, languages: 999, menus: 10, schedules: true },
 };

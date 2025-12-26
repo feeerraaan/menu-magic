@@ -15,7 +15,6 @@ export interface PlanLimits {
   items: number;
   schedules: boolean;
   analytics: boolean;
-  customDomain: boolean;
   qrCustomization: boolean;
   manualSetup: boolean;
 }
@@ -40,7 +39,6 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
     items: 25,
     schedules: false,
     analytics: false,
-    customDomain: false,
     qrCustomization: false,
     manualSetup: false,
   },
@@ -52,7 +50,6 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
     items: 50,
     schedules: true,
     analytics: true,
-    customDomain: true,
     qrCustomization: true,
     manualSetup: false,
   },
@@ -64,19 +61,17 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
     items: 100,
     schedules: true,
     analytics: true,
-    customDomain: true,
     qrCustomization: true,
     manualSetup: false,
   },
   lifetime: {
     photos: 1000,
     languages: 999,
-    menus: 20,
+    menus: 10,
     categories: 100,
     items: 1000,
     schedules: true,
     analytics: true,
-    customDomain: true,
     qrCustomization: true,
     manualSetup: true,
   },
@@ -109,7 +104,7 @@ export const PLANS: Record<PlanType, PlanInfo> = {
   lifetime: {
     id: 'lifetime',
     name: 'Myotragus',
-    description: 'Acceso de por vida',
+    description: 'Acceso de por vida. Te preparamos el menú nosotros manualmente.',
     limits: PLAN_LIMITS.lifetime,
     priceId: 'price_1ShbkTClyJbFQEQaodGb9UEE',
   },
@@ -126,7 +121,6 @@ export const LIMIT_LABELS: Record<keyof PlanLimits, string> = {
   items: 'Items',
   schedules: 'Horarios',
   analytics: 'Analytics',
-  customDomain: 'Dominio personalizado',
   qrCustomization: 'QR personalizado',
   manualSetup: 'Configuración manual del menú por nosotros',
 };
