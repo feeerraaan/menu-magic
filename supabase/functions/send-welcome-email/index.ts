@@ -10,6 +10,7 @@ const corsHeaders = {
 interface WelcomeEmailRequest {
   email: string;
   name: string;
+  restaurantName?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -19,7 +20,7 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { email, name }: WelcomeEmailRequest = await req.json();
+    const { email, name, restaurantName }: WelcomeEmailRequest = await req.json();
 
     console.log(`Sending welcome email to ${email} (${name})`);
 
@@ -32,7 +33,7 @@ const handler = async (req: Request): Promise<Response> => {
       body: JSON.stringify({
         from: "SaCarta <no-reply@sacarta.azpy.es>",
         to: [email],
-        subject: "¡Bienvenido a SaCarta! 🎉 Tu menú digital te espera",
+        subject: "¡Tu menú digital te espera! 🎉",
         html: `
 <!DOCTYPE html>
 <html lang="es">
@@ -112,8 +113,8 @@ const handler = async (req: Request): Promise<Response> => {
           <!-- CTA Button -->
           <tr>
             <td style="padding: 0 30px 40px; text-align: center;">
-              <a href="https://sacarta.azpy.es/auth" style="display: inline-block; background: linear-gradient(135deg, #f76201 0%, #e65d01ff 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-size: 16px; font-weight: 600; box-shadow: 0 4px 14px rgba(204, 92, 61, 0.4);">
-                Crear mi menú ahora →
+              <a href="https://sacarta.azpy.es/dashboard/editor" style="display: inline-block; background: linear-gradient(135deg, #f76201 0%, #e65d01ff 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-size: 14px; font-weight: 600; box-shadow: 0 4px 14px rgba(204, 92, 61, 0.4);">
+                ${restaurantName ? `Crear menú para ${restaurantName}` : 'Crear mi menú ahora'} →
               </a>
             </td>
           </tr>
