@@ -37,8 +37,8 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
     address: '',
     phone: '',
     currency: 'EUR',
-    default_language: 'ca',
-    supported_languages: ['ca', 'es', 'en'],
+    default_language: 'es',
+    supported_languages: ['es'],
   });
 
   const updateField = (field: string, value: any) => {
@@ -107,20 +107,6 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
       toast({ title: 'Error', description: error.message, variant: 'destructive' });
     } finally {
       setLoading(false);
-    }
-  };
-
-  const toggleLanguage = (lang: string) => {
-    const current = formData.supported_languages;
-    if (current.includes(lang)) {
-      if (current.length > 1) {
-        updateField('supported_languages', current.filter(l => l !== lang));
-        if (formData.default_language === lang) {
-          updateField('default_language', current.find(l => l !== lang) || 'en');
-        }
-      }
-    } else {
-      updateField('supported_languages', [...current, lang]);
     }
   };
 
@@ -222,19 +208,20 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                 <Label>{t('onboarding.defaultLanguage')}</Label>
                 <Select 
                   value={formData.default_language} 
-                  onValueChange={(v) => updateField('default_language', v)}
+                  onValueChange={(v) => {
+                    updateField('default_language', v);
+                    updateField('supported_languages', [v]);
+                  }}
                 >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {languages
-                      .filter(l => formData.supported_languages.includes(l.code))
-                      .map(l => (
-                        <SelectItem key={l.code} value={l.code}>
-                          {l.name}
-                        </SelectItem>
-                      ))}
+                    {languages.map(l => (
+                      <SelectItem key={l.code} value={l.code}>
+                        {l.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>

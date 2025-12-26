@@ -18,7 +18,7 @@ const translations: Record<string, Record<string, string>> = {
   es: {
     welcome: "Tu menú digital te espera 🎉",
     greeting: "Hola",
-    thanks: "¡Gracias por unirte a SaCarta! Estamos encantados de tenerte con nosotros. Ahora puedes crear tu menú digital profesional en minutos.",
+    thanks: "¡Gracias por unirte! Estamos encantados de tenerte con nosotros. Ahora puedes crear tu menú digital profesional en minutos.",
     features: "Con SaCarta podrás:",
     feature1: "✨ Crear menús digitales atractivos",
     feature2: "🌍 Traducir tu menú a múltiples idiomas",
@@ -36,7 +36,7 @@ const translations: Record<string, Record<string, string>> = {
   en: {
     welcome: "Your digital menu awaits 🎉",
     greeting: "Hello",
-    thanks: "Thank you for joining SaCarta! We're delighted to have you with us. Now you can create your professional digital menu in minutes.",
+    thanks: "Thank you for joining! We're delighted to have you with us. Now you can create your professional digital menu in minutes.",
     features: "With SaCarta you can:",
     feature1: "✨ Create attractive digital menus",
     feature2: "🌍 Translate your menu into multiple languages",
@@ -54,7 +54,7 @@ const translations: Record<string, Record<string, string>> = {
   ca: {
     welcome: "El teu menú digital t'espera 🎉",
     greeting: "Hola",
-    thanks: "Gràcies per unir-te a SaCarta! Estem encantats de tenir-te amb nosaltres. Ara pots crear el teu menú digital professional en minuts.",
+    thanks: "Gràcies per unir-te! Estem encantats de tenir-te amb nosaltres. Ara pots crear el teu menú digital professional en minuts.",
     features: "Amb SaCarta podràs:",
     feature1: "✨ Crear menús digitals atractius",
     feature2: "🌍 Traduir el teu menú a múltiples idiomes",
