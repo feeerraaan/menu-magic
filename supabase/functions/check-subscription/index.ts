@@ -12,11 +12,11 @@ const logStep = (step: string, details?: any) => {
   console.log(`[CHECK-SUBSCRIPTION] ${step}${detailsStr}`);
 };
 
-// Price/Product mapping for SaCarta
+// Price/Product mapping for Sa Carta
 const PLAN_MAPPING: Record<string, { plan: string; photos: number; languages: number }> = {
-  "price_1SheAFCgFIHkYWstnfLIdA3W": { plan: "pro_monthly", photos: 50, languages: 10 },
-  "price_1SheAQCgFIHkYWstrVsgPJQN": { plan: "pro_annual", photos: 50, languages: 10 },
-  "price_1SheAjCgFIHkYWstGofwVV2K": { plan: "lifetime", photos: 999, languages: 999 },
+  "price_1SikkXCZS330jw8u1e7cOKrQ": { plan: "pro_monthly", photos: 50, languages: 10 },
+  "price_1SikkrCZS330jw8uTxFrG8c3": { plan: "pro_annual", photos: 50, languages: 10 },
+  "price_1Sikn6CZS330jw8uv7g6gUs9": { plan: "lifetime", photos: 999, languages: 999 },
 };
 
 serve(async (req) => {
@@ -97,7 +97,7 @@ serve(async (req) => {
     logStep("Found Stripe customer", { customerId });
 
     // Check for lifetime purchase first (one-time payments)
-    const lifetimePriceId = "price_1SheAjCgFIHkYWstGofwVV2K";
+    const lifetimePriceId = "price_1Sikn6CZS330jw8uv7g6gUs9";
     let isLifetime = false;
     
     // Check checkout sessions for successful lifetime purchases

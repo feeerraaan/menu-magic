@@ -92,21 +92,21 @@ export const PLANS: Record<PlanType, PlanInfo> = {
     name: 'Ferreret',
     description: 'Para restaurantes activos',
     limits: PLAN_LIMITS.pro_monthly,
-    priceId: 'price_1ShbjSClyJbFQEQavF7mAwX9',
+    priceId: 'price_1SikkXCZS330jw8u1e7cOKrQ',
   },
   pro_annual: {
     id: 'pro_annual',
     name: 'Ferreret Anual',
     description: 'Acceso ilimitado',
     limits: PLAN_LIMITS.pro_annual,
-    priceId: 'price_1ShbkAClyJbFQEQa0JUtzEOp',
+    priceId: 'price_1SikkrCZS330jw8uTxFrG8c3',
   },
   lifetime: {
     id: 'lifetime',
     name: 'Myotragus',
     description: 'Acceso de por vida. Te preparamos el menú nosotros manualmente.',
     limits: PLAN_LIMITS.lifetime,
-    priceId: 'price_1ShbkTClyJbFQEQaodGb9UEE',
+    priceId: 'price_1Sikn6CZS330jw8uv7g6gUs9',
   },
 };
 
