@@ -60,7 +60,7 @@ export default function Index() {
                   {t('hero.startButton')} <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
-              <Link to="/m/demo">
+              <Link to="/m/sacarta">
                 <Button size="lg" variant="outline" className="text-lg px-8 h-14 rounded-full border-2 hover:bg-secondary/50 transition-all hover:-translate-y-0.5">
                   {t('hero.demoButton')}
                 </Button>
