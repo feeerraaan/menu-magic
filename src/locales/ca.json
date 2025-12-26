@@ -35,6 +35,13 @@
     "yourPlan": "El teu Pla",
     "selectPlan": "Seleccionar pla",
     "startFree": "Començar gratis",
+    "perMonth": "/mes",
+    "perYear": "/any",
+    "oneTime": " pagament únic",
+    "currentPlan": "Pla Actual",
+    "lifetimeActive": "Lifetime Actiu",
+    "included": "Inclòs",
+    "upgrade": "Millorar",
     "plans": {
       "sargantana": {
         "name": "Sargantana",
@@ -58,7 +65,16 @@
           "50 plats",
           "Horaris",
           "Analítiques avançades",
-          "Personalització de marca",
+          "Suport prioritari"
+        ],
+        "featuresAnnual": [
+          "5 menús digitals",
+          "3 idiomes",
+          "100 fotos",
+          "10 categories",
+          "100 plats",
+          "Horaris",
+          "Analítiques avançades",
           "Suport prioritari"
         ]
       },
@@ -72,7 +88,6 @@
           "1000 plats",
           "Horaris",
           "Analítiques avançades",
-          "Personalització de marca",
           "Sense quotes mensuals",
           "Accés de per vida",
           "Suport VIP",

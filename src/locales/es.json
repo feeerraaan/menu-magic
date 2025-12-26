@@ -35,6 +35,13 @@
     "yourPlan": "Tu Plan",
     "selectPlan": "Seleccionar plan",
     "startFree": "Empezar gratis",
+    "perMonth": "/mes",
+    "perYear": "/año",
+    "oneTime": " pago único",
+    "currentPlan": "Plan Actual",
+    "lifetimeActive": "Lifetime Activo",
+    "included": "Incluido",
+    "upgrade": "Mejorar",
     "plans": {
       "sargantana": {
         "name": "Sargantana",
@@ -58,7 +65,16 @@
           "50 platos",
           "Horarios",
           "Analíticas avanzadas",
-          "Personalización de marca",
+          "Soporte prioritario"
+        ],
+        "featuresAnnual": [
+          "5 menús digitales",
+          "3 idiomas",
+          "100 fotos",
+          "10 categorías",
+          "100 platos",
+          "Horarios",
+          "Analíticas avanzadas",
           "Soporte prioritario"
         ]
       },
@@ -72,7 +88,6 @@
           "1000 platos",
           "Horarios",
           "Analíticas avanzadas",
-          "Personalización de marca",
           "Sin cuotas mensuales",
           "Acceso de por vida",
           "Soporte VIP",

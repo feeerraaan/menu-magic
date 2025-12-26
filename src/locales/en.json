@@ -35,6 +35,13 @@
     "yourPlan": "Your Plan",
     "selectPlan": "Select Plan",
     "startFree": "Start Free",
+    "perMonth": "/month",
+    "perYear": "/year",
+    "oneTime": " one-time payment",
+    "currentPlan": "Current Plan",
+    "lifetimeActive": "Lifetime Active",
+    "included": "Included",
+    "upgrade": "Upgrade",
     "plans": {
       "sargantana": {
         "name": "Sargantana",
@@ -56,6 +63,17 @@
           "50 photos",
           "7 categories",
           "50 items",
+          "Schedules",
+          "Advanced analytics",
+          "Brand customization",
+          "Priority support"
+        ],
+        "featuresAnnual": [
+          "5 digital menus",
+          "3 languages",
+          "100 photos",
+          "10 categories",
+          "100 items",
           "Schedules",
           "Advanced analytics",
           "Brand customization",

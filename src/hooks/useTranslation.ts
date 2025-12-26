@@ -14,9 +14,9 @@ const translations: Record<string, Record<string, unknown>> = {
 export function useTranslation() {
   const { language } = useLanguage();
 
-  const t = (key: string, defaultValue?: string): string => {
+  const t = (key: string, defaultValue?: string): any => {
     const keys = key.split('.');
-    let value: unknown = translations[language];
+    let value: any = translations[language];
 
     for (const k of keys) {
       if (value && typeof value === 'object' && k in value) {
@@ -26,7 +26,7 @@ export function useTranslation() {
       }
     }
 
-    return typeof value === 'string' ? value : defaultValue || key;
+    return value !== undefined ? value : defaultValue || key;
   };
 
   const tReplace = (key: string, replacements: Record<string, string>): string => {
