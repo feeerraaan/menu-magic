@@ -50,9 +50,13 @@ const handler = async (req: Request): Promise<Response> => {
           <!-- Header with brand colors -->
           <tr>
             <td style="background: linear-gradient(135deg, #f76201 0%, #e65d01ff 100%); padding: 40px 30px; text-align: center;">
-              <div style="background-color: #ffffffff; border-radius: 50%; width: 160px; height: 160px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
-                <img src="https://sacarta.azpy.es/logo.png" alt="SaCarta Logo" style="width: 100px; height: auto; max-height: 100px; object-fit: contain;">
-              </div>
+              <table role="presentation" style="margin: 0 auto 20px; border-collapse: collapse;">
+                <tr>
+                  <td style="background-color: #ffffff; border-radius: 50%; width: 140px; height: 140px; text-align: center; vertical-align: middle;">
+                    <img src="https://sacarta.azpy.es/logo.png" alt="SaCarta Logo" style="width: 100px; height: 100px; display: block; margin: 0 auto;">
+                  </td>
+                </tr>
+              </table>
               <h1 style="color: #ffffff; margin: 0; font-size: 32px; font-weight: 700;">¡Bienvenido a SaCarta!</h1>
             </td>
           </tr>
