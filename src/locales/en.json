@@ -41,18 +41,21 @@
         "features": [
           "1 digital menu",
           "1 language",
-          "10 photos",
+          "0 photos",
+          "5 categories",
+          "25 items",
           "Basic QR",
-          "Unlimited dishes",
           "Email support"
         ]
       },
       "ferreret": {
         "name": "Ferreret",
         "features": [
-          "Unlimited menus",
-          "3 automatic languages",
-          "High quality photos",
+          "3 digital menus",
+          "2 languages",
+          "50 photos",
+          "7 categories",
+          "50 items",
           "Advanced analytics",
           "Brand customization",
           "Priority support"
@@ -61,10 +64,15 @@
       "myotragus": {
         "name": "Myotragus",
         "features": [
-          "Everything included in Ferreret",
+          "20 digital menus",
+          "Unlimited languages",
+          "1000 photos",
+          "100 categories",
+          "1000 items",
           "No monthly fees",
           "Lifetime access",
-          "VIP support"
+          "VIP support",
+          "Manual menu setup by us"
         ]
       }
     }

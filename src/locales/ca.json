@@ -41,18 +41,21 @@
         "features": [
           "1 menú digital",
           "1 idioma",
-          "10 fotos",
+          "0 fotos",
+          "5 categories",
+          "25 plats",
           "QR bàsic",
-          "Plats il·limitats",
           "Suport per correu electrònic"
         ]
       },
       "ferreret": {
         "name": "Ferreret",
         "features": [
-          "Menús il·limitats",
-          "3 idiomes automàtics",
-          "Fotos d'alta qualitat",
+          "3 menús digitals",
+          "2 idiomes",
+          "50 fotos",
+          "7 categories",
+          "50 plats",
           "Analítiques avançades",
           "Personalització de marca",
           "Suport prioritari"
@@ -61,10 +64,15 @@
       "myotragus": {
         "name": "Myotragus",
         "features": [
-          "Tot inclòs a Ferreret",
+          "20 menús digitals",
+          "Idiomes il·limitats",
+          "1000 fotos",
+          "100 categories",
+          "1000 plats",
           "Sense quotes mensuals",
           "Accés de per vida",
-          "Suport VIP"
+          "Suport VIP",
+          "Configuració manual del menú per nosaltres"
         ]
       }
     }

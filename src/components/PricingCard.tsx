@@ -15,6 +15,7 @@ interface PricingCardProps {
     priceAnnual?: string;
     periodAnnual?: string;
     features: string[];
+    featuresAnnual?: string[];
     popular?: boolean;
     mode?: string | null;
     planIdMonthly?: string;
@@ -50,6 +51,7 @@ export function PricingCard({
 
   const displayPrice = isAnnual && plan.priceAnnual ? plan.priceAnnual : plan.price;
   const displayPeriod = isAnnual && plan.periodAnnual ? plan.periodAnnual : plan.period;
+  const displayFeatures = isAnnual && plan.featuresAnnual ? plan.featuresAnnual : plan.features;
 
   // Plan id that Billing understands (free / pro_monthly / pro_annual / lifetime)
   const targetPlanId = isAnnual && plan.planIdAnnual ? plan.planIdAnnual : (plan.planIdMonthly || plan.id);
@@ -99,10 +101,8 @@ export function PricingCard({
         </div>
       )}
 
-      <div className="flex flex-col gap-3 mb-2">
-        <div className="flex justify-between items-start">
-          <h3 className="font-display text-2xl font-bold">{plan.name}</h3>
-        </div>
+      <div className="flex flex-row flex-wrap items-center justify-between gap-3 mb-2">
+        <h3 className="font-display text-2xl font-bold">{plan.name}</h3>
         {plan.priceAnnual && (
           <div className="flex items-center p-1 bg-muted/50 rounded-lg border border-border/50 w-fit">
             <button
@@ -132,7 +132,7 @@ export function PricingCard({
           <span className="text-muted-foreground text-sm sm:text-base">{displayPeriod}</span>
       </div>
       <ul className="space-y-4 mb-8 flex-grow">
-        {plan.features.map((f, j) => (
+        {displayFeatures.map((f, j) => (
           <li key={j} className="flex items-start gap-3 text-sm text-muted-foreground">
             <Check className={`h-5 w-5 shrink-0 ${plan.popular ? 'text-primary' : 'text-muted-foreground'}`} /> 
             <span>{f}</span>

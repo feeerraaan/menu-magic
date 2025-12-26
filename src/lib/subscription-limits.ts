@@ -17,6 +17,7 @@ export interface PlanLimits {
   analytics: boolean;
   customDomain: boolean;
   qrCustomization: boolean;
+  manualSetup: boolean;
 }
 
 export interface PlanInfo {
@@ -36,36 +37,39 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
     languages: 1,
     menus: 1,
     categories: 5,
-    items: 50,
+    items: 25,
     schedules: false,
     analytics: false,
     customDomain: false,
     qrCustomization: false,
+    manualSetup: false,
   },
   pro_monthly: {
     photos: 50,
-    languages: 3,
-    menus: 2,
-    categories: 50,
-    items: 500,
+    languages: 2,
+    menus: 3,
+    categories: 7,
+    items: 50,
     schedules: true,
     analytics: true,
     customDomain: true,
     qrCustomization: true,
+    manualSetup: false,
   },
   pro_annual: {
-    photos: 50,
+    photos: 100,
     languages: 3,
     menus: 5,
-    categories: 50,
-    items: 750,
+    categories: 10,
+    items: 100,
     schedules: true,
     analytics: true,
     customDomain: true,
     qrCustomization: true,
+    manualSetup: false,
   },
   lifetime: {
-    photos: 100,
+    photos: 1000,
     languages: 999,
     menus: 20,
     categories: 100,
@@ -74,6 +78,7 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
     analytics: true,
     customDomain: true,
     qrCustomization: true,
+    manualSetup: true,
   },
 };
 
@@ -123,6 +128,7 @@ export const LIMIT_LABELS: Record<keyof PlanLimits, string> = {
   analytics: 'Analytics',
   customDomain: 'Dominio personalizado',
   qrCustomization: 'QR personalizado',
+  manualSetup: 'Configuración manual del menú por nosotros',
 };
 
 // ============================================
