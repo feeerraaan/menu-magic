@@ -113,7 +113,7 @@ export function PricingCard({
       )}
 
       <div className="flex flex-row flex-wrap items-center justify-between gap-3 mb-2">
-        <h3 className="font-display text-2xl font-bold">{t(`pricing.plans.${plan.id}.name`, plan.name)}</h3>
+        <h3 className="font-display text-2xl font-bold">{t(`pricing.plans.${plan.id}.name`) || plan.name}</h3>
         {plan.priceAnnual && (
           <div className="flex items-center p-1 bg-muted/50 rounded-lg border border-border/50 w-fit">
             <button
