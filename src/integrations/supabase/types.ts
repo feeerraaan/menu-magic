@@ -381,6 +381,7 @@ export type Database = {
           id: string
           is_lifetime: boolean
           languages_limit: number
+          manual_override: boolean
           photos_limit: number
           plan: Database["public"]["Enums"]["plan_type"]
           restaurant_id: string
@@ -397,6 +398,7 @@ export type Database = {
           id?: string
           is_lifetime?: boolean
           languages_limit?: number
+          manual_override?: boolean
           photos_limit?: number
           plan?: Database["public"]["Enums"]["plan_type"]
           restaurant_id: string
@@ -413,6 +415,7 @@ export type Database = {
           id?: string
           is_lifetime?: boolean
           languages_limit?: number
+          manual_override?: boolean
           photos_limit?: number
           plan?: Database["public"]["Enums"]["plan_type"]
           restaurant_id?: string
