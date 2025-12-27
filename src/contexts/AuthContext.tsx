@@ -9,6 +9,7 @@ interface AuthContextType {
   signInWithMagicLink: (email: string) => Promise<{ error: Error | null }>;
   signInWithPassword: (email: string, password: string) => Promise<{ error: Error | null }>;
   signUp: (email: string, password: string, fullName?: string) => Promise<{ error: Error | null }>;
+  resetPassword: (email: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
 }
 
@@ -67,6 +68,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { error: error as Error | null };
   };
 
+  const resetPassword = async (email: string) => {
+    const redirectUrl = `${window.location.origin}/auth?mode=reset`;
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: redirectUrl,
+    });
+    return { error: error as Error | null };
+  };
+
   const signOut = async () => {
     try {
       // Primero limpiamos el estado local
@@ -103,6 +112,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signInWithMagicLink,
       signInWithPassword,
       signUp,
+      resetPassword,
       signOut,
     }}>
       {children}

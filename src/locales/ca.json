@@ -145,10 +145,16 @@
     "alreadyHaveAccount": "Ja tens compte?",
     "dontHaveAccount": "No tens compte?",
     "checkEmailForMagicLink": "Revisa el teu correu en busca de l'enllaç màgic!",
-    "welcomeMessage": "¡Benvingut!",
+    "welcomeMessage": "Benvingut!",
     "accountCreated": "El teu compte ha estat creat.",
     "errorTitle": "Error",
-    "checkYourEmail": "Revisa el teu correu electrònic"
+    "checkYourEmail": "Revisa el teu correu electrònic",
+    "forgotPasswordDesc": "Introdueix el teu email i t'enviarem un enllaç per restablir la contrasenya",
+    "resetPassword": "Recuperar contrasenya",
+    "sendResetLink": "Enviar enllaç de recuperació",
+    "resetLinkSent": "T'hem enviat un enllaç per restablir la teva contrasenya.",
+    "resetLinkDescription": "Hem enviat un enllaç de recuperació a <strong>{email}</strong>. Fes clic a l'enllaç per restablir la contrasenya.",
+    "backToSignIn": "Tornar a iniciar sessió"
   },
   "dashboard": {
     "title": "Panell",
