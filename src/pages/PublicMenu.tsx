@@ -355,7 +355,7 @@ function MenuContent({ data }: { data: PublicMenuData }) {
 
       {/* Footer */}
       <footer className="border-t border-slate-200 dark:border-slate-800 py-8 text-center text-xs text-slate-500 dark:text-slate-400 mt-16">
-        <p>Powered by Menu Magic</p>
+        <p>© 2025 SaCarta. Todos los derechos reservados.</p>
       </footer>
     </div>
   );
