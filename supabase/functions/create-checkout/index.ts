@@ -74,6 +74,7 @@ serve(async (req) => {
         },
       ],
       mode: mode || "subscription",
+      allow_promotion_codes: true,
       success_url: `${origin}/dashboard/billing/success`,
       cancel_url: `${origin}/dashboard/billing/canceled`,
       metadata: {
