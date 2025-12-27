@@ -99,6 +99,22 @@
   "footer": {
     "copyright": "© {year} SaCarta. Todos los derechos reservados."
   },
+  "contact": {
+    "title": "¿Tienes alguna pregunta?",
+    "subtitle": "Escríbenos y te responderemos lo antes posible",
+    "name": "Nombre",
+    "namePlaceholder": "Tu nombre",
+    "email": "Email",
+    "emailPlaceholder": "tu@email.com",
+    "message": "Mensaje",
+    "messagePlaceholder": "¿En qué podemos ayudarte?",
+    "send": "Enviar mensaje",
+    "sending": "Enviando...",
+    "success": "¡Mensaje enviado!",
+    "successDesc": "Te responderemos lo antes posible.",
+    "error": "Error al enviar",
+    "errorDesc": "Por favor, inténtalo de nuevo."
+  },
   "auth": {
     "signIn": "Iniciar Sesión",
     "signUp": "Registrarse",

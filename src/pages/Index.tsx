@@ -1,13 +1,62 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { QrCode, BarChart3, Globe, ArrowRight } from 'lucide-react';
+import { QrCode, BarChart3, Globe, ArrowRight, Mail, Send } from 'lucide-react';
 import { PRICING_PLANS } from '@/lib/constants';
 import { PricingCard } from '@/components/PricingCard';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useState } from 'react';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 export default function Index() {
   const { t } = useTranslation();
+  const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
+  const [isSending, setIsSending] = useState(false);
+
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validate inputs
+    if (!contactForm.name.trim() || !contactForm.email.trim() || !contactForm.message.trim()) {
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(contactForm.email)) {
+      toast.error(t('contact.error'));
+      return;
+    }
+
+    setIsSending(true);
+    try {
+      const { error } = await supabase.functions.invoke('send-contact', {
+        body: {
+          name: contactForm.name.trim(),
+          email: contactForm.email.trim(),
+          message: contactForm.message.trim()
+        }
+      });
+
+      if (error) throw error;
+
+      toast.success(t('contact.success'), {
+        description: t('contact.successDesc')
+      });
+      setContactForm({ name: '', email: '', message: '' });
+    } catch (error) {
+      console.error('Contact form error:', error);
+      toast.error(t('contact.error'), {
+        description: t('contact.errorDesc')
+      });
+    } finally {
+      setIsSending(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background font-sans selection:bg-primary/20">
       {/* Header */}
@@ -116,6 +165,76 @@ export default function Index() {
                 isPublic={true}
               />
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Contact */}
+      <section className="py-24 bg-secondary/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-2xl mx-auto">
+            <div className="text-center mb-12">
+              <div className="inline-flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 mb-6">
+                <Mail className="h-7 w-7 text-primary" />
+              </div>
+              <h2 className="font-display text-4xl font-bold mb-4">{t('contact.title')}</h2>
+              <p className="text-muted-foreground text-lg">{t('contact.subtitle')}</p>
+            </div>
+            
+            <form onSubmit={handleContactSubmit} className="bg-card p-8 rounded-2xl border border-border/50 shadow-sm space-y-6">
+              <div className="grid sm:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="contact-name">{t('contact.name')}</Label>
+                  <Input
+                    id="contact-name"
+                    placeholder={t('contact.namePlaceholder')}
+                    value={contactForm.name}
+                    onChange={(e) => setContactForm(prev => ({ ...prev, name: e.target.value }))}
+                    required
+                    maxLength={100}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="contact-email">{t('contact.email')}</Label>
+                  <Input
+                    id="contact-email"
+                    type="email"
+                    placeholder={t('contact.emailPlaceholder')}
+                    value={contactForm.email}
+                    onChange={(e) => setContactForm(prev => ({ ...prev, email: e.target.value }))}
+                    required
+                    maxLength={255}
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="contact-message">{t('contact.message')}</Label>
+                <Textarea
+                  id="contact-message"
+                  placeholder={t('contact.messagePlaceholder')}
+                  value={contactForm.message}
+                  onChange={(e) => setContactForm(prev => ({ ...prev, message: e.target.value }))}
+                  required
+                  maxLength={1000}
+                  rows={5}
+                  className="resize-none"
+                />
+              </div>
+              <Button 
+                type="submit" 
+                size="lg" 
+                className="w-full rounded-full shadow-md shadow-primary/20"
+                disabled={isSending}
+              >
+                {isSending ? (
+                  t('contact.sending')
+                ) : (
+                  <>
+                    {t('contact.send')} <Send className="ml-2 h-5 w-5" />
+                  </>
+                )}
+              </Button>
+            </form>
           </div>
         </div>
       </section>

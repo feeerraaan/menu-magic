@@ -99,6 +99,22 @@
   "footer": {
     "copyright": "© {year} SaCarta. Tots els drets reservats."
   },
+  "contact": {
+    "title": "Tens alguna pregunta?",
+    "subtitle": "Escriu-nos i et respondrem el més aviat possible",
+    "name": "Nom",
+    "namePlaceholder": "El teu nom",
+    "email": "Email",
+    "emailPlaceholder": "tu@email.com",
+    "message": "Missatge",
+    "messagePlaceholder": "Com et podem ajudar?",
+    "send": "Enviar missatge",
+    "sending": "Enviant...",
+    "success": "Missatge enviat!",
+    "successDesc": "Et respondrem el més aviat possible.",
+    "error": "Error en enviar",
+    "errorDesc": "Si us plau, torna-ho a provar."
+  },
   "auth": {
     "signIn": "Iniciar Sessió",
     "signUp": "Registrar-se",
