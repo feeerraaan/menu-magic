@@ -282,11 +282,11 @@ function MenuContent({ data }: { data: PublicMenuData }) {
             <>
               {/* Large Image */}
               {selectedItem.photo_url && (
-                <div className="relative w-full aspect-video">
+                <div className="relative w-full">
                   <img 
                     src={selectedItem.photo_url} 
                     alt={getItemName(selectedItem)}
-                    className="w-full h-full object-cover"
+                    className="w-full max-h-[50vh] object-contain bg-slate-100 dark:bg-slate-900"
                   />
                 </div>
               )}
@@ -489,11 +489,29 @@ function MenuItemCard({ item, getName, getDescription, formatPrice, restaurantId
       onClick={handleClick}
       className="group transition-all hover:bg-slate-50 dark:hover:bg-slate-900/50 p-4 -mx-4 rounded-lg cursor-pointer"
     >
-      <div className="flex items-start justify-between gap-4 mb-2">
-        <div className="flex-1">
-          <h3 className="font-serif text-lg text-slate-900 dark:text-white group-hover:text-slate-700 dark:group-hover:text-slate-200 transition-colors">
-            {getName(item)}
-          </h3>
+      <div className="flex gap-4">
+        {/* Photo */}
+        {item.photo_url && (
+          <div className="shrink-0">
+            <img 
+              src={item.photo_url} 
+              alt={getName(item)}
+              className="h-20 w-20 rounded-lg object-cover"
+            />
+          </div>
+        )}
+        
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-4 mb-1">
+            <h3 className="font-serif text-lg text-slate-900 dark:text-white group-hover:text-slate-700 dark:group-hover:text-slate-200 transition-colors">
+              {getName(item)}
+            </h3>
+            
+            {/* Price */}
+            {price && (
+              <span className="font-serif text-lg text-slate-900 dark:text-white shrink-0">{price}</span>
+            )}
+          </div>
           
           {/* Dietary Icons - Compact */}
           {(item.is_vegetarian || item.is_vegan || item.is_spicy || item.is_gluten_free) && (
@@ -520,33 +538,28 @@ function MenuItemCard({ item, getName, getDescription, formatPrice, restaurantId
               )}
             </div>
           )}
+          
+          {/* Description */}
+          {description && (
+            <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mt-2">{description}</p>
+          )}
+          
+          {/* Allergens */}
+          {item.allergens && item.allergens.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2 mt-3">
+              {item.allergens.map((allergen) => (
+                <Badge 
+                  key={allergen} 
+                  variant="outline" 
+                  className="bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800 text-xs py-1"
+                >
+                  ⚠️ {allergen}
+                </Badge>
+              ))}
+            </div>
+          )}
         </div>
-        
-        {/* Price */}
-        {price && (
-          <span className="font-serif text-lg text-slate-900 dark:text-white shrink-0">{price}</span>
-        )}
       </div>
-      
-      {/* Description */}
-      {description && (
-        <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-2">{description}</p>
-      )}
-      
-      {/* Allergens */}
-      {item.allergens && item.allergens.length > 0 && (
-        <div className="flex flex-wrap items-center gap-2 mt-3">
-          {item.allergens.map((allergen) => (
-            <Badge 
-              key={allergen} 
-              variant="outline" 
-              className="bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800 text-xs py-1"
-            >
-              ⚠️ {allergen}
-            </Badge>
-          ))}
-        </div>
-      )}
     </div>
   );
 }
