@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { ScheduleRule } from '@/types/database';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -7,16 +7,7 @@ import { Switch } from '@/components/ui/switch';
 import { Card } from '@/components/ui/card';
 import { Plus, Trash2, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-const DAYS = [
-  { value: 0, label: 'Dom' },
-  { value: 1, label: 'Lun' },
-  { value: 2, label: 'Mar' },
-  { value: 3, label: 'Mié' },
-  { value: 4, label: 'Jue' },
-  { value: 5, label: 'Vie' },
-  { value: 6, label: 'Sáb' },
-];
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface MenuScheduleEditorProps {
   scheduleRules: ScheduleRule[] | null;
@@ -25,8 +16,19 @@ interface MenuScheduleEditorProps {
 }
 
 export function MenuScheduleEditor({ scheduleRules, onChange, disabled }: MenuScheduleEditorProps) {
+  const { t } = useTranslation();
   const [enabled, setEnabled] = useState<boolean>(scheduleRules !== null && scheduleRules.length > 0);
   const [rules, setRules] = useState<ScheduleRule[]>(scheduleRules || []);
+
+  const DAYS = useMemo(() => [
+    { value: 0, label: t('schedule.daysShort.0') },
+    { value: 1, label: t('schedule.daysShort.1') },
+    { value: 2, label: t('schedule.daysShort.2') },
+    { value: 3, label: t('schedule.daysShort.3') },
+    { value: 4, label: t('schedule.daysShort.4') },
+    { value: 5, label: t('schedule.daysShort.5') },
+    { value: 6, label: t('schedule.daysShort.6') },
+  ], [t]);
 
   useEffect(() => {
     if (scheduleRules) {
@@ -83,7 +85,7 @@ export function MenuScheduleEditor({ scheduleRules, onChange, disabled }: MenuSc
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Clock className="h-4 w-4 text-muted-foreground" />
-          <Label>Horario programado</Label>
+          <Label>{t('schedule.title')}</Label>
         </div>
         <Switch
           checked={enabled}
@@ -95,13 +97,13 @@ export function MenuScheduleEditor({ scheduleRules, onChange, disabled }: MenuSc
       {enabled && (
         <div className="space-y-3">
           <p className="text-sm text-muted-foreground">
-            El menú solo se mostrará durante los horarios configurados
+            {t('schedule.description')}
           </p>
 
           {rules.map((rule, index) => (
             <Card key={index} className="p-4 space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Regla {index + 1}</span>
+                <span className="text-sm font-medium">{t('schedule.rule', { index: index + 1 })}</span>
                 <Button
                   variant="ghost"
                   size="icon"
@@ -113,7 +115,7 @@ export function MenuScheduleEditor({ scheduleRules, onChange, disabled }: MenuSc
               </div>
 
               <div className="space-y-2">
-                <Label className="text-xs text-muted-foreground">Días</Label>
+                <Label className="text-xs text-muted-foreground">{t('schedule.days')}</Label>
                 <div className="flex flex-wrap gap-1">
                   {DAYS.map(day => (
                     <button
@@ -136,7 +138,7 @@ export function MenuScheduleEditor({ scheduleRules, onChange, disabled }: MenuSc
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <Label className="text-xs text-muted-foreground">Hora inicio</Label>
+                  <Label className="text-xs text-muted-foreground">{t('schedule.startTime')}</Label>
                   <Input
                     type="time"
                     value={rule.start_time}
@@ -145,7 +147,7 @@ export function MenuScheduleEditor({ scheduleRules, onChange, disabled }: MenuSc
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-xs text-muted-foreground">Hora fin</Label>
+                  <Label className="text-xs text-muted-foreground">{t('schedule.endTime')}</Label>
                   <Input
                     type="time"
                     value={rule.end_time}
@@ -163,7 +165,7 @@ export function MenuScheduleEditor({ scheduleRules, onChange, disabled }: MenuSc
             onClick={addRule}
             disabled={disabled}
           >
-            <Plus className="mr-2 h-4 w-4" /> Añadir horario
+            <Plus className="mr-2 h-4 w-4" /> {t('schedule.addRule')}
           </Button>
         </div>
       )}

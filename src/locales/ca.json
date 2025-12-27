@@ -285,7 +285,9 @@
     "categoryName": "Nom de Categoría",
     "categoryDesc": "Descripció de Categoría (opcional)",
     "categoryNamePlaceholder": "p.ex., Appetizers",
-    "categoryItems": "articles",
+    "categoryDescPlaceholder": "Una breu descripció d'aquesta categoria",
+    "create": "Crear",
+    "save": "Desar",
     "addItem": "Afegir Article",
     "editItem": "Editar Article",
     "deleteItem": "Eliminar Article",
@@ -293,6 +295,7 @@
     "itemDesc": "Descripció",
     "itemDescPlaceholder": "Descriu el teu plat...",
     "itemPrice": "Preu",
+    "options": "Opcions",
     "itemPhoto": "Foto",
     "itemPhotoDesc": "Afegeix una foto del teu plat",
     "featured": "Destacat",
@@ -305,6 +308,8 @@
     "categoryCreated": "Categoría creada",
     "categoryUpdated": "Categoría actualitzada",
     "categoryDeleted": "Categoría eliminada",
+    "newItem": "Nou Article",
+    "photoDimensionsDesc": "Dimensions recomanades: 16:9 horitzontal (p.ex., 800x450px). Les fotos verticals o quadrades poden veure's retallades.",
     "itemCreated": "Article creat",
     "itemUpdated": "Article actualitzat",
     "itemDeleted": "Article eliminat",
@@ -327,7 +332,24 @@
     "menus": "Menús",
     "newMenu": "Nou Menú",
     "menuName": "Nom del Menú",
-    "noMenus": "Sense menús encara. Crea'n un per començar."
+    "noMenus": "Sense menús encara. Crea'n un per començar.",
+    "menuLabel": "Menú",
+    "active": "Actiu",
+    "limitReached": "Límit assolit",
+    "photo": "Foto",
+    "photosCount": "{used}/{limit} fotos",
+    "photoLimitReached": "Límit de fotos assolit",
+    "upgradeToPhotos": "Actualitza el teu pla per afegir més fotos ({used}/{limit})",
+    "name": "Nom",
+    "namePlaceholder": "p.ex., Pizza Margherita",
+    "description": "Descripció",
+    "descriptionPlaceholder": "Descriu el plat...",
+    "selectMenu": "Seleccionar menú",
+    "editMenu": "Editar menú",
+    "deleteMenu": "Eliminar menú",
+    "manageDescription": "Gestiona les teves categories i plats",
+    "addCategory": "Afegir Categoria",
+    "noCategories": "Sense categories encara. Comença afegint-ne una."
   },
   "onboarding": {
     "step1Title": "Comencem",
@@ -360,5 +382,33 @@
     "failed": "Error en pujar",
     "invalidFile": "Si us plau, puja un fitxer d'imatge",
     "sizeLimit": "La imatge ha de pesar menys de {size}MB"
+  },
+  "schedule": {
+    "title": "Horari programat",
+    "description": "El menú només es mostrarà durant els horaris configurats",
+    "rule": "Regla {index}",
+    "days": "Dies",
+    "startTime": "Hora inici",
+    "endTime": "Hora fi",
+    "addRule": "Afegir Regla",
+    "daysShort": {
+      "0": "Diu",
+      "1": "Dil",
+      "2": "Dim",
+      "3": "Dix",
+      "4": "Dij",
+      "5": "Div",
+      "6": "Dis"
+    }
+  },
+  "common": {
+    "error": "Error",
+    "menuUnavailable": "Menú no disponible",
+    "menuNotAvailable": "Aquest menú no està disponible.",
+    "cancel": "Cancel·lar",
+    "save": "Desar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "loading": "Carregant..."
   }
 }

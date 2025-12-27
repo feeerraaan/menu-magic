@@ -285,7 +285,9 @@
     "categoryName": "Nombre de Categoría",
     "categoryDesc": "Descripción de Categoría (opcional)",
     "categoryNamePlaceholder": "p.ej., Entrantes",
-    "categoryItems": "artículos",
+    "categoryDescPlaceholder": "Una breve descripción de esta categoría",
+    "create": "Crear",
+    "save": "Guardar",
     "addItem": "Añadir Artículo",
     "editItem": "Editar Artículo",
     "deleteItem": "Eliminar Artículo",
@@ -293,6 +295,7 @@
     "itemDesc": "Descripción",
     "itemDescPlaceholder": "Describe tu plato...",
     "itemPrice": "Precio",
+    "options": "Opciones",
     "itemPhoto": "Foto",
     "itemPhotoDesc": "Añade una foto de tu plato",
     "featured": "Destacado",
@@ -305,6 +308,8 @@
     "categoryCreated": "Categoría creada",
     "categoryUpdated": "Categoría actualizada",
     "categoryDeleted": "Categoría eliminada",
+    "newItem": "Nuevo Artículo",
+    "photoDimensionsDesc": "Dimensiones recomendadas: 16:9 horizontal (ej: 800x450px). Las fotos verticales o cuadradas pueden verse recortadas.",
     "itemCreated": "Artículo creado",
     "itemUpdated": "Artículo actualizado",
     "itemDeleted": "Artículo eliminado",
@@ -327,7 +332,24 @@
     "menus": "Menús",
     "newMenu": "Nuevo Menú",
     "menuName": "Nombre del Menú",
-    "noMenus": "Sin menús aún. Crea uno para comenzar."
+    "noMenus": "Sin menús aún. Crea uno para comenzar.",
+    "menuLabel": "Menú",
+    "active": "Activo",
+    "limitReached": "Límite alcanzado",
+    "photo": "Foto",
+    "photosCount": "{used}/{limit} fotos",
+    "photoLimitReached": "Límite de fotos alcanzado",
+    "upgradeToPhotos": "Actualiza tu plan para añadir más fotos ({used}/{limit})",
+    "name": "Nombre",
+    "namePlaceholder": "p.ej., Pizza Margherita",
+    "description": "Descripción",
+    "descriptionPlaceholder": "Describe el plato...",
+    "selectMenu": "Seleccionar menú",
+    "editMenu": "Editar menú",
+    "deleteMenu": "Eliminar menú",
+    "manageDescription": "Gestiona tus categorías y platos",
+    "addCategory": "Añadir Categoría",
+    "noCategories": "Sin categorías aún. Comienza añadiendo una."
   },
   "onboarding": {
     "step1Title": "Empecemos",
@@ -360,5 +382,33 @@
     "failed": "Error al subir",
     "invalidFile": "Por favor, sube un archivo de imagen",
     "sizeLimit": "La imagen debe pesar menos de {size}MB"
+  },
+  "schedule": {
+    "title": "Horario programado",
+    "description": "El menú solo se mostrará durante los horarios configurados",
+    "rule": "Regla {index}",
+    "days": "Días",
+    "startTime": "Hora inicio",
+    "endTime": "Hora fin",
+    "addRule": "Añadir Regla",
+    "daysShort": {
+      "0": "Dom",
+      "1": "Lun",
+      "2": "Mar",
+      "3": "Mié",
+      "4": "Jue",
+      "5": "Vie",
+      "6": "Sáb"
+    }
+  },
+  "common": {
+    "error": "Error",
+    "menuUnavailable": "Menú no disponible",
+    "menuNotAvailable": "Este menú no está disponible.",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "loading": "Cargando..."
   }
 }

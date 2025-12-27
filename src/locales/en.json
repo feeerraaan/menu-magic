@@ -288,7 +288,9 @@
     "categoryName": "Category Name",
     "categoryDesc": "Category Description (optional)",
     "categoryNamePlaceholder": "e.g., Appetizers",
-    "categoryItems": "items",
+    "categoryDescPlaceholder": "A brief description of this category",
+    "create": "Create",
+    "save": "Save",
     "addItem": "Add Item",
     "editItem": "Edit Item",
     "deleteItem": "Delete Item",
@@ -296,6 +298,7 @@
     "itemDesc": "Description",
     "itemDescPlaceholder": "Describe your dish...",
     "itemPrice": "Price",
+    "options": "Options",
     "itemPhoto": "Photo",
     "itemPhotoDesc": "Add a photo of your dish",
     "featured": "Featured",
@@ -308,6 +311,8 @@
     "categoryCreated": "Category created",
     "categoryUpdated": "Category updated",
     "categoryDeleted": "Category deleted",
+    "newItem": "New Item",
+    "photoDimensionsDesc": "Recommended dimensions: 16:9 horizontal (e.g., 800x450px). Vertical or square photos may be cropped.",
     "itemCreated": "Item created",
     "itemUpdated": "Item updated",
     "itemDeleted": "Item deleted",
@@ -330,7 +335,24 @@
     "menus": "Menus",
     "newMenu": "New Menu",
     "menuName": "Menu Name",
-    "noMenus": "No menus yet. Create one to get started."
+    "noMenus": "No menus yet. Create one to get started.",
+    "menuLabel": "Menu",
+    "active": "Active",
+    "limitReached": "Limit reached",
+    "photo": "Photo",
+    "photosCount": "{used}/{limit} photos",
+    "photoLimitReached": "Photo limit reached",
+    "upgradeToPhotos": "Upgrade your plan to add more photos ({used}/{limit})",
+    "name": "Name",
+    "namePlaceholder": "e.g., Margherita Pizza",
+    "description": "Description",
+    "descriptionPlaceholder": "Describe the dish...",
+    "selectMenu": "Select menu",
+    "editMenu": "Edit menu",
+    "deleteMenu": "Delete menu",
+    "manageDescription": "Manage your categories and menu items",
+    "addCategory": "Add Category",
+    "noCategories": "No categories yet. Start by adding one."
   },
   "onboarding": {
     "step1Title": "Let's get started",
@@ -363,5 +385,33 @@
     "failed": "Upload failed",
     "invalidFile": "Please upload an image file",
     "sizeLimit": "Image must be less than {size}MB"
+  },
+  "schedule": {
+    "title": "Scheduled Hours",
+    "description": "The menu will only be shown during the configured hours",
+    "rule": "Rule {index}",
+    "days": "Days",
+    "startTime": "Start time",
+    "endTime": "End time",
+    "addRule": "Add Rule",
+    "daysShort": {
+      "0": "Sun",
+      "1": "Mon",
+      "2": "Tue",
+      "3": "Wed",
+      "4": "Thu",
+      "5": "Fri",
+      "6": "Sat"
+    }
+  },
+  "common": {
+    "error": "Error",
+    "menuUnavailable": "Menu Unavailable",
+    "menuNotAvailable": "This menu is not available.",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "loading": "Loading..."
   }
 }

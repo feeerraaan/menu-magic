@@ -569,6 +569,7 @@ export default function PublicMenu() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<PublicMenuData | null>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     async function fetchMenu() {
@@ -711,8 +712,8 @@ export default function PublicMenu() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center p-8">
-          <h1 className="font-display text-2xl font-bold mb-2">Menu Unavailable</h1>
-          <p className="text-muted-foreground">{error || 'This menu is not available.'}</p>
+          <h1 className="font-display text-2xl font-bold mb-2">{t('common.menuUnavailable')}</h1>
+          <p className="text-muted-foreground">{error || t('common.menuNotAvailable')}</p>
         </div>
       </div>
     );

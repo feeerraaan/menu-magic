@@ -239,7 +239,7 @@ export function ItemDialogWithTranslations({
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            {item ? 'Editar item' : 'Nuevo item'}
+            {item ? t('menuEditor.editItem') : t('menuEditor.newItem')}
             {hasMultipleLanguages && <Globe className="h-4 w-4 text-muted-foreground" />}
           </DialogTitle>
         </DialogHeader>
@@ -248,11 +248,11 @@ export function ItemDialogWithTranslations({
           {/* Photo upload - always visible */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label>Foto</Label>
+              <Label>{t('menuEditor.photo')}</Label>
               {!canAddPhoto && !itemHasExistingPhoto && (
                 <Badge variant="outline" className="text-xs gap-1 border-warning/30">
                   <Crown className="h-3 w-3 text-warning" />
-                  {photosUsed}/{photosLimit} fotos
+                  {t('menuEditor.photosCount', { used: photosUsed, limit: photosLimit })}
                 </Badge>
               )}
             </div>
@@ -268,15 +268,15 @@ export function ItemDialogWithTranslations({
                   quality={0.85}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Dimensiones recomendadas: 16:9 horizontal (ej: 800x450px). Las fotos verticales o cuadradas pueden verse recortadas.
+                  {t('menuEditor.photoDimensionsDesc')}
                 </p>
               </>
             ) : (
               <div className="border-2 border-dashed border-warning/30 rounded-lg p-6 text-center bg-warning/5">
                 <Crown className="h-8 w-8 text-warning mx-auto mb-2" />
-                <p className="text-sm font-medium">Límite de fotos alcanzado</p>
+                <p className="text-sm font-medium">{t('menuEditor.photoLimitReached')}</p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Actualiza tu plan para añadir más fotos ({photosUsed}/{photosLimit})
+                  {t('menuEditor.upgradeToPhotos', { used: photosUsed, limit: photosLimit })}
                 </p>
               </div>
             )}
@@ -351,7 +351,7 @@ export function ItemDialogWithTranslations({
 
           {/* Price - always visible */}
           <div className="space-y-2">
-            <Label htmlFor="item-price">Precio ({currency})</Label>
+            <Label htmlFor="item-price">{t('menuEditor.itemPrice')} ({currency})</Label>
             <Input
               id="item-price"
               type="number"
@@ -365,14 +365,14 @@ export function ItemDialogWithTranslations({
 
           {/* Options - always visible */}
           <div className="space-y-3 pt-2">
-            <Label>Opciones</Label>
+            <Label>{t('menuEditor.options')}</Label>
             <div className="grid grid-cols-2 gap-3">
               {[
-                { key: 'is_featured', label: 'Destacado', icon: Star },
-                { key: 'is_vegetarian', label: 'Vegetariano', icon: Leaf },
-                { key: 'is_vegan', label: 'Vegano', icon: Leaf },
-                { key: 'is_spicy', label: 'Picante', icon: Flame },
-                { key: 'is_gluten_free', label: 'Sin gluten', icon: Wheat },
+                { key: 'is_featured', label: t('menuEditor.featured'), icon: Star },
+                { key: 'is_vegetarian', label: t('menuEditor.vegetarian'), icon: Leaf },
+                { key: 'is_vegan', label: t('menuEditor.vegan'), icon: Leaf },
+                { key: 'is_spicy', label: t('menuEditor.spicy'), icon: Flame },
+                { key: 'is_gluten_free', label: t('menuEditor.glutenFree'), icon: Wheat },
               ].map(opt => (
                 <div key={opt.key} className="flex items-center justify-between p-2 rounded-lg border">
                   <div className="flex items-center gap-2">
@@ -390,10 +390,10 @@ export function ItemDialogWithTranslations({
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Cancelar</Button>
+          <Button variant="outline" onClick={onClose}>{t('common.cancel')}</Button>
           <Button onClick={handleSubmit} disabled={loading || !translations[defaultLanguage]?.name?.trim()}>
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {item ? 'Guardar' : 'Crear'}
+            {item ? t('common.save') : t('menuEditor.create')}
           </Button>
         </DialogFooter>
       </DialogContent>

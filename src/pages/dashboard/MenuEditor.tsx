@@ -526,10 +526,10 @@ export default function MenuEditor() {
       <Card className="p-4">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div className="flex items-center gap-3">
-            <Label className="text-sm font-medium">Menú:</Label>
+            <Label className="text-sm font-medium">{t('menuEditor.menuLabel')}:</Label>
             <Select value={selectedMenuId || ''} onValueChange={setSelectedMenuId}>
               <SelectTrigger className="w-56">
-                <SelectValue placeholder="Seleccionar menú" />
+                <SelectValue placeholder={t('menuEditor.selectMenu')} />
               </SelectTrigger>
               <SelectContent>
                 {menus.map(m => (
@@ -537,7 +537,7 @@ export default function MenuEditor() {
                     <span className="flex items-center gap-2">
                       {m.name}
                       {m.is_active && (
-                        <Badge variant="default" className="text-xs px-1.5 py-0">Activo</Badge>
+                        <Badge variant="default" className="text-xs px-1.5 py-0">{t('menuEditor.active')}</Badge>
                       )}
                       {m.schedule_rules && canUseSchedules && (
                         <Clock className="h-3 w-3 text-muted-foreground" />
@@ -554,7 +554,7 @@ export default function MenuEditor() {
                 const menu = menus.find(m => m.id === selectedMenuId);
                 if (menu) setMenuDialog({ open: true, menu });
               }}
-              title="Editar menú"
+              title={t('menuEditor.editMenu')}
             >
               <Edit2 className="h-4 w-4" />
             </Button>
@@ -567,7 +567,7 @@ export default function MenuEditor() {
                     setDeleteConfirm({ open: true, type: 'menu', id: selectedMenuId });
                   }
                 }}
-                title="Eliminar menú"
+                title={t('menuEditor.deleteMenu')}
               >
                 <Trash2 className="h-4 w-4 text-destructive" />
               </Button>
@@ -577,7 +577,7 @@ export default function MenuEditor() {
             {!canCreateMenu && (
               <Badge variant="outline" className="text-xs gap-1 border-warning/30">
                 <Crown className="h-3 w-3 text-warning" />
-                Límite alcanzado
+                {t('menuEditor.limitReached')}
               </Badge>
             )}
             <Button 
@@ -595,7 +595,7 @@ export default function MenuEditor() {
               }}
               disabled={!canCreateMenu}
             >
-              <Plus className="mr-2 h-4 w-4" /> Nuevo Menú
+              <Plus className="mr-2 h-4 w-4" /> {t('menuEditor.newMenu')}
             </Button>
           </div>
         </div>
@@ -606,10 +606,10 @@ export default function MenuEditor() {
           <h2 className="font-display text-2xl font-bold flex items-center gap-2">
             {menus.find(m => m.id === selectedMenuId)?.name || 'Menu Editor'}
             {menus.find(m => m.id === selectedMenuId)?.is_active && (
-              <Badge variant="default">Activo</Badge>
+              <Badge variant="default">{t('menuEditor.active')}</Badge>
             )}
           </h2>
-          <p className="text-muted-foreground">Manage your categories and menu items</p>
+          <p className="text-muted-foreground">{t('menuEditor.manageDescription')}</p>
         </div>
         <Button 
           onClick={() => {
@@ -625,18 +625,18 @@ export default function MenuEditor() {
           }}
           disabled={!canCreateCategory}
         >
-          <Plus className="mr-2 h-4 w-4" /> Add Category
+          <Plus className="mr-2 h-4 w-4" /> {t('menuEditor.addCategory')}
         </Button>
       </div>
 
       {categories.length === 0 ? (
         <Card className="p-12 text-center">
-          <p className="text-muted-foreground mb-4">No categories yet. Start by adding one.</p>
+          <p className="text-muted-foreground mb-4">{t('menuEditor.noCategories')}</p>
           <Button 
             onClick={() => setCategoryDialog({ open: true })}
             disabled={!canCreateCategory}
           >
-            <Plus className="mr-2 h-4 w-4" /> Add Category
+            <Plus className="mr-2 h-4 w-4" /> {t('menuEditor.addCategory')}
           </Button>
         </Card>
       ) : (
@@ -1001,11 +1001,11 @@ function ItemDialog({
         <div className="space-y-4">
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label>Photo</Label>
+              <Label>{t('menuEditor.photo')}</Label>
               {!canAddPhoto && !itemHasExistingPhoto && (
                 <Badge variant="outline" className="text-xs gap-1 border-warning/30">
                   <Crown className="h-3 w-3 text-warning" />
-                  {photosUsed}/{photosLimit} fotos
+                  {t('menuEditor.photosCount', { used: photosUsed, limit: photosLimit })}
                 </Badge>
               )}
             </div>
@@ -1022,29 +1022,29 @@ function ItemDialog({
             ) : (
               <div className="border-2 border-dashed border-warning/30 rounded-lg p-6 text-center bg-warning/5">
                 <Crown className="h-8 w-8 text-warning mx-auto mb-2" />
-                <p className="text-sm font-medium">Límite de fotos alcanzado</p>
+                <p className="text-sm font-medium">{t('menuEditor.photoLimitReached')}</p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Actualiza tu plan para añadir más fotos ({photosUsed}/{photosLimit})
+                  {t('menuEditor.upgradeToPhotos', { used: photosUsed, limit: photosLimit })}
                 </p>
               </div>
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="item-name">Name</Label>
+            <Label htmlFor="item-name">{t('menuEditor.name')}</Label>
             <Input
               id="item-name"
               value={formData.name}
               onChange={(e) => setFormData(p => ({ ...p, name: e.target.value }))}
-              placeholder="e.g., Margherita Pizza"
+              placeholder={t('menuEditor.namePlaceholder')}
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="item-desc">Description</Label>
+            <Label htmlFor="item-desc">{t('menuEditor.description')}</Label>
             <Textarea
               id="item-desc"
               value={formData.description}
               onChange={(e) => setFormData(p => ({ ...p, description: e.target.value }))}
-              placeholder="Describe the dish..."
+              placeholder={t('menuEditor.descriptionPlaceholder')}
             />
           </div>
           <div className="space-y-2">

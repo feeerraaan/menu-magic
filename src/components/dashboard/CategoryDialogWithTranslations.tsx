@@ -231,7 +231,7 @@ export function CategoryDialogWithTranslations({
                     id={`cat-desc-${lang}`}
                     value={translations[lang]?.description || ''}
                     onChange={(e) => handleTranslationChange(lang, 'description', e.target.value)}
-                    placeholder="Una breve descripción de esta categoría"
+                    placeholder={t('menuEditor.categoryDescPlaceholder')}
                   />
                 </div>
               </TabsContent>
@@ -240,31 +240,31 @@ export function CategoryDialogWithTranslations({
         ) : (
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="cat-name">Nombre <span className="text-destructive">*</span></Label>
+              <Label htmlFor="cat-name">{t('menuEditor.categoryName')} <span className="text-destructive">*</span></Label>
               <Input
                 id="cat-name"
                 value={translations[defaultLanguage]?.name || ''}
                 onChange={(e) => handleTranslationChange(defaultLanguage, 'name', e.target.value)}
-                placeholder="ej: Entrantes, Platos principales"
+                placeholder={t('menuEditor.categoryNamePlaceholder')}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="cat-desc">Descripción (opcional)</Label>
+              <Label htmlFor="cat-desc">{t('menuEditor.categoryDesc')}</Label>
               <Textarea
                 id="cat-desc"
                 value={translations[defaultLanguage]?.description || ''}
                 onChange={(e) => handleTranslationChange(defaultLanguage, 'description', e.target.value)}
-                placeholder="Una breve descripción de esta categoría"
+                placeholder={t('menuEditor.categoryDescPlaceholder')}
               />
             </div>
           </div>
         )}
 
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Cancelar</Button>
+          <Button variant="outline" onClick={onClose}>{t('common.cancel')}</Button>
           <Button onClick={handleSubmit} disabled={loading || !translations[defaultLanguage]?.name?.trim()}>
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {category ? 'Guardar' : 'Crear'}
+            {category ? t('common.save') : t('menuEditor.create')}
           </Button>
         </DialogFooter>
       </DialogContent>
