@@ -102,6 +102,22 @@
   "footer": {
     "copyright": "© {year} SaCarta. All rights reserved."
   },
+  "contact": {
+    "title": "Have a question?",
+    "subtitle": "Write to us and we'll get back to you as soon as possible",
+    "name": "Name",
+    "namePlaceholder": "Your name",
+    "email": "Email",
+    "emailPlaceholder": "you@email.com",
+    "message": "Message",
+    "messagePlaceholder": "How can we help you?",
+    "send": "Send message",
+    "sending": "Sending...",
+    "success": "Message sent!",
+    "successDesc": "We'll get back to you as soon as possible.",
+    "error": "Failed to send",
+    "errorDesc": "Please try again."
+  },
   "auth": {
     "signIn": "Sign In",
     "signUp": "Sign Up",
