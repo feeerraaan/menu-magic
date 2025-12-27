@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2, Globe } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from '@/hooks/useTranslation';
 import { cn } from '@/lib/utils';
 
 interface CategoryDialogWithTranslationsProps {
@@ -50,6 +51,7 @@ export function CategoryDialogWithTranslations({
   const [loading, setLoading] = useState(false);
   const [loadingTranslations, setLoadingTranslations] = useState(false);
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   // Load existing translations when editing
   useEffect(() => {
@@ -99,7 +101,7 @@ export function CategoryDialogWithTranslations({
   const handleSubmit = async () => {
     const defaultData = translations[defaultLanguage];
     if (!defaultData?.name?.trim()) {
-      toast({ title: 'Error', description: 'El nombre es obligatorio', variant: 'destructive' });
+      toast({ title: t('common.error'), description: t('common.nameRequired'), variant: 'destructive' });
       return;
     }
 
@@ -169,12 +171,12 @@ export function CategoryDialogWithTranslations({
         }
       }
 
-      toast({ title: category ? 'Categoría actualizada' : 'Categoría creada' });
+      toast({ title: category ? t('menuEditor.categoryUpdated') : t('menuEditor.categoryCreated') });
       onSave();
       onClose();
     } catch (e: unknown) {
-      const errorMsg = e instanceof Error ? e.message : 'Unknown error';
-      toast({ title: 'Error', description: errorMsg, variant: 'destructive' });
+      const errorMsg = e instanceof Error ? e.message : t('common.unknownError');
+      toast({ title: t('common.error'), description: errorMsg, variant: 'destructive' });
     } finally {
       setLoading(false);
     }

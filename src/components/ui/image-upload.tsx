@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { Upload, X, Loader2, Image as ImageIcon } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface ImageUploadProps {
   value?: string | null;
@@ -83,6 +84,7 @@ export function ImageUpload({
   const [dragOver, setDragOver] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const aspectClasses = {
     square: 'aspect-square',
@@ -92,12 +94,15 @@ export function ImageUpload({
 
   const handleUpload = useCallback(async (file: File) => {
     if (!file.type.startsWith('image/')) {
-      toast({ title: 'Please upload an image file', variant: 'destructive' });
+      toast({ title: t('imageUpload.invalidFile'), variant: 'destructive' });
       return;
     }
 
     if (file.size > maxSizeMB * 1024 * 1024) {
-      toast({ title: `Image must be less than ${maxSizeMB}MB`, variant: 'destructive' });
+      toast({ 
+        title: t('imageUpload.sizeLimit', { size: maxSizeMB.toString() }), 
+        variant: 'destructive' 
+      });
       return;
     }
 
@@ -123,13 +128,13 @@ export function ImageUpload({
       const { data } = supabase.storage.from('menu-images').getPublicUrl(fileName);
       onChange(data.publicUrl);
       
-      toast({ title: 'Image uploaded' });
+      toast({ title: t('imageUpload.uploaded') });
     } catch (e: any) {
-      toast({ title: 'Upload failed', description: e.message, variant: 'destructive' });
+      toast({ title: t('imageUpload.failed'), description: e.message, variant: 'destructive' });
     } finally {
       setUploading(false);
     }
-  }, [restaurantId, folder, maxWidth, quality, maxSizeMB, onChange, toast]);
+  }, [restaurantId, folder, maxWidth, quality, maxSizeMB, onChange, toast, t]);
 
   const handleRemove = useCallback(async () => {
     if (!value) return;

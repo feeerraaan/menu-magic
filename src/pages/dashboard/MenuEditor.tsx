@@ -325,7 +325,7 @@ export default function MenuEditor() {
       }
       setCategoryDialog({ open: false });
     } catch (e: unknown) {
-      const errorMsg = e instanceof Error ? e.message : 'Unknown error';
+      const errorMsg = e instanceof Error ? e.message : t('common.unknownError');
       toast({ title: t('common.error'), description: errorMsg, variant: 'destructive' });
     }
   };
@@ -335,7 +335,7 @@ export default function MenuEditor() {
       await removeCategory(id);
       toast({ title: t('menuEditor.categoryDeleted') });
     } catch (e: unknown) {
-      const errorMsg = e instanceof Error ? e.message : 'Unknown error';
+      const errorMsg = e instanceof Error ? e.message : t('common.unknownError');
       toast({ title: t('common.error'), description: errorMsg, variant: 'destructive' });
     }
     setDeleteConfirm(null);
@@ -382,7 +382,7 @@ export default function MenuEditor() {
       }
       setItemDialog({ open: false });
     } catch (e: unknown) {
-      const errorMsg = e instanceof Error ? e.message : 'Unknown error';
+      const errorMsg = e instanceof Error ? e.message : t('common.unknownError');
       toast({ title: t('common.error'), description: errorMsg, variant: 'destructive' });
     }
   };
@@ -397,7 +397,7 @@ export default function MenuEditor() {
       }));
       toast({ title: t('menuEditor.itemDeleted') });
     } catch (e: unknown) {
-      const errorMsg = e instanceof Error ? e.message : 'Unknown error';
+      const errorMsg = e instanceof Error ? e.message : t('common.unknownError');
       toast({ title: t('common.error'), description: errorMsg, variant: 'destructive' });
     }
     setDeleteConfirm(null);
@@ -433,7 +433,7 @@ export default function MenuEditor() {
         toast({ title: t('menuEditor.itemDuplicated') });
       }
     } catch (e: unknown) {
-      const errorMsg = e instanceof Error ? e.message : 'Unknown error';
+      const errorMsg = e instanceof Error ? e.message : t('common.unknownError');
       toast({ title: t('common.error'), description: errorMsg, variant: 'destructive' });
     }
   };
@@ -449,7 +449,7 @@ export default function MenuEditor() {
         ),
       }));
     } catch (e: any) {
-      toast({ title: 'Error', description: e.message, variant: 'destructive' });
+      toast({ title: t('common.error'), description: e.message, variant: 'destructive' });
     }
   };
 
@@ -461,7 +461,7 @@ export default function MenuEditor() {
         await supabase.from('items').update({ display_order: i }).eq('id', newItems[i].id);
       }
     } catch (e: any) {
-      toast({ title: 'Error saving order', variant: 'destructive' });
+      toast({ title: t('menuEditor.errorSavingOrder'), variant: 'destructive' });
     }
   };
 
@@ -585,8 +585,8 @@ export default function MenuEditor() {
               onClick={() => {
                 if (!canCreateMenu) {
                   toast({ 
-                    title: 'Límite de menús alcanzado', 
-                    description: 'Actualiza tu plan para crear más menús.',
+                    title: t('menuEditor.menuLimitReached'), 
+                    description: t('menuEditor.menuLimitDescription'),
                     variant: 'destructive'
                   });
                   return;
@@ -615,8 +615,8 @@ export default function MenuEditor() {
           onClick={() => {
             if (!canCreateCategory) {
               toast({ 
-                title: 'Límite de categorías alcanzado', 
-                description: 'Actualiza tu plan para crear más categorías.',
+                title: t('menuEditor.categoryLimitReached'), 
+                description: t('menuEditor.categoryLimitDescription'),
                 variant: 'destructive'
               });
               return;
@@ -760,7 +760,7 @@ export default function MenuEditor() {
                   try {
                     const { supabase } = await import('@/integrations/supabase/client');
                     await supabase.from('menus').delete().eq('id', deleteConfirm.id);
-                    toast({ title: 'Menú eliminado' });
+                    toast({ title: t('menuEditor.menuDeleted') });
                     setDeleteConfirm(null);
                     // Select another menu
                     const remaining = menus.filter(m => m.id !== deleteConfirm.id);
@@ -769,7 +769,7 @@ export default function MenuEditor() {
                     }
                     refetchMenus();
                   } catch (e: any) {
-                    toast({ title: 'Error', description: e.message, variant: 'destructive' });
+                    toast({ title: t('common.error'), description: e.message, variant: 'destructive' });
                   }
                 }
               }}
@@ -803,7 +803,7 @@ export default function MenuEditor() {
                   schedule_rules: data.schedule_rules as any,
                 })
                 .eq('id', menu.id);
-              toast({ title: 'Menú actualizado' });
+              toast({ title: t('menuEditor.menuUpdated') });
             } else {
               const { data: newMenu, error } = await supabase
                 .from('menus')
@@ -821,12 +821,12 @@ export default function MenuEditor() {
               if (newMenu) {
                 setSelectedMenuId(newMenu.id);
               }
-              toast({ title: 'Menú creado' });
+              toast({ title: t('menuEditor.menuCreated') });
             }
             setMenuDialog({ open: false });
             refetchMenus();
           } catch (e: any) {
-            toast({ title: 'Error', description: e.message, variant: 'destructive' });
+            toast({ title: t('common.error'), description: e.message, variant: 'destructive' });
           }
         }}
       />

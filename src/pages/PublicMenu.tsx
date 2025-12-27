@@ -226,7 +226,7 @@ function MenuContent({ data }: { data: PublicMenuData }) {
           <section className="mb-16">
             <div className="flex items-center gap-3 mb-8">
               <div className="h-px flex-1 bg-slate-300 dark:bg-slate-700"></div>
-              <h2 className="font-serif text-2xl text-slate-900 dark:text-white">Destacados</h2>
+              <h2 className="font-serif text-2xl text-slate-900 dark:text-white">{t('menu.featured')}</h2>
               <div className="h-px flex-1 bg-slate-300 dark:bg-slate-700"></div>
             </div>
             <div className="grid gap-4 md:gap-6">
@@ -268,7 +268,7 @@ function MenuContent({ data }: { data: PublicMenuData }) {
                 />
               ))}
               {category.items.filter(i => i.is_active).length === 0 && (
-                <p className="text-slate-500 dark:text-slate-400 text-center py-4">Sin items</p>
+                <p className="text-slate-500 dark:text-slate-400 text-center py-4">{t('menu.noItems')}</p>
               )}
             </div>
           </section>
@@ -342,7 +342,7 @@ function MenuContent({ data }: { data: PublicMenuData }) {
                   <div className="flex items-start gap-3 p-4 rounded-lg bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 mb-4">
                     <AlertCircle className="h-5 w-5 mt-0.5 text-orange-600 dark:text-orange-400 shrink-0" />
                     <div>
-                      <p className="text-sm font-medium text-slate-900 dark:text-white">Alérgenos</p>
+                      <p className="text-sm font-medium text-slate-900 dark:text-white">{t('menu.allergens')}</p>
                       <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">{selectedItem.allergens.join(', ')}</p>
                     </div>
                   </div>
@@ -355,7 +355,7 @@ function MenuContent({ data }: { data: PublicMenuData }) {
 
       {/* Footer */}
       <footer className="border-t border-slate-200 dark:border-slate-800 py-8 text-center text-xs text-slate-500 dark:text-slate-400 mt-16">
-        <p>© 2025 SaCarta. Todos los derechos reservados.</p>
+        <p>{t('footer.copyright', { year: new Date().getFullYear().toString() })}</p>
       </footer>
     </div>
   );

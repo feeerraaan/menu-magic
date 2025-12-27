@@ -58,7 +58,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
         setStep(2);
       } catch (e) {
         const error = e as Error;
-        toast({ title: 'Error', description: error.message, variant: 'destructive' });
+        toast({ title: t('common.error'), description: error.message, variant: 'destructive' });
       } finally {
         setLoading(false);
       }
@@ -104,7 +104,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
       onComplete();
     } catch (e) {
       const error = e as Error;
-      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+      toast({ title: t('common.error'), description: error.message, variant: 'destructive' });
     } finally {
       setLoading(false);
     }

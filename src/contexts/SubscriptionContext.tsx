@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback, ReactNode,
 import { Subscription } from '@/types/database';
 import { PlanType, PlanLimits, getPlanLimits, isPremiumPlan } from '@/lib/subscription-limits';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from '@/hooks/useTranslation';
 import * as api from '@/lib/api';
 
 interface SubscriptionContextType {
@@ -34,6 +35,7 @@ export function SubscriptionProvider({ restaurantId, children }: SubscriptionPro
   const previousPlan = useRef<PlanType | null>(null);
   const isVisibilityRefetch = useRef(false);
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const refetch = useCallback(async () => {
     console.log('[SubscriptionContext] refetch called, restaurantId:', restaurantId);
@@ -54,8 +56,8 @@ export function SubscriptionProvider({ restaurantId, children }: SubscriptionPro
       // Show toast if plan changed after returning from checkout
       if (isVisibilityRefetch.current && previousPlan.current && previousPlan.current !== newPlan) {
         toast({
-          title: '¡Plan actualizado!',
-          description: `Tu plan ha cambiado a ${PLAN_NAMES[newPlan]}.`,
+          title: t('dashboard.paymentSuccess'),
+          description: t('dashboard.paymentSuccessDesc').replace('{plan}', PLAN_NAMES[newPlan]),
         });
       }
       

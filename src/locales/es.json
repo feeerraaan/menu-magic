@@ -97,7 +97,7 @@
     }
   },
   "footer": {
-    "copyright": "© {year} SaCarta. Fet des de sa illa."
+    "copyright": "© {year} SaCarta. Todos los derechos reservados."
   },
   "auth": {
     "signIn": "Iniciar Sesión",
@@ -170,7 +170,9 @@
     "add": "Añadir",
     "loading": "Cargando...",
     "error": "Algo salió mal",
-    "success": "¡Éxito!"
+    "success": "¡Éxito!",
+    "nameRequired": "El nombre es obligatorio",
+    "unknownError": "Error desconocido"
   },
   "menu": {
     "featured": "Destacados",
@@ -306,6 +308,15 @@
     "itemCreated": "Artículo creado",
     "itemUpdated": "Artículo actualizado",
     "itemDeleted": "Artículo eliminado",
+    "itemDuplicated": "Artículo duplicado",
+    "menuCreated": "Menú creado",
+    "menuUpdated": "Menú actualizado",
+    "menuDeleted": "Menú eliminado",
+    "errorSavingOrder": "Error al guardar el orden",
+    "menuLimitReached": "Límite de menús alcanzado",
+    "menuLimitDescription": "Actualiza tu plan para crear más menús.",
+    "categoryLimitReached": "Límite de categorías alcanzado",
+    "categoryLimitDescription": "Actualiza tu plan para crear más categorías.",
     "duplicate": "Duplicar",
     "deleteConfirm": "¿Estás seguro?",
     "deleteMessage": "Esta acción no se puede deshacer.",
@@ -342,5 +353,12 @@
     "welcomeMessage": "¡Bienvenido a SaCarta!",
     "welcomeDescription": "Tu restaurante está listo.",
     "pleaseEnterName": "Por favor, introduce el nombre de tu restaurante"
+  },
+  "imageUpload": {
+    "uploading": "Subiendo...",
+    "uploaded": "Imagen subida",
+    "failed": "Error al subir",
+    "invalidFile": "Por favor, sube un archivo de imagen",
+    "sizeLimit": "La imagen debe pesar menos de {size}MB"
   }
 }

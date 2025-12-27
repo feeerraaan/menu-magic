@@ -100,7 +100,7 @@
     }
   },
   "footer": {
-    "copyright": "© {year} SaCarta. Made from the island."
+    "copyright": "© {year} SaCarta. All rights reserved."
   },
   "auth": {
     "signIn": "Sign In",
@@ -173,7 +173,9 @@
     "add": "Add",
     "loading": "Loading...",
     "error": "Something went wrong",
-    "success": "Success!"
+    "success": "Success!",
+    "nameRequired": "Name is required",
+    "unknownError": "Unknown error"
   },
   "menu": {
     "featured": "Featured",
@@ -309,6 +311,15 @@
     "itemCreated": "Item created",
     "itemUpdated": "Item updated",
     "itemDeleted": "Item deleted",
+    "itemDuplicated": "Item duplicated",
+    "menuCreated": "Menu created",
+    "menuUpdated": "Menu updated",
+    "menuDeleted": "Menu deleted",
+    "errorSavingOrder": "Error saving order",
+    "menuLimitReached": "Menu limit reached",
+    "menuLimitDescription": "Upgrade your plan to create more menus.",
+    "categoryLimitReached": "Category limit reached",
+    "categoryLimitDescription": "Upgrade your plan to create more categories.",
     "duplicate": "Duplicate",
     "deleteConfirm": "Are you sure?",
     "deleteMessage": "This action cannot be undone.",
@@ -345,5 +356,12 @@
     "welcomeMessage": "Welcome to SaCarta!",
     "welcomeDescription": "Your restaurant is ready.",
     "pleaseEnterName": "Please enter your restaurant name"
+  },
+  "imageUpload": {
+    "uploading": "Uploading...",
+    "uploaded": "Image uploaded",
+    "failed": "Upload failed",
+    "invalidFile": "Please upload an image file",
+    "sizeLimit": "Image must be less than {size}MB"
   }
 }

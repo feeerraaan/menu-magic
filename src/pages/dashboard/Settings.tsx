@@ -104,7 +104,7 @@ export default function Settings() {
       });
       toast({ title: t('settings.settingsSaved') });
     } catch (e: unknown) {
-      const errorMessage = e instanceof Error ? e.message : 'Unknown error';
+      const errorMessage = e instanceof Error ? e.message : t('common.unknownError');
       toast({ title: t('common.error'), description: errorMessage, variant: 'destructive' });
     } finally {
       setLoading(false);

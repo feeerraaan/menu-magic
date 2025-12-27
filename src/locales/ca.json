@@ -97,7 +97,7 @@
     }
   },
   "footer": {
-    "copyright": "© {year} SaCarta. Fet des de sa illa."
+    "copyright": "© {year} SaCarta. Tots els drets reservats."
   },
   "auth": {
     "signIn": "Iniciar Sessió",
@@ -170,7 +170,9 @@
     "add": "Afegir",
     "loading": "Carregant...",
     "error": "Quelcom ha anat malament",
-    "success": "¡Èxit!"
+    "success": "¡Èxit!",
+    "nameRequired": "El nom és obligatori",
+    "unknownError": "Error desconegut"
   },
   "menu": {
     "featured": "Destacats",
@@ -306,6 +308,15 @@
     "itemCreated": "Article creat",
     "itemUpdated": "Article actualitzat",
     "itemDeleted": "Article eliminat",
+    "itemDuplicated": "Article duplicat",
+    "menuCreated": "Menú creat",
+    "menuUpdated": "Menú actualitzat",
+    "menuDeleted": "Menú eliminat",
+    "errorSavingOrder": "Error en desar l'ordre",
+    "menuLimitReached": "Límit de menús assolit",
+    "menuLimitDescription": "Actualitza el teu pla per crear més menús.",
+    "categoryLimitReached": "Límit de categories assolit",
+    "categoryLimitDescription": "Actualitza el teu pla per crear més categories.",
     "duplicate": "Duplicar",
     "deleteConfirm": "Estàs segur?",
     "deleteMessage": "Aquesta acció no es pot desfer.",
@@ -342,5 +353,12 @@
     "welcomeMessage": "Benvingut a SaCarta!",
     "welcomeDescription": "El teu restaurant està preparat.",
     "pleaseEnterName": "Si us plau, introdueix el nom del teu restaurant"
+  },
+  "imageUpload": {
+    "uploading": "Pujant...",
+    "uploaded": "Imatge pujada",
+    "failed": "Error en pujar",
+    "invalidFile": "Si us plau, puja un fitxer d'imatge",
+    "sizeLimit": "La imatge ha de pesar menys de {size}MB"
   }
 }
