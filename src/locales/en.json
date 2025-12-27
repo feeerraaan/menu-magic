@@ -151,7 +151,13 @@
     "welcomeMessage": "Welcome!",
     "accountCreated": "Your account has been created.",
     "errorTitle": "Error",
-    "checkYourEmail": "Check your email"
+    "checkYourEmail": "Check your email",
+    "forgotPasswordDesc": "Enter your email and we'll send you a link to reset your password",
+    "resetPassword": "Reset password",
+    "sendResetLink": "Send reset link",
+    "resetLinkSent": "We've sent you a link to reset your password.",
+    "resetLinkDescription": "We sent a reset link to <strong>{email}</strong>. Click the link to reset your password.",
+    "backToSignIn": "Back to sign in"
   },
   "dashboard": {
     "title": "Dashboard",

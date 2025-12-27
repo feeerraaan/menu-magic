@@ -148,7 +148,14 @@
     "welcomeMessage": "¡Bienvenido!",
     "accountCreated": "Tu cuenta ha sido creada.",
     "errorTitle": "Error",
-    "checkYourEmail": "Revisa tu correo electrónico"
+    "checkYourEmail": "Revisa tu correo electrónico",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "forgotPasswordDesc": "Introduce tu email y te enviaremos un enlace para restablecer tu contraseña",
+    "resetPassword": "Recuperar contraseña",
+    "sendResetLink": "Enviar enlace de recuperación",
+    "resetLinkSent": "Te hemos enviado un enlace para restablecer tu contraseña.",
+    "resetLinkDescription": "Hemos enviado un enlace de recuperación a <strong>{email}</strong>. Haz clic en el enlace para restablecer tu contraseña.",
+    "backToSignIn": "Volver a iniciar sesión"
   },
   "dashboard": {
     "title": "Panel",

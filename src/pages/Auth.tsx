@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { Utensils, Mail, Lock, User, Loader2 } from 'lucide-react';
 
-type AuthMode = 'signin' | 'signup' | 'magic-link';
+type AuthMode = 'signin' | 'signup' | 'magic-link' | 'forgot-password';
 
 export default function Auth() {
   const [mode, setMode] = useState<AuthMode>('signin');
@@ -18,8 +18,9 @@ export default function Auth() {
   const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
   const [magicLinkSent, setMagicLinkSent] = useState(false);
+  const [resetEmailSent, setResetEmailSent] = useState(false);
 
-  const { signInWithMagicLink, signInWithPassword, signUp, user, loading: authLoading } = useAuth();
+  const { signInWithMagicLink, signInWithPassword, signUp, resetPassword, user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -74,7 +75,15 @@ export default function Auth() {
     setLoading(true);
 
     try {
-      if (mode === 'magic-link') {
+      if (mode === 'forgot-password') {
+        const { error } = await resetPassword(email);
+        if (error) {
+          toast({ title: t('auth.errorTitle'), description: error.message, variant: 'destructive' });
+        } else {
+          setResetEmailSent(true);
+          toast({ title: t('auth.checkYourEmail'), description: t('auth.resetLinkSent') });
+        }
+      } else if (mode === 'magic-link') {
         const { error } = await signInWithMagicLink(email);
         if (error) {
           toast({ title: t('auth.errorTitle'), description: error.message, variant: 'destructive' });
@@ -102,6 +111,36 @@ export default function Auth() {
       setLoading(false);
     }
   };
+
+  if (resetEmailSent) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-secondary/20 to-background p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+              <Mail className="h-8 w-8 text-primary" />
+            </div>
+            <CardTitle className="font-display text-2xl">{t('auth.checkEmail')}</CardTitle>
+            <CardDescription>
+              {t('auth.resetLinkDescription').replace('{email}', email)}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => {
+                setResetEmailSent(false);
+                setMode('signin');
+              }}
+            >
+              {t('auth.backToSignIn')}
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (magicLinkSent) {
     return (
@@ -138,12 +177,18 @@ export default function Auth() {
             <img src="/logo.png" alt="Logo SaCarta" />
           </div>
           <CardTitle className="font-display text-2xl">
-            {mode === 'signup' ? t('auth.createYourAccount') : t('auth.welcomeBack')}
+            {mode === 'signup' 
+              ? t('auth.createYourAccount') 
+              : mode === 'forgot-password' 
+                ? t('auth.resetPassword') 
+                : t('auth.welcomeBack')}
           </CardTitle>
           <CardDescription>
             {mode === 'signup' 
               ? t('auth.startCreating')
-              : t('auth.signInToManage')}
+              : mode === 'forgot-password'
+                ? t('auth.forgotPasswordDesc')
+                : t('auth.signInToManage')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -181,9 +226,20 @@ export default function Auth() {
               </div>
             </div>
 
-            {mode !== 'magic-link' && (
+            {mode !== 'magic-link' && mode !== 'forgot-password' && (
               <div className="space-y-2">
-                <Label htmlFor="password">{t('auth.password')}</Label>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password">{t('auth.password')}</Label>
+                  {mode === 'signin' && (
+                    <button
+                      type="button"
+                      onClick={() => setMode('forgot-password')}
+                      className="text-xs text-primary hover:underline"
+                    >
+                      {t('auth.forgotPassword')}
+                    </button>
+                  )}
+                </div>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -202,7 +258,13 @@ export default function Auth() {
 
             <Button type="submit" className="w-full" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {mode === 'signup' ? t('auth.createAccount') : mode === 'magic-link' ? t('auth.sendMagicLink') : t('auth.signIn')}
+              {mode === 'signup' 
+                ? t('auth.createAccount') 
+                : mode === 'magic-link' 
+                  ? t('auth.sendMagicLink') 
+                  : mode === 'forgot-password'
+                    ? t('auth.sendResetLink')
+                    : t('auth.signIn')}
             </Button>
           </form>
 
@@ -216,7 +278,7 @@ export default function Auth() {
               </div>
             </div>
 
-            {mode !== 'magic-link' && (
+            {mode !== 'magic-link' && mode !== 'forgot-password' && (
               <Button
                 variant="outline"
                 className="w-full"
@@ -227,7 +289,7 @@ export default function Auth() {
               </Button>
             )}
 
-            {mode === 'magic-link' && (
+            {(mode === 'magic-link' || mode === 'forgot-password') && (
               <Button
                 variant="outline"
                 className="w-full"
