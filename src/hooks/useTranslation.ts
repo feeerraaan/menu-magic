@@ -14,7 +14,7 @@ const translations: Record<string, Record<string, unknown>> = {
 export function useTranslation() {
   const { language } = useLanguage();
 
-  const t = (key: string, replacements?: Record<string, string>): string => {
+  const t = (key: string, replacements?: Record<string, string | number>): string => {
     const keys = key.split('.');
     let value: any = translations[language];
 
@@ -33,14 +33,14 @@ export function useTranslation() {
 
     if (replacements) {
       Object.entries(replacements).forEach(([k, v]) => {
-        value = value.replace(`{${k}}`, v);
+        value = value.replace(`{${k}}`, String(v));
       });
     }
 
     return value;
   };
 
-  const tReplace = (key: string, replacements: Record<string, string>): string => {
+  const tReplace = (key: string, replacements: Record<string, string | number>): string => {
     return t(key, replacements);
   };
 

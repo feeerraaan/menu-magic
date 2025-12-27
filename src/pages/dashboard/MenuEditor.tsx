@@ -929,6 +929,7 @@ function ItemDialog({
   onClose: () => void; 
   onSave: (data: Partial<Item>, item?: Item, categoryId?: string) => void;
 }) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: '',
     description: '',
