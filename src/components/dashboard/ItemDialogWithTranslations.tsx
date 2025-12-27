@@ -255,15 +255,20 @@ export function ItemDialogWithTranslations({
               )}
             </div>
             {canUploadPhoto ? (
-              <ImageUpload
-                value={formData.photo_url}
-                onChange={(url) => setFormData(p => ({ ...p, photo_url: url }))}
-                restaurantId={restaurantId}
-                folder="items"
-                aspectRatio="video"
-                maxWidth={800}
-                quality={0.85}
-              />
+              <>
+                <ImageUpload
+                  value={formData.photo_url}
+                  onChange={(url) => setFormData(p => ({ ...p, photo_url: url }))}
+                  restaurantId={restaurantId}
+                  folder="items"
+                  aspectRatio="video"
+                  maxWidth={800}
+                  quality={0.85}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Dimensiones recomendadas: 16:9 horizontal (ej: 800x450px). Las fotos verticales o cuadradas pueden verse recortadas.
+                </p>
+              </>
             ) : (
               <div className="border-2 border-dashed border-warning/30 rounded-lg p-6 text-center bg-warning/5">
                 <Crown className="h-8 w-8 text-warning mx-auto mb-2" />
