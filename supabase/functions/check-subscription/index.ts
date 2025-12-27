@@ -56,12 +56,34 @@ serve(async (req) => {
     const user = userData.user;
     logStep("User authenticated", { userId: user.id, email: user.email });
 
-    // Get the user's restaurant
+    // Get the user's restaurant and subscription
     const { data: restaurant } = await supabaseClient
       .from("restaurants")
       .select("id")
       .eq("owner_id", user.id)
       .single();
+
+    // Check if there's a manual override - if so, don't touch the subscription
+    if (restaurant) {
+      const { data: existingSub } = await supabaseClient
+        .from("subscriptions")
+        .select("plan, photos_limit, languages_limit, is_lifetime, manual_override, current_period_end")
+        .eq("restaurant_id", restaurant.id)
+        .single();
+
+      if (existingSub?.manual_override) {
+        logStep("Manual override detected, skipping Stripe check", { plan: existingSub.plan });
+        return new Response(JSON.stringify({
+          subscribed: existingSub.plan !== "free",
+          plan: existingSub.plan,
+          is_lifetime: existingSub.is_lifetime,
+          subscription_end: existingSub.current_period_end,
+        }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 200,
+        });
+      }
+    }
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
