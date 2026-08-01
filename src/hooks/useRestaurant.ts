@@ -22,9 +22,16 @@ export function useRestaurant() {
     }
   };
 
+  // Depends on user.id (a stable string), NOT the user object identity: Supabase emits a NEW
+  // user object every time it auto-refreshes the token when the tab regains focus, which would
+  // otherwise trigger a full restaurant refetch + setLoading(true) on every tab switch. That
+  // loading=true briefly swaps DashboardLayout to <LoadingPage/>, unmounting the current page
+  // and its dialogs (e.g. an in-progress AI import). See SubscriptionContext for the same
+  // guard. https://github.com/supabase/supabase-js auto-refreshes on visibilitychange.
   useEffect(() => {
     refetch();
-  }, [user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
 
   const create = async (data: Partial<Restaurant> & { name: string }) => {
     if (!user) throw new Error('Not authenticated');

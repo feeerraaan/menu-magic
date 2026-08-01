@@ -41,6 +41,6 @@ export async function extractMenuStructure(
     messages,
     schema: MenuImportOutputSchema,
     temperature: 0.2,
-    maxTokens: 4000,
+    maxTokens: 8000,
   });
 }

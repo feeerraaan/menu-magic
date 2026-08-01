@@ -37,21 +37,16 @@ export function SubscriptionProvider({ restaurantId, children }: SubscriptionPro
   const { toast } = useToast();
   const { t } = useTranslation();
 
-  const refetch = useCallback(async () => {
-    console.log('[SubscriptionContext] refetch called, restaurantId:', restaurantId);
+  const refetch = useCallback(async (opts?: { silent?: boolean }) => {
     if (!restaurantId) {
-      console.log('[SubscriptionContext] No restaurantId, skipping fetch');
       return;
     }
-    setLoading(true);
+    if (!opts?.silent) setLoading(true);
     try {
-      console.log('[SubscriptionContext] Fetching subscription...');
       const data = await api.fetchSubscription(restaurantId);
-      console.log('[SubscriptionContext] Fetched subscription data:', data);
       setSubscription(data);
 
       const newPlan = (data?.plan || 'free') as PlanType;
-      console.log('[SubscriptionContext] Plan resolved to:', newPlan);
       
       // Show toast if plan changed after returning from checkout
       if (isVisibilityRefetch.current && previousPlan.current && previousPlan.current !== newPlan) {
@@ -66,8 +61,7 @@ export function SubscriptionProvider({ restaurantId, children }: SubscriptionPro
     } catch (error) {
       console.error('[SubscriptionContext] Error fetching subscription:', error);
     } finally {
-      setLoading(false);
-      console.log('[SubscriptionContext] Loading complete');
+      if (!opts?.silent) setLoading(false);
     }
   }, [restaurantId, toast]);
 
@@ -77,33 +71,29 @@ export function SubscriptionProvider({ restaurantId, children }: SubscriptionPro
     hasFetchedOnce.current = true;
   }, [refetch]);
 
-  // Auto-refresh when tab becomes visible (e.g., returning from Stripe checkout)
+  // Auto-refresh when tab becomes visible (e.g., returning from Stripe checkout). Note:
+  // visibilitychange and focus fire back-to-back on tab refocus, so guard against a double
+  // fetch with a short debounce, and skip the loading flag here so the page (and any open
+  // dialog, e.g. an AI import in progress) never re-renders as a loading skeleton on tab
+  // switch. https://github.com/supabase/supabase-js also auto-refreshes tokens on
+  // visibilitychange, which is harmless on its own.
   useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible' && hasFetchedOnce.current) {
+    let timeout: ReturnType<typeof setTimeout> | null = null;
+    const handleRefocus = () => {
+      if (!hasFetchedOnce.current) return;
+      if (timeout) clearTimeout(timeout);
+      timeout = setTimeout(() => {
         isVisibilityRefetch.current = true;
-        refetch();
-      }
+        void refetch({ silent: true });
+      }, 150);
     };
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
+    document.addEventListener('visibilitychange', handleRefocus);
+    window.addEventListener('focus', handleRefocus);
     return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [refetch]);
-
-  // Also refresh when window gets focus (covers more edge cases)
-  useEffect(() => {
-    const handleFocus = () => {
-      if (hasFetchedOnce.current) {
-        isVisibilityRefetch.current = true;
-        refetch();
-      }
-    };
-
-    window.addEventListener('focus', handleFocus);
-    return () => {
-      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleRefocus);
+      window.removeEventListener('focus', handleRefocus);
+      if (timeout) clearTimeout(timeout);
     };
   }, [refetch]);
 

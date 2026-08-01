@@ -146,12 +146,15 @@ export function createOpenAiCompatibleProvider(config: OpenAiCompatibleConfig): 
     },
 
     async generateStructured<T>(opts: GenerateStructuredOptions<T>): Promise<T> {
-      // The free OpenCode Zen models are flaky in two ways (both seen live):
+      // The free OpenCode Zen models are flaky in three ways (all seen live):
       //   1. Occasionally return an empty body (~1 in 3 on some features).
       //   2. Occasionally wrap the JSON in markdown fences or add prose around it, which a
       //      naive JSON.parse rejects even though the payload is extractable.
-      // So: extract the first balanced {...} from the raw text (tolerating fences/prose), and
-      // retry the whole request a few times before giving up.
+      //   3. Occasionally TRUNCATE the JSON mid-string because the response hit max_tokens
+      //      (seen on long menu imports) — the payload is still salvageable.
+      // So: extract the first balanced {...}, then if JSON.parse fails try to repair the
+      // truncated output by closing any dangling string/bracket; retry the whole request a
+      // few times before giving up.
       let lastError: unknown;
       for (let attempt = 0; attempt < 3; attempt++) {
         try {
@@ -163,18 +166,15 @@ export function createOpenAiCompatibleProvider(config: OpenAiCompatibleConfig): 
             response_format: { type: 'json_object' },
           });
           const raw = json.choices?.[0]?.message?.content ?? '';
-          const extracted = extractJsonObject(raw);
-          let parsed: unknown;
-          try {
-            parsed = JSON.parse(extracted);
-          } catch {
+          let parsed: unknown = tryParseJson(raw);
+          if (parsed === undefined) {
             throw new Error(`Provider ${config.id}: model did not return valid JSON — got: ${raw.slice(0, 200)}`);
           }
           return opts.schema.parse(parsed);
         } catch (err) {
           lastError = err;
-          // Schema validation failures won't fix themselves on retry, but an empty body or a
-          // fence-wrapped payload might — retry regardless.
+          // Schema validation failures won't fix themselves on retry, but an empty body, a
+          // fence-wrapped payload, or a truncated one might — retry regardless.
           await new Promise((r) => setTimeout(r, 500));
         }
       }
@@ -183,8 +183,27 @@ export function createOpenAiCompatibleProvider(config: OpenAiCompatibleConfig): 
   };
 }
 
+// Parses JSON leniently: extracts the first balanced {...}, then falls back to repairing a
+// truncated payload (closes dangling string/brackets) before giving up. Returns undefined on
+// genuine failure.
+function tryParseJson(raw: string): unknown | undefined {
+  if (!raw) return undefined;
+  const balanced = extractJsonObject(raw);
+  try {
+    return JSON.parse(balanced);
+  } catch {
+    // balanced === raw.trim() means the object was unclosed — try a repair pass.
+  }
+  try {
+    return JSON.parse(repairTruncatedJson(balanced));
+  } catch {
+    return undefined;
+  }
+}
+
 // Returns the text between the first '{' and its matching '}' so prose/fence-wrapped JSON
-// (e.g. ```json {...}```) still parses. Falls back to the raw string when unbalanced.
+// (e.g. ```json {...}```) still parses. When unbalanced (truncated), returns everything from
+// the first '{' to the end of the string so the caller can attempt repair.
 function extractJsonObject(raw: string): string {
   if (!raw) return '{}';
   const start = raw.indexOf('{');
@@ -207,5 +226,58 @@ function extractJsonObject(raw: string): string {
       if (depth === 0) return raw.slice(start, i + 1);
     }
   }
-  return raw.trim();
+  return raw.slice(start); // truncated — keep everything from the first '{' for repair
+}
+
+// Best-effort repair for a JSON object that was cut off mid-string or mid-array: closes any
+// dangling string quote, strips a trailing comma, and closes open braces/brackets. Never
+// throws — returns the repaired text even if it's still invalid.
+function repairTruncatedJson(raw: string): string {
+  const stack: string[] = [];
+  let out = '';
+  let inString = false;
+  let escaped = false;
+
+  for (let i = 0; i < raw.length; i++) {
+    const ch = raw[i];
+    if (inString) {
+      out += ch;
+      if (escaped) escaped = false;
+      else if (ch === '\\') escaped = true;
+      else if (ch === '"') inString = false;
+      continue;
+    }
+    if (ch === '"') {
+      inString = true;
+      out += ch;
+      continue;
+    }
+    if (ch === '{') {
+      stack.push('}');
+      out += ch;
+      continue;
+    }
+    if (ch === '[') {
+      stack.push(']');
+      out += ch;
+      continue;
+    }
+    if (ch === '}' || ch === ']') {
+      const expect = ch === '}' ? '}' : ']';
+      if (stack.length > 0 && stack[stack.length - 1] === expect) stack.pop();
+      out += ch;
+      continue;
+    }
+    out += ch;
+  }
+
+  if (inString) out += '"'; // close a dangling string
+
+  // Strip a trailing comma left by the cut (e.g. `"items": [...],`).
+  out = out.replace(/,\s*$/, '');
+
+  // Close any remaining open brackets in reverse order.
+  while (stack.length > 0) out += stack.pop();
+
+  return out;
 }
