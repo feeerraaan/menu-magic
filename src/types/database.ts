@@ -124,11 +124,6 @@ export interface Profile {
   updated_at: string;
 }
 
-export type PlanType = 'free' | 'pro_monthly' | 'pro_annual' | 'lifetime';
-
-export const PLAN_LIMITS: Record<PlanType, { photos: number; languages: number; menus: number; schedules: boolean; }> = {
-  free: { photos: 0, languages: 1, menus: 1, schedules: false },
-  pro_monthly: { photos: 50, languages: 2, menus: 3, schedules: true },
-  pro_annual: { photos: 100, languages: 3, menus: 5, schedules: true },
-  lifetime: { photos: 1000, languages: 999, menus: 10, schedules: true },
-};
+// PlanType/PLAN_LIMITS live in @/lib/subscription-limits — that's the single source of
+// truth for plan limits (consumed via useSubscriptionContext()); this file used to have
+// a second, drifted copy of both that nothing actually imported.

@@ -13,6 +13,9 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      // Frontend-safe AI types only (plain interfaces, no runtime/provider code) — see
+      // docs/AI_ARCHITECTURE.md §1. Never alias packages/ai/{providers,agents,tools,pipelines}.
+      "@ai": path.resolve(__dirname, "./packages/ai/schemas"),
     },
   },
 }));

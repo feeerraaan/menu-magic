@@ -17,6 +17,11 @@ export interface PlanLimits {
   analytics: boolean;
   qrCustomization: boolean;
   manualSetup: boolean;
+  // Unified AI credit pool per billing period, spent across every AI feature
+  // (description generation, translation, optimizer runs, imports). A single
+  // pool instead of per-feature quotas because operation cost varies too much
+  // (an import costs ~15x a single description) to hand-tune separately.
+  aiCreditsPerMonth: number;
 }
 
 export interface PlanInfo {
@@ -41,6 +46,7 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
     analytics: false,
     qrCustomization: false,
     manualSetup: false,
+    aiCreditsPerMonth: 20,
   },
   pro_monthly: {
     photos: 50,
@@ -52,6 +58,7 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
     analytics: true,
     qrCustomization: true,
     manualSetup: false,
+    aiCreditsPerMonth: 300,
   },
   pro_annual: {
     photos: 100,
@@ -63,6 +70,7 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
     analytics: true,
     qrCustomization: true,
     manualSetup: false,
+    aiCreditsPerMonth: 500,
   },
   lifetime: {
     photos: 1000,
@@ -74,7 +82,20 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
     analytics: true,
     qrCustomization: true,
     manualSetup: true,
+    aiCreditsPerMonth: 1000,
   },
+};
+
+// ============================================
+// AI CREDIT COSTS - per-operation cost against the unified aiCreditsPerMonth pool
+// ============================================
+export type AiUsageKind = 'description' | 'translation' | 'optimizer_run' | 'import';
+
+export const AI_CREDIT_COSTS: Record<AiUsageKind, number> = {
+  description: 1,
+  translation: 1,
+  optimizer_run: 3,
+  import: 15,
 };
 
 // ============================================
@@ -123,6 +144,7 @@ export const LIMIT_LABELS: Record<keyof PlanLimits, string> = {
   analytics: 'Analytics',
   qrCustomization: 'QR personalizado',
   manualSetup: 'Configuración manual del menú por nosotros',
+  aiCreditsPerMonth: 'Créditos IA / mes',
 };
 
 // ============================================

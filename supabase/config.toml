@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.send-contact]
 verify_jwt = false
+
+[functions.ai-generate-description]
+verify_jwt = false

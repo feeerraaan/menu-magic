@@ -9,11 +9,22 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ImageUpload } from '@/components/ui/image-upload';
-import { Loader2, Globe, Crown, Star, Leaf, Flame, Wheat } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Loader2, Globe, Crown, Star, Leaf, Flame, Wheat, Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useAiDescription } from '@/hooks/useAiDescription';
+import type { DescriptionStyle } from '@ai/description';
 import { cn } from '@/lib/utils';
+
+const DESCRIPTION_STYLES: { value: DescriptionStyle; label: string }[] = [
+  { value: 'luxury', label: 'Lujoso' },
+  { value: 'traditional', label: 'Tradicional' },
+  { value: 'modern', label: 'Moderno' },
+  { value: 'casual', label: 'Casual' },
+  { value: 'fine_dining', label: 'Alta cocina' },
+];
 
 interface ItemDialogWithTranslationsProps {
   open: boolean;
@@ -71,8 +82,21 @@ export function ItemDialogWithTranslations({
     is_gluten_free: false,
   });
   const [loading, setLoading] = useState(false);
+  const [aiStyle, setAiStyle] = useState<DescriptionStyle>('modern');
   const { toast } = useToast();
   const { t } = useTranslation();
+  const { generate: generateAiDescription, loading: aiGenerating } = useAiDescription();
+
+  const handleGenerateDescription = async (lang: string) => {
+    if (!item) return;
+    try {
+      const description = await generateAiDescription(item.id, aiStyle, lang);
+      handleTranslationChange(lang, 'description', description);
+    } catch (e: unknown) {
+      const errorMsg = e instanceof Error ? e.message : t('common.unknownError');
+      toast({ title: t('common.error'), description: errorMsg, variant: 'destructive' });
+    }
+  };
 
   const itemHasExistingPhoto = item?.photo_url ? true : false;
   const canUploadPhoto = canAddPhoto || itemHasExistingPhoto || formData.photo_url === item?.photo_url;
@@ -322,6 +346,31 @@ export function ItemDialogWithTranslations({
                       onChange={(e) => handleTranslationChange(lang, 'description', e.target.value)}
                       placeholder="Describe el plato..."
                     />
+                    {item && (
+                      <div className="flex items-center gap-2">
+                        <Select value={aiStyle} onValueChange={(v) => setAiStyle(v as DescriptionStyle)}>
+                          <SelectTrigger className="h-8 text-xs w-[140px]">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {DESCRIPTION_STYLES.map((s) => (
+                              <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="h-8 gap-1.5 text-xs"
+                          disabled={aiGenerating}
+                          onClick={() => handleGenerateDescription(lang)}
+                        >
+                          {aiGenerating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+                          Generar con IA
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </TabsContent>
               ))}
@@ -345,6 +394,31 @@ export function ItemDialogWithTranslations({
                   onChange={(e) => handleTranslationChange(defaultLanguage, 'description', e.target.value)}
                   placeholder="Describe el plato..."
                 />
+                {item && (
+                  <div className="flex items-center gap-2">
+                    <Select value={aiStyle} onValueChange={(v) => setAiStyle(v as DescriptionStyle)}>
+                      <SelectTrigger className="h-8 text-xs w-[140px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {DESCRIPTION_STYLES.map((s) => (
+                          <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="h-8 gap-1.5 text-xs"
+                      disabled={aiGenerating}
+                      onClick={() => handleGenerateDescription(defaultLanguage)}
+                    >
+                      {aiGenerating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+                      Generar con IA
+                    </Button>
+                  </div>
+                )}
               </div>
             </>
           )}
