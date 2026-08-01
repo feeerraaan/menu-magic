@@ -1,4 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
+import { assertWithinLimits, fetchSubscription } from '@/lib/api';
+import { getPlanLimits, PlanType } from '@/lib/subscription-limits';
 import type { GenerateDescriptionInput, GenerateDescriptionResult } from '@ai/description';
 import type { TranslateFieldInput, TranslateFieldResult } from '@ai/translation';
 import type { OptimizerOutput, MenuScoreHistoryEntry } from '@ai/optimizer';
@@ -171,15 +173,48 @@ interface CommitImportedMenuInput {
  * same tables/writes as the manual editor (createMenu/createCategory/createItem-equivalent
  * inserts) — this is a normal authenticated write respecting RLS, not an AI operation, so it
  * doesn't go through an Edge Function.
+ *
+ * Enforces the plan's real limits BEFORE writing anything: an import must not exceed the
+ * subscription's menus/categories/items/languages quotas (verified against actual DB counts,
+ * not local UI state). Throws a clear upgrade-prompt error when it would.
  */
 export async function commitImportedMenu(input: CommitImportedMenuInput): Promise<{ menuId: string }> {
-  const { data: menu, error: menuError } = await supabase
-    .from('menus')
-    .insert({ restaurant_id: input.restaurantId, name: input.menuName, is_active: true })
-    .select('id')
-    .single();
-  if (menuError) throw menuError;
-  const menuId = menu.id as string;
+  const addedItems = input.categories.reduce((sum, c) => sum + c.items.length, 0);
+
+  // Reuse an existing empty menu when present (e.g. the auto-created "Main Menu" from
+  // onboarding): the import lands its categories inside it instead of creating a new menu,
+  // so a free plan (1 menu) can import without needing a menu slot.
+  const emptyMenu = await findEmptyMenu(input.restaurantId);
+
+  await assertWithinLimits(input.restaurantId, {
+    menus: emptyMenu ? 0 : 1,
+    categories: input.categories.length,
+    items: addedItems,
+  });
+
+  // Imported translations must not exceed the plan's language quota either — the restaurant's
+  // supported_languages should already respect it, but guard against a stale config.
+  const supportedLanguages = (await fetchRestaurantSupportedLanguages(input.restaurantId));
+  const plan = await getPlanTypeForRestaurant(input.restaurantId);
+  const languageLimit = getPlanLimits(plan).languages;
+  if (supportedLanguages.length > languageLimit) {
+    throw new Error(
+      `Este restaurante tiene ${supportedLanguages.length} idiomas, más del límite de tu plan (${languageLimit}). Quita idiomas en Ajustes para importar.`,
+    );
+  }
+
+  let menuId: string;
+  if (emptyMenu) {
+    menuId = emptyMenu;
+  } else {
+    const { data: menu, error: menuError } = await supabase
+      .from('menus')
+      .insert({ restaurant_id: input.restaurantId, name: input.menuName, is_active: true })
+      .select('id')
+      .single();
+    if (menuError) throw menuError;
+    menuId = menu.id as string;
+  }
 
   for (let categoryIndex = 0; categoryIndex < input.categories.length; categoryIndex++) {
     const category = input.categories[categoryIndex];
@@ -244,5 +279,42 @@ export async function commitImportedMenu(input: CommitImportedMenuInput): Promis
     }
   }
 
+  // When reusing an empty menu (e.g. the auto-created "Main Menu"), rename it to the
+  // imported menu's name so the public page shows the right title.
+  if (emptyMenu) {
+    await supabase.from('menus').update({ name: input.menuName }).eq('id', emptyMenu);
+  }
+
   return { menuId };
+}
+
+async function findEmptyMenu(restaurantId: string): Promise<string | null> {
+  const { data: menus } = await supabase
+    .from('menus')
+    .select('id')
+    .eq('restaurant_id', restaurantId);
+  const menuIds = (menus ?? []).map((m) => m.id as string);
+  if (menuIds.length === 0) return null;
+
+  const { data: categories } = await supabase
+    .from('categories')
+    .select('menu_id')
+    .in('menu_id', menuIds);
+  const usedMenuIds = new Set((categories ?? []).map((c) => (c as { menu_id: string }).menu_id));
+  return menuIds.find((id) => !usedMenuIds.has(id)) ?? null;
+}
+
+async function fetchRestaurantSupportedLanguages(restaurantId: string): Promise<string[]> {
+  const { data, error } = await supabase
+    .from('restaurants')
+    .select('supported_languages')
+    .eq('id', restaurantId)
+    .maybeSingle();
+  if (error) throw error;
+  return (data as { supported_languages?: string[] } | null)?.supported_languages ?? [];
+}
+
+async function getPlanTypeForRestaurant(restaurantId: string): Promise<PlanType> {
+  const sub = await fetchSubscription(restaurantId);
+  return (sub?.plan ?? 'free') as PlanType;
 }

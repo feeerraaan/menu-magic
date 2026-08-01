@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Restaurant, Menu, Category, Item, Subscription } from '@/types/database';
+import { PlanType, getPlanLimits } from '@/lib/subscription-limits';
 
 // Restaurant hooks
 export async function fetchRestaurant(userId: string): Promise<Restaurant | null> {
@@ -264,4 +265,93 @@ export async function uploadImage(file: File, restaurantId: string): Promise<str
   
   const { data } = supabase.storage.from('menu-images').getPublicUrl(fileName);
   return data.publicUrl;
+}
+
+// ---------------------------------------------------------------------------
+// Plan-limit enforcement (server-side truth, not local UI state)
+//
+// The manual editor blocks in the UI via `canCreateMenu/Category/Item`, but those are
+// computed from the component's local state which can drift (and AI import bypassed them
+// entirely). These helpers query the real row counts + the real subscription plan right
+// before a write and throw a clear upgrade-prompt error when the plan would be exceeded —
+// the single source of truth for every create path.
+// ---------------------------------------------------------------------------
+
+export interface RestaurantUsage {
+  menus: number;
+  categories: number;
+  items: number;
+  photos: number;
+}
+
+export async function getRestaurantUsage(restaurantId: string): Promise<RestaurantUsage> {
+  const { data: menus } = await supabase
+    .from('menus')
+    .select('id')
+    .eq('restaurant_id', restaurantId);
+  const menuIds = (menus ?? []).map((m) => m.id as string);
+
+  const { data: categories } = menuIds.length
+    ? await supabase.from('categories').select('id').in('menu_id', menuIds)
+    : { data: [] };
+  const categoryIds = (categories ?? []).map((c) => c.id as string);
+
+  const { data: items } = categoryIds.length
+    ? await supabase.from('items').select('id, photo_url').in('category_id', categoryIds)
+    : { data: [] };
+
+  return {
+    menus: menuIds.length,
+    categories: categoryIds.length,
+    items: (items ?? []).length,
+    photos: (items ?? []).filter((i) => (i as { photo_url?: string | null }).photo_url).length,
+  };
+}
+
+export interface UsageDelta {
+  menus?: number;
+  categories?: number;
+  items?: number;
+  photos?: number;
+}
+
+/**
+ * Verifies that applying `delta` to the restaurant's current usage stays within the plan's
+ * limits. Throws a clear, upgrade-prompt-shaped error listing exactly which limits would be
+ * exceeded. Call BEFORE any create that adds menus/categories/items/photos.
+ */
+export async function assertWithinLimits(
+  restaurantId: string,
+  delta: UsageDelta,
+  opts?: { plan?: PlanType },
+): Promise<void> {
+  const plan = opts?.plan ?? (await getPlanType(restaurantId));
+  const limits = getPlanLimits(plan);
+  const usage = await getRestaurantUsage(restaurantId);
+
+  const exceeded: string[] = [];
+  if (delta.menus && usage.menus + delta.menus > limits.menus) {
+    exceeded.push(`menús (${usage.menus} + ${delta.menus} > ${limits.menus})`);
+  }
+  if (delta.categories && usage.categories + delta.categories > limits.categories) {
+    exceeded.push(`categorías (${usage.categories} + ${delta.categories} > ${limits.categories})`);
+  }
+  if (delta.items && usage.items + delta.items > limits.items) {
+    exceeded.push(`platos (${usage.items} + ${delta.items} > ${limits.items})`);
+  }
+  if (delta.photos && usage.photos + delta.photos > limits.photos) {
+    exceeded.push(`fotos (${usage.photos} + ${delta.photos} > ${limits.photos})`);
+  }
+
+  if (exceeded.length > 0) {
+    const limitLabels = exceeded.join(', ');
+    throw new Error(
+      `Límite de ${limitLabels} de tu plan (${plan}). Mejora tu plan para seguir añadiendo.`,
+    );
+  }
+}
+
+async function getPlanType(restaurantId: string): Promise<PlanType> {
+  const sub = await fetchSubscription(restaurantId);
+  return (sub?.plan ?? 'free') as PlanType;
 }

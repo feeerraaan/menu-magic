@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { Restaurant, Category, Item, Menu, ScheduleRule } from '@/types/database';
+import { assertWithinLimits } from '@/lib/api';
 import { useMenus, useCategories, useItems } from '@/hooks/useRestaurant';
 import { useSubscriptionContext } from '@/contexts/SubscriptionContext';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -323,6 +324,7 @@ export default function MenuEditor() {
         await updateCategory(category.id, { name, description: description || null });
         toast({ title: t('menuEditor.categoryUpdated') });
       } else {
+        await assertWithinLimits(restaurant.id, { categories: 1 });
         await createCategory(name);
         toast({ title: t('menuEditor.categoryCreated') });
       }
@@ -355,6 +357,7 @@ export default function MenuEditor() {
         }));
         toast({ title: t('menuEditor.itemUpdated') });
       } else if (categoryId) {
+        await assertWithinLimits(restaurant.id, { items: 1 });
         const insertData = {
           category_id: categoryId,
           name: data.name || 'New Item',
@@ -829,6 +832,7 @@ export default function MenuEditor() {
                 .eq('id', menu.id);
               toast({ title: t('menuEditor.menuUpdated') });
             } else {
+              await assertWithinLimits(restaurant.id, { menus: 1 });
               const { data: newMenu, error } = await supabase
                 .from('menus')
                 .insert({
