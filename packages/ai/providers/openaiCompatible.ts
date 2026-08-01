@@ -146,9 +146,12 @@ export function createOpenAiCompatibleProvider(config: OpenAiCompatibleConfig): 
     },
 
     async generateStructured<T>(opts: GenerateStructuredOptions<T>): Promise<T> {
-      // The free OpenCode Zen models intermittently return an empty/non-JSON completion (~1 in
-      // 3 on description generation, see docs/IMPLEMENTATION_PLAN.md). Retry the whole request
-      // a few times before giving up — the failure is model-side, not request-side.
+      // The free OpenCode Zen models are flaky in two ways (both seen live):
+      //   1. Occasionally return an empty body (~1 in 3 on some features).
+      //   2. Occasionally wrap the JSON in markdown fences or add prose around it, which a
+      //      naive JSON.parse rejects even though the payload is extractable.
+      // So: extract the first balanced {...} from the raw text (tolerating fences/prose), and
+      // retry the whole request a few times before giving up.
       let lastError: unknown;
       for (let attempt = 0; attempt < 3; attempt++) {
         try {
@@ -159,22 +162,50 @@ export function createOpenAiCompatibleProvider(config: OpenAiCompatibleConfig): 
             max_tokens: opts.maxTokens ?? 1024,
             response_format: { type: 'json_object' },
           });
-          const raw = json.choices?.[0]?.message?.content ?? '{}';
+          const raw = json.choices?.[0]?.message?.content ?? '';
+          const extracted = extractJsonObject(raw);
           let parsed: unknown;
           try {
-            parsed = JSON.parse(raw);
+            parsed = JSON.parse(extracted);
           } catch {
             throw new Error(`Provider ${config.id}: model did not return valid JSON — got: ${raw.slice(0, 200)}`);
           }
           return opts.schema.parse(parsed);
         } catch (err) {
           lastError = err;
-          // Non-retryable: schema validation failures (model answered structurally wrong) won't
-          // fix themselves on retry for free — but an empty body might, so retry regardless.
+          // Schema validation failures won't fix themselves on retry, but an empty body or a
+          // fence-wrapped payload might — retry regardless.
           await new Promise((r) => setTimeout(r, 500));
         }
       }
       throw lastError instanceof Error ? lastError : new Error(`Provider ${config.id}: structured generation failed`);
     },
   };
+}
+
+// Returns the text between the first '{' and its matching '}' so prose/fence-wrapped JSON
+// (e.g. ```json {...}```) still parses. Falls back to the raw string when unbalanced.
+function extractJsonObject(raw: string): string {
+  if (!raw) return '{}';
+  const start = raw.indexOf('{');
+  if (start === -1) return raw.trim();
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+  for (let i = start; i < raw.length; i++) {
+    const ch = raw[i];
+    if (inString) {
+      if (escaped) escaped = false;
+      else if (ch === '\\') escaped = true;
+      else if (ch === '"') inString = false;
+      continue;
+    }
+    if (ch === '"') inString = true;
+    else if (ch === '{') depth++;
+    else if (ch === '}') {
+      depth--;
+      if (depth === 0) return raw.slice(start, i + 1);
+    }
+  }
+  return raw.trim();
 }
