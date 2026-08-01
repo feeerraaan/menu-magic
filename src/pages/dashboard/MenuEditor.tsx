@@ -17,6 +17,7 @@ import { MenuScheduleEditor } from '@/components/dashboard/MenuScheduleEditor';
 import { UpgradeBanner, LimitIndicator } from '@/components/subscription';
 import { CategoryDialogWithTranslations } from '@/components/dashboard/CategoryDialogWithTranslations';
 import { ItemDialogWithTranslations } from '@/components/dashboard/ItemDialogWithTranslations';
+import { AiImportDialog } from '@/components/dashboard/AiImportDialog';
 import { 
   DndContext, 
   closestCenter, 
@@ -53,6 +54,7 @@ import {
   Clock,
   AlertTriangle,
   Crown,
+  Sparkles,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ImageUpload } from '@/components/ui/image-upload';
@@ -234,6 +236,7 @@ export default function MenuEditor() {
   const [itemDialog, setItemDialog] = useState<{ open: boolean; item?: Item; categoryId?: string }>({ open: false });
   const [deleteConfirm, setDeleteConfirm] = useState<{ open: boolean; type: 'category' | 'item' | 'menu'; id: string } | null>(null);
   const [menuDialog, setMenuDialog] = useState<{ open: boolean; menu?: Menu }>({ open: false });
+  const [aiImportOpen, setAiImportOpen] = useState(false);
   
   const { toast } = useToast();
   
@@ -611,33 +614,43 @@ export default function MenuEditor() {
           </h2>
           <p className="text-muted-foreground">{t('menuEditor.manageDescription')}</p>
         </div>
-        <Button 
-          onClick={() => {
-            if (!canCreateCategory) {
-              toast({ 
-                title: t('menuEditor.categoryLimitReached'), 
-                description: t('menuEditor.categoryLimitDescription'),
-                variant: 'destructive'
-              });
-              return;
-            }
-            setCategoryDialog({ open: true });
-          }}
-          disabled={!canCreateCategory}
-        >
-          <Plus className="mr-2 h-4 w-4" /> {t('menuEditor.addCategory')}
-        </Button>
-      </div>
-
-      {categories.length === 0 ? (
-        <Card className="p-12 text-center">
-          <p className="text-muted-foreground mb-4">{t('menuEditor.noCategories')}</p>
-          <Button 
-            onClick={() => setCategoryDialog({ open: true })}
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => setAiImportOpen(true)} className="gap-2">
+            <Sparkles className="h-4 w-4" /> Importar con IA
+          </Button>
+          <Button
+            onClick={() => {
+              if (!canCreateCategory) {
+                toast({
+                  title: t('menuEditor.categoryLimitReached'),
+                  description: t('menuEditor.categoryLimitDescription'),
+                  variant: 'destructive'
+                });
+                return;
+              }
+              setCategoryDialog({ open: true });
+            }}
             disabled={!canCreateCategory}
           >
             <Plus className="mr-2 h-4 w-4" /> {t('menuEditor.addCategory')}
           </Button>
+        </div>
+      </div>
+
+      {categories.length === 0 ? (
+        <Card className="p-12 text-center space-y-3">
+          <p className="text-muted-foreground mb-1">{t('menuEditor.noCategories')}</p>
+          <div className="flex items-center justify-center gap-2">
+            <Button
+              onClick={() => setCategoryDialog({ open: true })}
+              disabled={!canCreateCategory}
+            >
+              <Plus className="mr-2 h-4 w-4" /> {t('menuEditor.addCategory')}
+            </Button>
+            <Button variant="outline" onClick={() => setAiImportOpen(true)} className="gap-2">
+              <Sparkles className="h-4 w-4" /> Importar con IA
+            </Button>
+          </div>
         </Card>
       ) : (
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleCategoryDragEnd}>
@@ -666,6 +679,16 @@ export default function MenuEditor() {
           </SortableContext>
         </DndContext>
       )}
+
+      {/* AI Import Dialog */}
+      <AiImportDialog
+        open={aiImportOpen}
+        restaurantId={restaurant.id}
+        onClose={() => setAiImportOpen(false)}
+        onImported={() => {
+          refetchMenus();
+        }}
+      />
 
       {/* Category Dialog */}
       <CategoryDialogWithTranslations

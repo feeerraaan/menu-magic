@@ -3,6 +3,8 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { GenerateDescriptionInput, GenerateDescriptionResult } from '@ai/description';
 import type { TranslateFieldInput, TranslateFieldResult } from '@ai/translation';
 import type { OptimizerOutput, MenuScoreHistoryEntry } from '@ai/optimizer';
+import type { MenuImportStartInput, MenuImportStartResponse, MenuImportResult } from '@ai/menuImport';
+import type { AiJob } from '@ai/common';
 
 // One function per AI operation, mirroring src/lib/api.ts's convention. Every call goes
 // through supabase.functions.invoke — never a direct provider/agent import (see
@@ -52,4 +54,110 @@ export async function fetchMenuScoreHistory(restaurantId: string): Promise<MenuS
     .limit(30);
   if (error) throw error;
   return (data ?? []) as MenuScoreHistoryEntry[];
+}
+
+export async function startMenuImport(input: MenuImportStartInput): Promise<MenuImportStartResponse> {
+  const { data, error } = await supabase.functions.invoke('ai-import-start', {
+    body: input,
+  });
+  if (error) throw error;
+  return data as MenuImportStartResponse;
+}
+
+export async function fetchAiJob(jobId: string): Promise<AiJob> {
+  const { data, error } = await untypedSupabase
+    .from('ai_jobs')
+    .select('*')
+    .eq('id', jobId)
+    .single();
+  if (error) throw error;
+  return data as AiJob;
+}
+
+interface CommitImportedMenuInput {
+  restaurantId: string;
+  menuName: string;
+  categories: MenuImportResult['categories'];
+  translationsByLanguage: MenuImportResult['translationsByLanguage'];
+}
+
+/**
+ * Persists an owner-reviewed import result as real menus/categories/items, using the exact
+ * same tables/writes as the manual editor (createMenu/createCategory/createItem-equivalent
+ * inserts) — this is a normal authenticated write respecting RLS, not an AI operation, so it
+ * doesn't go through an Edge Function.
+ */
+export async function commitImportedMenu(input: CommitImportedMenuInput): Promise<{ menuId: string }> {
+  const { data: menu, error: menuError } = await supabase
+    .from('menus')
+    .insert({ restaurant_id: input.restaurantId, name: input.menuName, is_active: true })
+    .select('id')
+    .single();
+  if (menuError) throw menuError;
+  const menuId = menu.id as string;
+
+  for (let categoryIndex = 0; categoryIndex < input.categories.length; categoryIndex++) {
+    const category = input.categories[categoryIndex];
+    const { data: newCategory, error: categoryError } = await supabase
+      .from('categories')
+      .insert({
+        menu_id: menuId,
+        name: category.name,
+        description: category.description ?? null,
+        display_order: categoryIndex,
+      })
+      .select('id')
+      .single();
+    if (categoryError) throw categoryError;
+    const categoryId = newCategory.id as string;
+
+    for (const [lang, translation] of Object.entries(input.translationsByLanguage)) {
+      const translatedCategory = translation.categories[categoryIndex];
+      if (!translatedCategory) continue;
+      await untypedSupabase.from('category_translations').insert({
+        category_id: categoryId,
+        language: lang,
+        name: translatedCategory.name,
+        description: translatedCategory.description ?? null,
+        generated_by: 'ai_generated',
+      });
+    }
+
+    for (let itemIndex = 0; itemIndex < category.items.length; itemIndex++) {
+      const item = category.items[itemIndex];
+      const { data: newItem, error: itemError } = await supabase
+        .from('items')
+        .insert({
+          category_id: categoryId,
+          name: item.name,
+          description: item.description ?? null,
+          price: item.price ?? null,
+          is_vegetarian: item.isVegetarian ?? false,
+          is_vegan: item.isVegan ?? false,
+          is_spicy: item.isSpicy ?? false,
+          is_gluten_free: item.isGlutenFree ?? false,
+          allergens: item.allergens ?? [],
+          display_order: itemIndex,
+          is_active: true,
+        })
+        .select('id')
+        .single();
+      if (itemError) throw itemError;
+      const itemId = newItem.id as string;
+
+      for (const [lang, translation] of Object.entries(input.translationsByLanguage)) {
+        const translatedItem = translation.categories[categoryIndex]?.items[itemIndex];
+        if (!translatedItem) continue;
+        await untypedSupabase.from('item_translations').insert({
+          item_id: itemId,
+          language: lang,
+          name: translatedItem.name,
+          description: translatedItem.description ?? null,
+          generated_by: 'ai_generated',
+        });
+      }
+    }
+  }
+
+  return { menuId };
 }

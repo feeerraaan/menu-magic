@@ -26,3 +26,6 @@ verify_jwt = false
 
 [functions.ai-optimize-menu]
 verify_jwt = false
+
+[functions.ai-import-start]
+verify_jwt = false

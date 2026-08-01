@@ -38,13 +38,18 @@ Living document — update the checkboxes as each phase ships, per the project r
 - [ ] Manual E2E test against the deployed function (same prerequisite as Phases 1-2). Verified so far: typecheck, lint, and `vite build` all pass.
 - Note: `src/lib/ai-api.ts`'s `fetchMenuScoreHistory` casts the Supabase client narrowly (`untypedSupabase`) since `ai_menu_scores` isn't in the generated `Database` type yet — regenerate `src/integrations/supabase/types.ts` after applying the Phase 0 migration and this cast can be removed.
 
-## Phase 4 — AI Import
+## Phase 4 — AI Import ✅ done (with a scoped-down source-format list — see note)
 
-- [ ] `packages/ai/schemas/menuImport.ts`, `prompts/menuImport.ts`, `agents/menuImportAgent.ts`, `pipelines/importPipeline.ts`.
-- [ ] Edge Function `supabase/functions/ai-import-start/index.ts` (async job, `EdgeRuntime.waitUntil` for long-running extraction).
-- [ ] UI: "Importar con IA" entry point in `MenuEditor.tsx` (empty-categories state + menu-selection bar), review screen for the extracted tree before commit.
-- [ ] `src/hooks/useAiImport.ts`.
-- [ ] Manual E2E test: import a real sample PDF menu, confirm the extracted tree is fully editable before save, confirm nothing publishes without explicit confirmation, confirm auto-translation into all `supported_languages` runs, confirm 15-credit charge.
+- [x] `packages/ai/schemas/menuImport.ts`, `prompts/menuImport.ts`, `agents/menuImportAgent.ts`, `pipelines/importPipeline.ts`.
+- [x] `packages/ai/agents/translationAgent.ts` extended with `translateMenuBatch` (whole-tree translation, one LLM call per target language instead of per field) and `packages/ai/prompts/translation.ts` extended with `buildMenuBatchTranslationPrompt`.
+- [x] Edge Function `supabase/functions/ai-import-start/index.ts` (async job via `EdgeRuntime.waitUntil`, with a synchronous fallback where that global isn't available).
+- [x] UI: "Importar con IA" entry point in `MenuEditor.tsx` (header + empty-categories state), new `src/components/dashboard/AiImportDialog.tsx` — source picker (paste text / PDF / URL) → progress → fully editable review tree (rename/remove categories and items) → "Guardar en mi menú" commits via `commitImportedMenu()` in `src/lib/ai-api.ts`, which writes through the same tables the manual editor uses.
+- [x] `src/hooks/useAiImport.ts` (Realtime subscription to the `ai_jobs` row).
+- [ ] Manual E2E test against the deployed function (same prerequisite as Phases 1-3, plus the caveats below).
+
+**Scope note — source formats actually implemented:** plain text paste, `.pdf` upload (via the `unpdf` library, chosen because it's purpose-built for edge/serverless runtimes with no native bindings), and a website URL (fetched server-side, HTML tags stripped). **Word (.docx), Excel (.xlsx), and photo/image OCR are NOT implemented** in this pass — the Edge Function rejects those `sourceType`s with a clear error, and the UI doesn't offer them. Implementing them properly needs format-specific parsing libraries (mammoth, xlsx, and a vision-capable model call respectively) that weren't verified in this session — flagged honestly rather than shipped untested.
+
+**Verification caveat:** this repo's sandbox has no Deno CLI available, so the Deno-side code (all of `packages/ai/{providers,agents,prompts,pipelines}`, all 4 `supabase/functions/ai-*` functions, and `_shared/*`) could not be typechecked or executed here — only manually reviewed for import/export consistency against the same patterns the existing (working) Edge Functions use. The frontend half (hooks, `ai-api.ts`, all UI components, the `@ai` schema types) passed `tsc --noEmit`, `eslint`, and `vite build` cleanly, including the new import-boundary rule. Treat every Edge Function as needing a real smoke test against a deployed Supabase project with live OpenCode Zen keys before relying on it — see the Deployment checklist below.
 
 ## Deployment checklist (do once code for a phase is ready, requires the user's go-ahead + OpenCode Zen keys)
 
