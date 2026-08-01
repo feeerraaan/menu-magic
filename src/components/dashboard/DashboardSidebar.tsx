@@ -29,7 +29,8 @@ import {
   CreditCard,
   LogOut,
   Crown,
-  Sparkles
+  Sparkles,
+  Wand2
 } from 'lucide-react';
 
 export function DashboardSidebar() {
@@ -60,6 +61,7 @@ export function DashboardSidebar() {
     { title: t('dashboard.menuEditor'), url: '/dashboard/editor', icon: FileText },
     { title: t('dashboard.qrCode'), url: '/dashboard/qr', icon: QrCode },
     { title: t('dashboard.analytics'), url: '/dashboard/analytics', icon: BarChart3 },
+    { title: 'Optimizador IA', url: '/dashboard/ai-optimizer', icon: Wand2 },
     { title: t('dashboard.settings'), url: '/dashboard/settings', icon: Settings },
     { title: t('dashboard.billing'), url: '/dashboard/billing', icon: CreditCard },
   ];

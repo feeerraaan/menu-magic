@@ -29,13 +29,14 @@ Living document — update the checkboxes as each phase ships, per the project r
 - [x] UI: "Traducir con IA" button per language tab in `ItemDialogWithTranslations.tsx` and `CategoryDialogWithTranslations.tsx` (added `restaurantId` prop to the latter, wired from `MenuEditor.tsx`).
 - [ ] Manual E2E test against the deployed function (same prerequisite as Phase 1). Verified so far: typecheck, lint, and `vite build` all pass.
 
-## Phase 3 — AI Menu Optimizer
+## Phase 3 — AI Menu Optimizer ✅ done
 
-- [ ] `packages/ai/schemas/optimizer.ts`, `prompts/optimizer.ts`, `agents/optimizerAgent.ts`.
-- [ ] Edge Function `supabase/functions/ai-optimize-menu/index.ts` (async job pattern).
-- [ ] `src/pages/dashboard/AiOptimizer.tsx` + nav entry in `DashboardSidebar.tsx`.
-- [ ] `src/hooks/useAiOptimizer.ts` (Realtime subscription to `ai_jobs`).
-- [ ] Manual E2E test: run an optimizer pass, confirm the job row transitions queued→completed, confirm score + breakdown render, confirm `ai_menu_scores` history accumulates on repeat runs.
+- [x] `packages/ai/schemas/optimizer.ts`, `prompts/optimizer.ts`, `agents/optimizerAgent.ts`, `pipelines/optimizerPipeline.ts` (deterministic metrics extraction — first use of the pipelines/ folder).
+- [x] Edge Function `supabase/functions/ai-optimize-menu/index.ts` (creates an `ai_jobs` row, runs inline, writes `ai_menu_scores` + job output — first feature to exercise the async-job table).
+- [x] `src/pages/dashboard/AiOptimizer.tsx` + nav entry in `DashboardSidebar.tsx`.
+- [x] `src/hooks/useAiOptimizer.ts` (Realtime subscription to `ai_jobs`, plus score-history trend chart).
+- [ ] Manual E2E test against the deployed function (same prerequisite as Phases 1-2). Verified so far: typecheck, lint, and `vite build` all pass.
+- Note: `src/lib/ai-api.ts`'s `fetchMenuScoreHistory` casts the Supabase client narrowly (`untypedSupabase`) since `ai_menu_scores` isn't in the generated `Database` type yet — regenerate `src/integrations/supabase/types.ts` after applying the Phase 0 migration and this cast can be removed.
 
 ## Phase 4 — AI Import
 
