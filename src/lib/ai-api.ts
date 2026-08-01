@@ -30,32 +30,55 @@ import type {
 // through supabase.functions.invoke — never a direct provider/agent import (see
 // docs/AI_ARCHITECTURE.md §1 and §5).
 
+// Edge Functions signal failure with a non-2xx status; supabase-js wraps that in a
+// FunctionsHttpError whose .message is the useless generic 'Edge Function returned a
+// non-2xx status code'. The real reason lives in the response body ({ error: string }).
+// This unwraps it (and special-cases HTTP 402 = AI credit limit with an upgrade hint) so the
+// UI can show the actual problem instead of a generic message. See the original bug report.
+async function invokeAi<T>(fn: string, body: object): Promise<T> {
+  const { data, error } = await supabase.functions.invoke(fn, { body });
+  if (error) {
+    const status =
+      (error as { context?: { status?: number } }).context?.status ?? 500;
+    const serverMessage = await readServerError(error);
+    const message =
+      status === 402
+        ? 'Has agotado los créditos IA de tu plan. Mejora tu plan (Ferreret) para seguir usando la IA.'
+        : (serverMessage ?? error.message);
+    const wrapped = new Error(message);
+    (wrapped as { status?: number }).status = status;
+    throw wrapped;
+  }
+  return data as T;
+}
+
+// Extracts the server's { error: string } body from a FunctionsHttpError (which wraps the
+// raw Response in .context). Returns null when there's no parseable body.
+async function readServerError(error: unknown): Promise<string | null> {
+  const context = (error as { context?: Response }).context;
+  if (!context || typeof context.json !== 'function') return null;
+  try {
+    const body = await context.json();
+    return typeof body?.error === 'string' && body.error.length > 0 ? body.error : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function generateItemDescription(
   input: GenerateDescriptionInput,
 ): Promise<GenerateDescriptionResult> {
-  const { data, error } = await supabase.functions.invoke('ai-generate-description', {
-    body: input,
-  });
-  if (error) throw error;
-  return data as GenerateDescriptionResult;
+  return invokeAi<GenerateDescriptionResult>('ai-generate-description', input);
 }
 
 export async function translateField(input: TranslateFieldInput): Promise<TranslateFieldResult> {
-  const { data, error } = await supabase.functions.invoke('ai-translate', {
-    body: input,
-  });
-  if (error) throw error;
-  return data as TranslateFieldResult;
+  return invokeAi<TranslateFieldResult>('ai-translate', input);
 }
 
 export async function runMenuOptimizer(
   restaurantId: string,
 ): Promise<{ jobId: string; result: OptimizerOutput }> {
-  const { data, error } = await supabase.functions.invoke('ai-optimize-menu', {
-    body: { restaurantId },
-  });
-  if (error) throw error;
-  return data as { jobId: string; result: OptimizerOutput };
+  return invokeAi<{ jobId: string; result: OptimizerOutput }>('ai-optimize-menu', { restaurantId });
 }
 
 export async function fetchMenuScoreHistory(restaurantId: string): Promise<MenuScoreHistoryEntry[]> {
@@ -70,19 +93,11 @@ export async function fetchMenuScoreHistory(restaurantId: string): Promise<MenuS
 }
 
 export async function startMenuImport(input: MenuImportStartInput): Promise<MenuImportStartResponse> {
-  const { data, error } = await supabase.functions.invoke('ai-import-start', {
-    body: input,
-  });
-  if (error) throw error;
-  return data as MenuImportStartResponse;
+  return invokeAi<MenuImportStartResponse>('ai-import-start', input);
 }
 
 export async function startAiSetupImport(input: MenuImportStartInput): Promise<MenuImportStartResponse> {
-  const { data, error } = await supabase.functions.invoke('ai-import-start', {
-    body: { ...input, jobType: 'ai_setup' },
-  });
-  if (error) throw error;
-  return data as MenuImportStartResponse;
+  return invokeAi<MenuImportStartResponse>('ai-import-start', { ...input, jobType: 'ai_setup' });
 }
 
 export async function fetchAiJob(jobId: string): Promise<AiJob> {
@@ -96,9 +111,7 @@ export async function fetchAiJob(jobId: string): Promise<AiJob> {
 }
 
 async function invokeCopilot(body: Record<string, unknown>): Promise<unknown> {
-  const { data, error } = await supabase.functions.invoke('ai-copilot', { body });
-  if (error) throw error;
-  return data;
+  return invokeAi<unknown>('ai-copilot', body);
 }
 
 export async function startCopilotConversation(input: CopilotStartConversationInput): Promise<CopilotStartConversationResponse> {
@@ -128,9 +141,7 @@ export async function listCopilotConversations(input: CopilotListConversationsIn
 // --- Phase 7: Business Insights + Recommendations ---
 
 export async function runInsights(input: InsightsRunInput): Promise<InsightsRunResponse> {
-  const { data, error } = await supabase.functions.invoke('ai-insights', { body: input });
-  if (error) throw error;
-  return data as InsightsRunResponse;
+  return invokeAi<InsightsRunResponse>('ai-insights', input);
 }
 
 export async function fetchRecommendations(restaurantId: string): Promise<InsightsRecommendation[]> {
@@ -156,9 +167,7 @@ export async function setRecommendationStatus(
 export async function sendCustomerAssistantMessage(
   input: CustomerAssistantSendInput,
 ): Promise<CustomerAssistantSendResponse> {
-  const { data, error } = await supabase.functions.invoke('ai-customer-assistant', { body: input });
-  if (error) throw error;
-  return data as CustomerAssistantSendResponse;
+  return invokeAi<CustomerAssistantSendResponse>('ai-customer-assistant', input);
 }
 
 interface CommitImportedMenuInput {

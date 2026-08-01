@@ -71,7 +71,12 @@ export function AiImportDialog({ open, restaurantId, onClose, onImported, jobTyp
         await start({ sourceType: 'pdf', fileBase64, fileName: file.name });
       }
     } catch (e: unknown) {
-      toast({ title: 'Error', description: e instanceof Error ? e.message : 'Error desconocido', variant: 'destructive' });
+      const isCreditError = (e as { status?: number })?.status === 402;
+      toast({
+        title: isCreditError ? 'Créditos IA agotados' : 'Error',
+        description: e instanceof Error ? e.message : 'Error desconocido',
+        variant: 'destructive',
+      });
     }
   };
 
