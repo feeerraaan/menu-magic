@@ -1,6 +1,6 @@
 # SaCarta AI Feature Specifications
 
-Per-feature spec for all 9 planned AI features. Phases 1-4 are built in this engagement; Phases 5-9 are specified here in enough depth for a future session to implement directly, but no code exists for them yet. Read `AI_ARCHITECTURE.md` first for the shared platform concepts (providers, jobs, credits, RLS) referenced throughout.
+Per-feature spec for all 9 planned AI features. **Phases 1-8 are now built** (Phases 1-4 in the first engagement, Phases 5-8 in the second). Read `AI_ARCHITECTURE.md` first for the shared platform concepts (providers, jobs, credits, RLS) referenced throughout. Where a spec below says "(future — spec only)", that section is now historical design that was implemented as written — see `IMPLEMENTATION_PLAN.md` for the build record.
 
 ---
 
@@ -50,7 +50,7 @@ Per-feature spec for all 9 planned AI features. Phases 1-4 are built in this eng
 
 ---
 
-## Phase 5 — AI Setup *(future — spec only)*
+## Phase 5 — AI Setup ✅ built
 
 **What it is:** an alternate onboarding path. Today, `src/components/dashboard/OnboardingWizard.tsx` is a 3-step manual flow (name → address/phone → currency/language) that creates the `restaurants`/`subscriptions`/`menus` rows on step 1. AI Setup inserts a fork right after step 1 (once the restaurant row and its `id` exist): "Build my menu manually" (continues to the existing step 2) vs. "Upload your menu — AI will build it" (branches into the same upload UI as AI Import, tagged `job_type='ai_setup'` so it's distinguishable in analytics, but otherwise reusing `importPipeline.ts` entirely). On completion, jumps to the existing `handleFinish()`.
 **Data model:** no new tables — reuses `ai_jobs` with a distinct `job_type` value.
@@ -58,7 +58,7 @@ Per-feature spec for all 9 planned AI features. Phases 1-4 are built in this eng
 
 ---
 
-## Phase 6 — AI Restaurant Copilot *(future — spec only, this design already exists in detail)*
+## Phase 6 — AI Restaurant Copilot ✅ built
 
 A chat inside the dashboard where the owner types requests and the AI performs real mutations — not just answers questions. This is the highest-risk feature in the whole roadmap (natural language driving arbitrary database writes), so its design is captured here in full even though it won't be built until a future session.
 
@@ -105,11 +105,11 @@ Every mutating action — confirmed or not — needs a row capturing: `restauran
 Per-turn injection is a small restaurant summary (name, currency, languages, counts) — **not** a full menu dump, regardless of restaurant size. `search_items`/`get_menu_structure` are how the agent pulls in specifics on demand, the same way a new human employee would ask rather than being handed a full POS export. Conversation history persists server-side (not client-only), keyed by a `conversation_id`, with a sliding window of the last ~20 messages verbatim plus a periodically-refreshed summary of anything older.
 
 **Credit cost:** 2 credits per Copilot turn (message + any tool call).
-**Blocking prerequisite:** validate that the chosen OpenCode Zen model reliably supports function-calling before committing to this design in code — flagged in `AI_ARCHITECTURE.md` §2.
+**Blocking prerequisite — VALIDATED (2026-08-01):** function-calling was tested against the real OpenCode Zen endpoint with the production key before building the Copilot. Result: `deepseek-v4-flash-free` reliably emits `tool_calls` in `tool_choice:'auto'` and chains read-only→mutating calls across turns; `tool_choice:'required'` is rejected (DeepSeek thinking-mode) so the Copilot only uses `auto`; and thinking-mode must be disabled (`thinking:{type:'disabled'}`) because DeepSeek otherwise demands echoing `reasoning_content` on the next turn. Both gotchas are recorded in `IMPLEMENTATION_PLAN.md` §Phase 6.
 
 ---
 
-## Phase 7 — AI Business Insights + AI Recommendations *(future — spec only)*
+## Phase 7 — AI Business Insights + AI Recommendations ✅ built
 
 **Insights:** narrative, consultant-style text generated on demand from existing `menu_views`/`items`/`ai_menu_scores` data (e.g. "Seafood receives the most attention", "Vegetarian options are underrepresented"). No new persistent content table — the narrative is ephemeral/re-generatable, stored only in `ai_jobs.output` for the run that produced it (job type `business_insights`). Slots into `src/pages/dashboard/Analytics.tsx` alongside the existing charts.
 **Recommendations:** discrete, dismissible suggestion cards ("add a photo to Paella", "merge these two near-duplicate items"), each with its own lifecycle (`open|dismissed|actioned`) rather than a jsonb blob, since dismissing one shouldn't require regenerating everything. Needs one new table, `ai_recommendations` (`restaurant_id`, `ai_job_id?`, `category` free-text, `target_type/target_id?`, `title`, `detail`, `status`).
@@ -117,7 +117,7 @@ Per-turn injection is a small restaurant summary (name, currency, languages, cou
 
 ---
 
-## Phase 8 — AI Customer Assistant *(future — spec only, safety-critical design already set)*
+## Phase 8 — AI Customer Assistant ✅ built
 
 A chat on the **public** menu page (`/m/:slug`, anonymous diners). Recommends dishes given constraints like "I am gluten free", "I want something spicy", "I have 20€", "I don't like seafood". **Read-only — must never mutate data**, and must never recommend something that violates a stated hard constraint.
 

@@ -19,6 +19,10 @@ import type {
   CopilotListConversationsResponse,
 } from '@ai/copilot';
 import type { InsightsRunInput, InsightsRunResponse, InsightsRecommendation } from '@ai/insights';
+import type {
+  CustomerAssistantSendInput,
+  CustomerAssistantSendResponse,
+} from '@ai/customerAssistant';
 
 // One function per AI operation, mirroring src/lib/api.ts's convention. Every call goes
 // through supabase.functions.invoke — never a direct provider/agent import (see
@@ -143,6 +147,16 @@ export async function setRecommendationStatus(
 ): Promise<void> {
   const { error } = await supabase.from('ai_recommendations').update({ status }).eq('id', id);
   if (error) throw error;
+}
+
+// --- Phase 8: Customer Assistant (anonymous public chat) ---
+
+export async function sendCustomerAssistantMessage(
+  input: CustomerAssistantSendInput,
+): Promise<CustomerAssistantSendResponse> {
+  const { data, error } = await supabase.functions.invoke('ai-customer-assistant', { body: input });
+  if (error) throw error;
+  return data as CustomerAssistantSendResponse;
 }
 
 interface CommitImportedMenuInput {

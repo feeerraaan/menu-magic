@@ -22,6 +22,10 @@ export interface PlanLimits {
   // pool instead of per-feature quotas because operation cost varies too much
   // (an import costs ~15x a single description) to hand-tune separately.
   aiCreditsPerMonth: number;
+  // Phase 8: public anonymous chat on the menu page. Gated by plan flag, NOT credit-metered
+  // against the owner's pool — its cost is driven by diner traffic, not the owner's actions
+  // (see docs/FEATURE_SPECIFICATIONS.md §Phase 8).
+  aiCustomerAssistantEnabled: boolean;
 }
 
 export interface PlanInfo {
@@ -47,6 +51,7 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
     qrCustomization: false,
     manualSetup: false,
     aiCreditsPerMonth: 20,
+    aiCustomerAssistantEnabled: false,
   },
   pro_monthly: {
     photos: 50,
@@ -59,6 +64,7 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
     qrCustomization: true,
     manualSetup: false,
     aiCreditsPerMonth: 300,
+    aiCustomerAssistantEnabled: true,
   },
   pro_annual: {
     photos: 100,
@@ -71,6 +77,7 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
     qrCustomization: true,
     manualSetup: false,
     aiCreditsPerMonth: 500,
+    aiCustomerAssistantEnabled: true,
   },
   lifetime: {
     photos: 1000,
@@ -83,6 +90,7 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
     qrCustomization: true,
     manualSetup: true,
     aiCreditsPerMonth: 1000,
+    aiCustomerAssistantEnabled: true,
   },
 };
 
@@ -147,6 +155,7 @@ export const LIMIT_LABELS: Record<keyof PlanLimits, string> = {
   qrCustomization: 'QR personalizado',
   manualSetup: 'Configuración manual del menú por nosotros',
   aiCreditsPerMonth: 'Créditos IA / mes',
+  aiCustomerAssistantEnabled: 'Asistente IA para clientes',
 };
 
 // ============================================

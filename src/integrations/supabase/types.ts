@@ -441,6 +441,38 @@ export type Database = {
           },
         ]
       }
+      anon_chat_events: {
+        Row: {
+          created_at: string
+          id: string
+          ip_hash: string
+          restaurant_id: string
+          session_token: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ip_hash: string
+          restaurant_id: string
+          session_token: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ip_hash?: string
+          restaurant_id?: string
+          session_token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "anon_chat_events_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       categories: {
         Row: {
           created_at: string

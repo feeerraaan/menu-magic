@@ -63,7 +63,7 @@ export function getProviderForFeature(feature: AiFeatureKey): LLMProvider {
 ```
 Switching a feature's model is `supabase secrets set AI_MODEL_TRANSLATION=qwen3.6-plus-free` — no redeploy, picked up on the next invocation. No DB-backed config table; this is a solo-operator product at this stage, and Deno secrets already work exactly this way for Stripe/Resend.
 
-**Known limitation, flagged for the future Copilot phase (Phase 7), not relevant to Phases 1-4:** tool/function-calling reliability on OpenCode Zen's free models is unverified. Phases 1-4 only ever use `generateStructured` (single-shot structured JSON output, no multi-turn tool loop), which is a much easier bar than reliable function-calling — so this isn't a blocker now, but must be validated before building the Copilot.
+**Function-calling on Zen (VALIDATED 2026-08-01 during Phase 6 build):** the free model (`deepseek-v4-flash-free`) reliably emits `tool_calls` in `tool_choice:'auto'` mode and chains read-only → mutating calls across turns. Two gotchas shaped the Copilot implementation: (1) `tool_choice:'required'` is rejected by the provider (DeepSeek thinking-mode: `"Thinking mode does not support this tool_choice"`) — the Copilot only ever uses `auto`; (2) DeepSeek thinking-mode demands `reasoning_content` be echoed back on the next turn, which the provider contract doesn't store — the Copilot's loop disables thinking (`thinking:{type:'disabled'}`) and multi-turn tool loops work. See `IMPLEMENTATION_PLAN.md` §Phase 6.
 
 ## 3. `prompts/` vs `agents/` vs `pipelines/` vs `tools/`
 

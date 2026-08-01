@@ -1,6 +1,6 @@
 # SaCarta AI Roadmap
 
-Nine features, sequenced across two horizons: **Phases 1-5 are built.** Phases 6-8 (Copilot, Insights + Recommendations, Customer Assistant) are fully specified in `FEATURE_SPECIFICATIONS.md` but not implemented yet — they're sequenced for a future build.
+Nine features originally planned. **All buildable phases (1-5, 6, 7, 8) are now built** — see `IMPLEMENTATION_PLAN.md` for the per-phase checklist. The only items not built are deliberately excluded (AI Image Generation) — everything else shipped.
 
 AI Image Generation is not on this roadmap at all, in any phase — see `VISION.md` for why. It is not "phase 10," it is excluded.
 
@@ -40,12 +40,12 @@ The riskiest phase: a chat that performs real mutations (price changes, bulk edi
 
 Bundled together: both are read-mostly (Insights narrates from existing analytics + Optimizer data; Recommendations derives dismissible suggestion cards from Optimizer/Insights output). **Built (2026-08-01):** consultant-style narrative on demand (3 credits) stored in `ai_jobs.output`, discrete dismissible `ai_recommendations` cards with lifecycle (dismissed/actioned survive regeneration), UI section in the Analytics page. E2E-verified live.
 
-## Phase 8 — AI Customer Assistant *(future)*
+## Phase 8 — AI Customer Assistant ✅ done
 
-Sequenced last because it is the only AI feature exposed to anonymous, potentially adversarial public internet traffic — a qualitatively different cost/abuse surface from every owner-facing feature before it. It has no dependency on any other AI feature to function (it only needs the already-public menu data), so there's no technical reason to rush it; shipping it last means its rate-limiting design benefits from real usage-cost data gathered from Phases 1-8.
+Sequenced last because it is the only AI feature exposed to anonymous, potentially adversarial public internet traffic — a qualitatively different cost/abuse surface from every owner-facing feature before it. **Built (2026-08-01):** anonymous chat widget on the public menu page, deterministic pre-filter enforces hard constraints (allergen/diet safety is structurally impossible to violate), server-side hallucination validation, plan-gated (pro+), and layered anonymous rate limiting (per-session, per-IP-hash, per-restaurant-daily). E2E-verified live including the gluten/vegan/budget exclusion tests and the rate-limit cap.
 
 ---
 
 ## Status tracking
 
-This file is updated at the end of each phase (per the project's "after each completed feature, update documentation" rule). See `IMPLEMENTATION_PLAN.md` for the current build checklist and what's actually shipped vs. in progress.
+All phases shipped (2026-08-01): **1-4** (this engagement's original scope), **5** (AI Setup), **6** (Copilot), **7** (Insights + Recommendations), **8** (Customer Assistant). AI Image Generation permanently excluded. See `IMPLEMENTATION_PLAN.md` for the full build checklist and deployment record.

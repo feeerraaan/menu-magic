@@ -96,7 +96,25 @@ Living document — update the checkboxes as each phase ships, per the project r
 - [x] **Provider hardening:** `generateStructured` in `openaiCompatible.ts` now retries empty/non-JSON completions up to 3× — mitigates the documented free-model flakiness that hit Insights on its first live attempt (empty body); re-benefits every AI feature.
 - [x] Manual E2E test against the deployed function (2026-08-01): seeded a pro-tier restaurant (2 items, one vegan + one duplicated name, ~6 views), ran `ai-insights` — got a realistic Spanish narrative, 5 recommendations (fotos/descripciones/dietary/idiomas/vistas) with correct `target_type`/`target_id`, owner PATCH to `dismissed` worked (RLS), `ai_usage` charged 3 credits (kind `insights`).
 
-## Explicitly not built yet (see `ROADMAP.md` / `FEATURE_SPECIFICATIONS.md`)
+## Phase 8 — AI Customer Assistant ✅ done
 
-Phase 8 (Customer Assistant) is fully specified but not yet built. AI Image Generation is permanently excluded (see `VISION.md`), not merely deferred.
+- [x] Migration `20260801190000_...`: `anon_chat_events` append-only rate-limit/usage table with composite indexes on `(restaurant_id, session_token, created_at)` and `(restaurant_id, ip_hash, created_at)`. **No RLS policies at all** — the Edge Function writes via service-role (which bypasses RLS); anon/authenticated clients are denied by default. Verified live: anon `SELECT` returns `[]`.
+- [x] `packages/ai/schemas/customerAssistant.ts`, `prompts/customerAssistant.ts`, `agents/customerAssistantAgent.ts` — the safety-critical flow: (1) one LLM call extracts structured constraints, (2) `filterCandidates()` is PURE CODE (no LLM) enforcing every hard constraint (allergens with aliases, dietary flags, max price, exclude tags), (3) second LLM call ranks ONLY within the surviving set, (4) `validateRecommendations()` drops any hallucinated item id server-side.
+- [x] Edge Function `supabase/functions/ai-customer-assistant/index.ts` — anon, read-only public menu access, plan-gated (`aiCustomerAssistantEnabled`), rate limits checked BEFORE any LLM call: per-session 20/hour, per-IP-hash 60/hour, per-restaurant daily cap tied to plan tier (150/300/600 for pro/lifetime). Salted IP hash via Web Crypto — raw IP never stored. Friendly "busy" reply on limit, no provider call.
+- [x] Frontend: `src/lib/ai-api.ts` `sendCustomerAssistantMessage`, widget `src/components/public/CustomerAssistantWidget.tsx` (session token in localStorage, chat panel with recommendation cards, allergen/diet examples), wired into `PublicMenu.tsx`'s footer.
+- [x] `PlanLimits.aiCustomerAssistantEnabled` added (free: false, pro/lifetime: true) + `LIMIT_LABELS`.
+- [x] Manual E2E tests against the deployed function (2026-08-01), all passed live: (a) "soy celiaco" → only the gluten-free hummus recommended, carbonara/pizza correctly excluded; (b) "vegano <10€" → only hummus, non-vegan/over-budget excluded; (c) "no me gusta el picante" → spicy chicken never recommended; (d) anon RLS on `anon_chat_events` returns `[]`; (e) rate limit: 24 messages with one session token → exactly 4 rejected at the 20/hour cap.
+
+## Deployment checklist — ALL PHASES 0-8 DONE
+
+- [x] All migrations applied to the live `dtmnomjbfziwfwheqcfx` project (Phases 0, 5, 6, 7, 8).
+- [x] All 8 AI Edge Functions deployed: `ai-generate-description`, `ai-translate`, `ai-optimize-menu`, `ai-import-start`, `ai-copilot`, `ai-insights`, `ai-customer-assistant` (+ the 4 pre-existing non-AI functions untouched).
+- [x] Live end-to-end test per function (see each phase's checklist).
+- [x] Deno CLI available in this environment now — all AI Edge Functions pass `deno check` before deploy (previously the Deno side was never typechecked here).
+
+**Known caveat — free-model flakiness (unchanged from Phases 1-4):** the default model (`deepseek-v4-flash-free`) intermittently returns an empty/non-JSON body. Mitigated for structured output by the new 3× retry in `generateStructured` (added in Phase 7); the Copilot disables thinking-mode so its multi-turn tool loops are stable. The durable fix remains more rotation keys or a paid model for `AI_MODEL_DEFAULT` / `AI_MODEL_COPILOT`.
+
+## AI Image Generation
+
+Permanently excluded (see `VISION.md`), not merely deferred.
 

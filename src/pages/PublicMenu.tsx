@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@/hooks/useTranslation';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { CustomerAssistantWidget } from '@/components/public/CustomerAssistantWidget';
 import { isMenuAvailable } from '@/components/dashboard/MenuScheduleEditor';
 import { 
   Leaf, 
@@ -357,6 +358,9 @@ function MenuContent({ data }: { data: PublicMenuData }) {
       <footer className="border-t border-slate-200 dark:border-slate-800 py-8 text-center text-xs text-slate-500 dark:text-slate-400 mt-16">
         <p>{t('footer.copyright', { year: new Date().getFullYear().toString() })}</p>
       </footer>
+
+      {/* Phase 8 — AI Customer Assistant (anonymous chat widget) */}
+      <CustomerAssistantWidget slug={restaurant.slug} />
     </div>
   );
 }
