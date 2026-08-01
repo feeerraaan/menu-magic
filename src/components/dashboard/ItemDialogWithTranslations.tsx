@@ -15,6 +15,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAiDescription } from '@/hooks/useAiDescription';
+import { useAiTranslation } from '@/hooks/useAiTranslation';
 import type { DescriptionStyle } from '@ai/description';
 import { cn } from '@/lib/utils';
 
@@ -86,12 +87,31 @@ export function ItemDialogWithTranslations({
   const { toast } = useToast();
   const { t } = useTranslation();
   const { generate: generateAiDescription, loading: aiGenerating } = useAiDescription();
+  const { translate: translateAiField, loading: aiTranslating } = useAiTranslation();
 
   const handleGenerateDescription = async (lang: string) => {
     if (!item) return;
     try {
       const description = await generateAiDescription(item.id, aiStyle, lang);
       handleTranslationChange(lang, 'description', description);
+    } catch (e: unknown) {
+      const errorMsg = e instanceof Error ? e.message : t('common.unknownError');
+      toast({ title: t('common.error'), description: errorMsg, variant: 'destructive' });
+    }
+  };
+
+  const handleTranslateField = async (lang: string, field: 'name' | 'description') => {
+    const sourceText = translations[defaultLanguage]?.[field];
+    if (!sourceText?.trim()) return;
+    try {
+      const translated = await translateAiField(
+        sourceText,
+        defaultLanguage,
+        lang,
+        restaurantId,
+        field === 'name' ? 'nombre de un plato en un menú de restaurante' : 'descripción de un plato en un menú de restaurante',
+      );
+      handleTranslationChange(lang, field, translated);
     } catch (e: unknown) {
       const errorMsg = e instanceof Error ? e.message : t('common.unknownError');
       toast({ title: t('common.error'), description: errorMsg, variant: 'destructive' });
@@ -328,9 +348,24 @@ export function ItemDialogWithTranslations({
               {supportedLanguages.map(lang => (
                 <TabsContent key={lang} value={lang} className="space-y-4 mt-4">
                   <div className="space-y-2">
-                    <Label htmlFor={`item-name-${lang}`}>
-                      Nombre {lang === defaultLanguage && <span className="text-destructive">*</span>}
-                    </Label>
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor={`item-name-${lang}`}>
+                        Nombre {lang === defaultLanguage && <span className="text-destructive">*</span>}
+                      </Label>
+                      {lang !== defaultLanguage && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 gap-1 text-xs px-2"
+                          disabled={aiTranslating || !translations[defaultLanguage]?.name?.trim()}
+                          onClick={() => handleTranslateField(lang, 'name')}
+                        >
+                          {aiTranslating ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
+                          Traducir con IA
+                        </Button>
+                      )}
+                    </div>
                     <Input
                       id={`item-name-${lang}`}
                       value={translations[lang]?.name || ''}
@@ -339,7 +374,22 @@ export function ItemDialogWithTranslations({
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor={`item-desc-${lang}`}>Descripción</Label>
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor={`item-desc-${lang}`}>Descripción</Label>
+                      {lang !== defaultLanguage && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 gap-1 text-xs px-2"
+                          disabled={aiTranslating || !translations[defaultLanguage]?.description?.trim()}
+                          onClick={() => handleTranslateField(lang, 'description')}
+                        >
+                          {aiTranslating ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
+                          Traducir con IA
+                        </Button>
+                      )}
+                    </div>
                     <Textarea
                       id={`item-desc-${lang}`}
                       value={translations[lang]?.description || ''}

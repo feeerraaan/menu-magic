@@ -6,10 +6,11 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, Globe } from 'lucide-react';
+import { Loader2, Globe, Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useAiTranslation } from '@/hooks/useAiTranslation';
 import { cn } from '@/lib/utils';
 
 interface CategoryDialogWithTranslationsProps {
@@ -17,6 +18,7 @@ interface CategoryDialogWithTranslationsProps {
   category?: Category;
   supportedLanguages: string[];
   defaultLanguage: string;
+  restaurantId: string;
   onClose: () => void;
   onSave: () => void;
   menuId: string;
@@ -42,6 +44,7 @@ export function CategoryDialogWithTranslations({
   category,
   supportedLanguages,
   defaultLanguage,
+  restaurantId,
   onClose,
   onSave,
   menuId,
@@ -52,6 +55,27 @@ export function CategoryDialogWithTranslations({
   const [loadingTranslations, setLoadingTranslations] = useState(false);
   const { toast } = useToast();
   const { t } = useTranslation();
+  const { translate: translateAiField, loading: aiTranslating } = useAiTranslation();
+
+  const handleTranslateField = async (lang: string, field: 'name' | 'description') => {
+    const sourceText = translations[defaultLanguage]?.[field];
+    if (!sourceText?.trim()) return;
+    try {
+      const translated = await translateAiField(
+        sourceText,
+        defaultLanguage,
+        lang,
+        restaurantId,
+        field === 'name'
+          ? 'nombre de una categoría de menú de restaurante'
+          : 'descripción de una categoría de menú de restaurante',
+      );
+      handleTranslationChange(lang, field, translated);
+    } catch (e: unknown) {
+      const errorMsg = e instanceof Error ? e.message : t('common.unknownError');
+      toast({ title: t('common.error'), description: errorMsg, variant: 'destructive' });
+    }
+  };
 
   // Load existing translations when editing
   useEffect(() => {
@@ -215,9 +239,24 @@ export function CategoryDialogWithTranslations({
             {supportedLanguages.map(lang => (
               <TabsContent key={lang} value={lang} className="space-y-4 mt-4">
                 <div className="space-y-2">
-                  <Label htmlFor={`cat-name-${lang}`}>
-                    Nombre {lang === defaultLanguage && <span className="text-destructive">*</span>}
-                  </Label>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor={`cat-name-${lang}`}>
+                      Nombre {lang === defaultLanguage && <span className="text-destructive">*</span>}
+                    </Label>
+                    {lang !== defaultLanguage && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 gap-1 text-xs px-2"
+                        disabled={aiTranslating || !translations[defaultLanguage]?.name?.trim()}
+                        onClick={() => handleTranslateField(lang, 'name')}
+                      >
+                        {aiTranslating ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
+                        Traducir con IA
+                      </Button>
+                    )}
+                  </div>
                   <Input
                     id={`cat-name-${lang}`}
                     value={translations[lang]?.name || ''}
@@ -226,7 +265,22 @@ export function CategoryDialogWithTranslations({
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor={`cat-desc-${lang}`}>Descripción (opcional)</Label>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor={`cat-desc-${lang}`}>Descripción (opcional)</Label>
+                    {lang !== defaultLanguage && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 gap-1 text-xs px-2"
+                        disabled={aiTranslating || !translations[defaultLanguage]?.description?.trim()}
+                        onClick={() => handleTranslateField(lang, 'description')}
+                      >
+                        {aiTranslating ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
+                        Traducir con IA
+                      </Button>
+                    )}
+                  </div>
                   <Textarea
                     id={`cat-desc-${lang}`}
                     value={translations[lang]?.description || ''}

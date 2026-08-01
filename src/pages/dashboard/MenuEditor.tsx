@@ -673,6 +673,7 @@ export default function MenuEditor() {
         category={categoryDialog.category}
         supportedLanguages={restaurant.supported_languages}
         defaultLanguage={restaurant.default_language}
+        restaurantId={restaurant.id}
         menuId={selectedMenuId || ''}
         onClose={() => setCategoryDialog({ open: false })}
         onSave={async () => {

@@ -4,29 +4,30 @@ Living document — update the checkboxes as each phase ships, per the project r
 
 ## Phase 0 — Foundations
 
-- [ ] Migration: `ai_jobs`, `ai_usage` (+ `get_ai_credits_used_this_period`), `ai_menu_scores`, `ai_generated_content`, provenance columns (`generated_by` on translations, `description_generated_by` on items), `ai_jobs` added to `supabase_realtime` publication.
-- [ ] `PlanLimits` de-duplication: `src/lib/subscription-limits.ts` is the single source of truth; `src/types/database.ts`'s dead copy removed or re-exported.
-- [ ] `aiCreditsPerMonth` added to `PlanLimits` + `PLAN_LIMITS`; `AI_CREDIT_COSTS` constant added.
-- [ ] `packages/ai/{schemas,providers,agents,prompts,tools,pipelines}/` created; `providers/types.ts`, `providers/openaiCompatible.ts`, `providers/opencodeZen.ts`, `providers/registry.ts`, `schemas/common.ts` written.
-- [ ] `vite.config.ts` / `tsconfig.app.json`: `@ai` alias to `packages/ai/schemas`.
-- [ ] `eslint.config.js`: import-boundary rule blocking `src/**` from `packages/ai/{providers,agents,tools,pipelines}/**`.
-- [ ] `supabase/config.toml`: entries for each new Edge Function (`verify_jwt = false`, manual JWT check inside, matching existing convention).
+- [x] Migration: `ai_jobs`, `ai_usage` (+ `get_ai_credits_used_this_period`), `ai_menu_scores`, `ai_generated_content`, provenance columns (`generated_by` on translations, `description_generated_by` on items), `ai_jobs` added to `supabase_realtime` publication. (written, not yet applied to the live Supabase project — see Deployment checklist)
+- [x] `PlanLimits` de-duplication: `src/lib/subscription-limits.ts` is the single source of truth; `src/types/database.ts`'s dead copy removed (nothing imported it).
+- [x] `aiCreditsPerMonth` added to `PlanLimits` + `PLAN_LIMITS`; `AI_CREDIT_COSTS` constant added.
+- [x] `packages/ai/{schemas,providers,agents,prompts,tools,pipelines}/` created; `providers/types.ts`, `providers/openaiCompatible.ts`, `providers/opencodeZen.ts`, `providers/registry.ts`, `schemas/common.ts` written.
+- [x] `vite.config.ts` / `tsconfig.app.json`: `@ai` alias to `packages/ai/schemas`.
+- [x] `eslint.config.js`: import-boundary rule blocking `src/**` from `packages/ai/{providers,agents,tools,pipelines}/**` (smoke-tested, confirmed it fires).
+- [x] `supabase/config.toml`: entries added per function as each is created.
+- [x] `supabase/functions/_shared/{cors,aiAuth,aiCredits}.ts` — shared JWT/RLS-client/credit-metering helpers reused by every AI Edge Function.
 
-## Phase 1 — AI Description Generator
+## Phase 1 — AI Description Generator ✅ done
 
-- [ ] `packages/ai/schemas/description.ts`, `prompts/descriptionGenerator.ts`, `agents/descriptionAgent.ts`.
-- [ ] Edge Function `supabase/functions/ai-generate-description/index.ts`.
-- [ ] `src/lib/ai-api.ts` (new), `src/hooks/useAiDescription.ts` (new).
-- [ ] UI: "Generar con IA" button + style selector in `ItemDialogWithTranslations.tsx`.
-- [ ] Manual E2E test: generate a description for a real item, confirm it only saves after the existing Save button is clicked, confirm `ai_usage` gets a 1-credit row, confirm free-tier cap rejection past 20 credits.
+- [x] `packages/ai/schemas/description.ts`, `prompts/descriptionGenerator.ts`, `agents/descriptionAgent.ts`.
+- [x] Edge Function `supabase/functions/ai-generate-description/index.ts`.
+- [x] `src/lib/ai-api.ts` (new), `src/hooks/useAiDescription.ts` (new).
+- [x] UI: "Generar con IA" button + style selector in `ItemDialogWithTranslations.tsx`.
+- [ ] Manual E2E test against the deployed function (needs OpenCode Zen keys + `supabase db push`/`functions deploy` — see Deployment checklist). Verified so far: typecheck, lint (incl. the import-boundary rule), and `vite build` all pass.
 
-## Phase 2 — AI Translation
+## Phase 2 — AI Translation ✅ done
 
-- [ ] `packages/ai/schemas/translation.ts`, `prompts/translation.ts`, `agents/translationAgent.ts`.
-- [ ] Edge Function `supabase/functions/ai-translate/index.ts`.
-- [ ] `src/hooks/useAiTranslation.ts`.
-- [ ] UI: "Traducir con IA" button per language tab in `ItemDialogWithTranslations.tsx` and `CategoryDialogWithTranslations.tsx`.
-- [ ] Manual E2E test: translate a field into a second supported language, confirm culinary terms are explained not mistranslated, confirm `generated_by` is set on save.
+- [x] `packages/ai/schemas/translation.ts`, `prompts/translation.ts`, `agents/translationAgent.ts`.
+- [x] Edge Function `supabase/functions/ai-translate/index.ts`.
+- [x] `src/hooks/useAiTranslation.ts`.
+- [x] UI: "Traducir con IA" button per language tab in `ItemDialogWithTranslations.tsx` and `CategoryDialogWithTranslations.tsx` (added `restaurantId` prop to the latter, wired from `MenuEditor.tsx`).
+- [ ] Manual E2E test against the deployed function (same prerequisite as Phase 1). Verified so far: typecheck, lint, and `vite build` all pass.
 
 ## Phase 3 — AI Menu Optimizer
 

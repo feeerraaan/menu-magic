@@ -20,3 +20,6 @@ verify_jwt = false
 
 [functions.ai-generate-description]
 verify_jwt = false
+
+[functions.ai-translate]
+verify_jwt = false
