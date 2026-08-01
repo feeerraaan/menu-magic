@@ -51,8 +51,7 @@ serve(async (req) => {
       .maybeSingle();
     if (categoryError) throw categoryError;
 
-    // deno-lint-ignore no-explicit-any
-    const menu = category?.menus as any;
+    const menu = category?.menus as { restaurant_id?: string; restaurants?: { currency?: string } } | null;
     const restaurantId: string | undefined = menu?.restaurant_id;
     const currency: string | undefined = menu?.restaurants?.currency;
     if (!restaurantId) return jsonResponse({ error: "Could not resolve restaurant for this item" }, 404);

@@ -117,8 +117,8 @@ serve(async (req) => {
       }
     })();
 
-    // deno-lint-ignore no-explicit-any
-    const edgeRuntime = (globalThis as any).EdgeRuntime;
+    const edgeRuntime = (globalThis as unknown as { EdgeRuntime?: { waitUntil?: (p: Promise<unknown>) => void } })
+      .EdgeRuntime;
     if (edgeRuntime?.waitUntil) {
       edgeRuntime.waitUntil(backgroundWork);
     } else {
