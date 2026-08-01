@@ -39,6 +39,145 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_copilot_actions: {
+        Row: {
+          affected_rows: Json
+          confirmed_by: string | null
+          conversation_id: string | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          message_id: string | null
+          preview_payload: Json
+          raw_llm_tool_input: Json
+          resolved_params: Json
+          restaurant_id: string
+          status: string
+          tool_name: string
+          updated_at: string
+          user_id: string | null
+          user_request_text: string | null
+        }
+        Insert: {
+          affected_rows?: Json
+          confirmed_by?: string | null
+          conversation_id?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          message_id?: string | null
+          preview_payload?: Json
+          raw_llm_tool_input?: Json
+          resolved_params?: Json
+          restaurant_id: string
+          status?: string
+          tool_name: string
+          updated_at?: string
+          user_id?: string | null
+          user_request_text?: string | null
+        }
+        Update: {
+          affected_rows?: Json
+          confirmed_by?: string | null
+          conversation_id?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          message_id?: string | null
+          preview_payload?: Json
+          raw_llm_tool_input?: Json
+          resolved_params?: Json
+          restaurant_id?: string
+          status?: string
+          tool_name?: string
+          updated_at?: string
+          user_id?: string | null
+          user_request_text?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_copilot_actions_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "ai_copilot_conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_copilot_actions_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_copilot_conversations: {
+        Row: {
+          created_at: string
+          id: string
+          restaurant_id: string
+          status: string
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          restaurant_id: string
+          status?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          restaurant_id?: string
+          status?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_copilot_conversations_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_copilot_messages: {
+        Row: {
+          content: string | null
+          conversation_id: string
+          created_at: string
+          id: string
+          role: string
+        }
+        Insert: {
+          content?: string | null
+          conversation_id: string
+          created_at?: string
+          id?: string
+          role: string
+        }
+        Update: {
+          content?: string | null
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_copilot_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "ai_copilot_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ai_generated_content: {
         Row: {
           ai_job_id: string | null
@@ -193,6 +332,63 @@ export type Database = {
           },
           {
             foreignKeyName: "ai_menu_scores_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_recommendations: {
+        Row: {
+          ai_job_id: string | null
+          category: string
+          created_at: string
+          detail: string | null
+          id: string
+          restaurant_id: string
+          status: string
+          target_id: string | null
+          target_type: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          ai_job_id?: string | null
+          category?: string
+          created_at?: string
+          detail?: string | null
+          id?: string
+          restaurant_id: string
+          status?: string
+          target_id?: string | null
+          target_type?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          ai_job_id?: string | null
+          category?: string
+          created_at?: string
+          detail?: string | null
+          id?: string
+          restaurant_id?: string
+          status?: string
+          target_id?: string | null
+          target_type?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_recommendations_ai_job_id_fkey"
+            columns: ["ai_job_id"]
+            isOneToOne: false
+            referencedRelation: "ai_jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_recommendations_restaurant_id_fkey"
             columns: ["restaurant_id"]
             isOneToOne: false
             referencedRelation: "restaurants"
@@ -723,8 +919,18 @@ export type Database = {
         | "completed"
         | "failed"
         | "canceled"
-      ai_job_type: "menu_optimizer_run" | "menu_import"
-      ai_usage_kind: "description" | "translation" | "optimizer_run" | "import"
+      ai_job_type:
+        | "menu_optimizer_run"
+        | "menu_import"
+        | "ai_setup"
+        | "business_insights"
+      ai_usage_kind:
+        | "description"
+        | "translation"
+        | "optimizer_run"
+        | "import"
+        | "copilot"
+        | "insights"
       app_role: "admin" | "owner" | "user"
       content_origin: "human" | "ai_generated" | "ai_edited"
       plan_type: "free" | "pro_monthly" | "pro_annual" | "lifetime"
@@ -874,8 +1080,20 @@ export const Constants = {
         "failed",
         "canceled",
       ],
-      ai_job_type: ["menu_optimizer_run", "menu_import"],
-      ai_usage_kind: ["description", "translation", "optimizer_run", "import"],
+      ai_job_type: [
+        "menu_optimizer_run",
+        "menu_import",
+        "ai_setup",
+        "business_insights",
+      ],
+      ai_usage_kind: [
+        "description",
+        "translation",
+        "optimizer_run",
+        "import",
+        "copilot",
+        "insights",
+      ],
       app_role: ["admin", "owner", "user"],
       content_origin: ["human", "ai_generated", "ai_edited"],
       plan_type: ["free", "pro_monthly", "pro_annual", "lifetime"],

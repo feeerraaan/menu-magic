@@ -18,6 +18,7 @@ import type {
   CopilotListConversationsInput,
   CopilotListConversationsResponse,
 } from '@ai/copilot';
+import type { InsightsRunInput, InsightsRunResponse, InsightsRecommendation } from '@ai/insights';
 
 // One function per AI operation, mirroring src/lib/api.ts's convention. Every call goes
 // through supabase.functions.invoke — never a direct provider/agent import (see
@@ -116,6 +117,32 @@ export async function fetchCopilotHistory(input: CopilotHistoryInput): Promise<C
 
 export async function listCopilotConversations(input: CopilotListConversationsInput): Promise<CopilotListConversationsResponse> {
   return (await invokeCopilot({ action: 'list_conversations', ...input })) as CopilotListConversationsResponse;
+}
+
+// --- Phase 7: Business Insights + Recommendations ---
+
+export async function runInsights(input: InsightsRunInput): Promise<InsightsRunResponse> {
+  const { data, error } = await supabase.functions.invoke('ai-insights', { body: input });
+  if (error) throw error;
+  return data as InsightsRunResponse;
+}
+
+export async function fetchRecommendations(restaurantId: string): Promise<InsightsRecommendation[]> {
+  const { data, error } = await supabase
+    .from('ai_recommendations')
+    .select('*')
+    .eq('restaurant_id', restaurantId)
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  return (data ?? []) as unknown as InsightsRecommendation[];
+}
+
+export async function setRecommendationStatus(
+  id: string,
+  status: 'dismissed' | 'actioned',
+): Promise<void> {
+  const { error } = await supabase.from('ai_recommendations').update({ status }).eq('id', id);
+  if (error) throw error;
 }
 
 interface CommitImportedMenuInput {

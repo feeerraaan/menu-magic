@@ -2,12 +2,15 @@ import { useOutletContext } from 'react-router-dom';
 import { Restaurant } from '@/types/database';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { useAiInsights } from '@/hooks/useAiInsights';
+import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { BarChart3, Eye, Globe, TrendingUp, Calendar } from 'lucide-react';
+import { BarChart3, Eye, Globe, TrendingUp, Calendar, Sparkles, Lightbulb, X, Check, Loader2 } from 'lucide-react';
 import { languages } from '@/lib/i18n';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { Button } from '@/components/ui/button';
 
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
 
@@ -15,6 +18,21 @@ export default function Analytics() {
   const { restaurant } = useOutletContext<{ restaurant: Restaurant }>();
   const { t } = useTranslation();
   const { stats, loading, error } = useAnalytics(restaurant?.id);
+  const insights = useAiInsights(restaurant?.id);
+  const { toast } = useToast();
+
+  const handleRunInsights = async () => {
+    try {
+      await insights.run();
+      toast({ title: 'Análisis generado' });
+    } catch (e: unknown) {
+      toast({
+        title: 'Error',
+        description: e instanceof Error ? e.message : 'Error desconocido',
+        variant: 'destructive',
+      });
+    }
+  };
 
   if (loading) {
     return (
@@ -209,6 +227,80 @@ export default function Analytics() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Phase 7 — AI Business Insights + Recommendations */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0">
+          <div>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-primary" />
+              Análisis IA del negocio
+            </CardTitle>
+            <CardDescription>
+              {insights.narrative
+                ? 'Narrativa consultora sobre tus datos y sugerencias accionables.'
+                : 'Genera un análisis consultor de tus datos y recomendaciones concretas (3 créditos IA).'}
+            </CardDescription>
+          </div>
+          <Button onClick={handleRunInsights} disabled={insights.running} className="gap-2 shrink-0">
+            {insights.running ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+            {insights.running ? 'Analizando...' : insights.narrative ? 'Actualizar análisis' : 'Generar análisis'}
+          </Button>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {insights.error && (
+            <div className="rounded-lg border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive">
+              {insights.error.message}
+            </div>
+          )}
+
+          {insights.narrative && (
+            <div className="rounded-lg bg-secondary/40 p-4">
+              <p className="text-sm leading-relaxed whitespace-pre-line">{insights.narrative}</p>
+              {insights.lastRunAt && (
+                <p className="text-xs text-muted-foreground mt-2">
+                  Generado el {new Date(insights.lastRunAt).toLocaleString('es-ES')}
+                </p>
+              )}
+            </div>
+          )}
+
+          {!insights.narrative && !insights.running && (
+            <div className="flex items-center gap-3 rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
+              <Lightbulb className="h-5 w-5 shrink-0 opacity-60" />
+              Pulsa "Generar análisis" para que la IA revise tus vistas, tu menú y la evolución del
+              optimizador, y te proponga mejoras concretas.
+            </div>
+          )}
+
+          {insights.recommendations.length > 0 && (
+            <div className="space-y-3">
+              <p className="text-sm font-medium flex items-center gap-2">
+                <Lightbulb className="h-4 w-4 text-warning" /> Recomendaciones
+              </p>
+              {insights.recommendations.map((rec) => (
+                <div key={rec.id} className="flex items-start justify-between gap-3 rounded-lg border p-3">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium">{rec.title}</p>
+                    {rec.detail && <p className="text-sm text-muted-foreground mt-0.5">{rec.detail}</p>}
+                    {rec.category && (
+                      <p className="text-[11px] text-muted-foreground mt-1 uppercase tracking-wide">{rec.category}</p>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <Button size="icon" variant="ghost" onClick={() => insights.action(rec.id)} title="Hecho">
+                      <Check className="h-4 w-4 text-emerald-600" />
+                    </Button>
+                    <Button size="icon" variant="ghost" onClick={() => insights.dismiss(rec.id)} title="Descartar">
+                      <X className="h-4 w-4 text-muted-foreground" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

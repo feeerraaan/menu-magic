@@ -87,7 +87,16 @@ Living document — update the checkboxes as each phase ships, per the project r
 - [x] **Tooling upgrade:** Deno CLI installed (`/root/.deno/bin/deno`); all 4 existing AI Edge Functions + the new `ai-copilot` now pass `deno check` (previously the Deno side was never typechecked in this repo).
 - [x] Manual E2E test against the deployed function (2026-08-01): seeded a throwaway pro-tier restaurant (3 items across Vinos/Entrantes), started a conversation, asked "sube un 10% el precio de todos los vinos" — agent chained `search_items` → `bulk_adjust_prices`, returned a preview (`2 platos`, 24→26.4, 18→19.8), **prices unchanged before confirm**, then `confirm_preview` applied exactly those 2 rows. `ai_copilot_actions` audit row recorded `status:executed` + `affected_rows`; `ai_usage` charged 2 credits (kind `copilot`); anon client sees 0 rows on `ai_copilot_actions` (RLS verified).
 
+## Phase 7 — AI Business Insights + AI Recommendations ✅ done
+
+- [x] Migration `20260801180000_...`: `ai_recommendations` (discrete dismissible cards with lifecycle, owner UPDATE for dismiss/action, service-role insert only) + `ai_job_type` gains `'business_insights'` + `ai_usage_kind` gains `'insights'`.
+- [x] `packages/ai/schemas/insights.ts`, `prompts/insights.ts`, `agents/insightsAgent.ts`, `pipelines/insightsPipeline.ts` — deterministic metrics (30-day views, top items/categories, dietary counts, photo/description coverage, optimizer score trend) fed to the LLM for narrative + ≤5 recommendation proposals.
+- [x] Edge Function `supabase/functions/ai-insights/index.ts` — synchronous: credit check → `ai_jobs` row (`business_insights`) → pipeline → narrative in `ai_jobs.output`, stale `open` cards deleted, new cards inserted (service-role), `ai_usage` charged 3 credits. Dismissed/actioned cards survive regeneration.
+- [x] `src/lib/ai-api.ts` + `src/hooks/useAiInsights.ts` + UI section in `src/pages/dashboard/Analytics.tsx` (narrative panel + recommendation cards with done/dismiss actions).
+- [x] **Provider hardening:** `generateStructured` in `openaiCompatible.ts` now retries empty/non-JSON completions up to 3× — mitigates the documented free-model flakiness that hit Insights on its first live attempt (empty body); re-benefits every AI feature.
+- [x] Manual E2E test against the deployed function (2026-08-01): seeded a pro-tier restaurant (2 items, one vegan + one duplicated name, ~6 views), ran `ai-insights` — got a realistic Spanish narrative, 5 recommendations (fotos/descripciones/dietary/idiomas/vistas) with correct `target_type`/`target_id`, owner PATCH to `dismissed` worked (RLS), `ai_usage` charged 3 credits (kind `insights`).
+
 ## Explicitly not built yet (see `ROADMAP.md` / `FEATURE_SPECIFICATIONS.md`)
 
-Phase 7 (Insights + Recommendations), Phase 8 (Customer Assistant) are fully specified but not yet built. AI Image Generation is permanently excluded (see `VISION.md`), not merely deferred.
+Phase 8 (Customer Assistant) is fully specified but not yet built. AI Image Generation is permanently excluded (see `VISION.md`), not merely deferred.
 

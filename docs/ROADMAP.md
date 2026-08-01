@@ -36,9 +36,9 @@ Onboarding's alternate path: "upload your menu" next to the existing 3-step manu
 
 The riskiest phase: a chat that performs real mutations (price changes, bulk edits, new items) via natural language. Sequenced after every single-purpose pipeline it depends on (Description, Translation) is already reliable in isolation, because the Copilot's job is to orchestrate those pipelines plus direct table mutations behind a mandatory preview-and-confirm gate. **Built (2026-08-01):** full 12-tool set, deterministic resolver + executor boundary, preview/confirm gate, audit trail (`ai_copilot_actions`), server-side conversation history, 2 credits/turn, E2E-verified live (price change previewed → confirmed → applied). Function-calling prerequisite validated against the real model first.
 
-## Phase 7 — AI Business Insights + AI Recommendations *(future)*
+## Phase 7 — AI Business Insights + AI Recommendations ✅ done
 
-Bundled together: both are read-mostly (Insights narrates from existing analytics + Optimizer data; Recommendations derives dismissible suggestion cards from Optimizer/Insights output). Lower risk, ships as retention/polish once the core paid-tier value (Import, Translation, Copilot) is already justifying upgrades.
+Bundled together: both are read-mostly (Insights narrates from existing analytics + Optimizer data; Recommendations derives dismissible suggestion cards from Optimizer/Insights output). **Built (2026-08-01):** consultant-style narrative on demand (3 credits) stored in `ai_jobs.output`, discrete dismissible `ai_recommendations` cards with lifecycle (dismissed/actioned survive regeneration), UI section in the Analytics page. E2E-verified live.
 
 ## Phase 8 — AI Customer Assistant *(future)*
 

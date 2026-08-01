@@ -146,21 +146,35 @@ export function createOpenAiCompatibleProvider(config: OpenAiCompatibleConfig): 
     },
 
     async generateStructured<T>(opts: GenerateStructuredOptions<T>): Promise<T> {
-      const json = await callChatCompletions(config, {
-        model: config.model,
-        messages: toWireMessages(opts),
-        temperature: opts.temperature ?? 0.3,
-        max_tokens: opts.maxTokens ?? 1024,
-        response_format: { type: 'json_object' },
-      });
-      const raw = json.choices?.[0]?.message?.content ?? '{}';
-      let parsed: unknown;
-      try {
-        parsed = JSON.parse(raw);
-      } catch {
-        throw new Error(`Provider ${config.id}: model did not return valid JSON — got: ${raw.slice(0, 200)}`);
+      // The free OpenCode Zen models intermittently return an empty/non-JSON completion (~1 in
+      // 3 on description generation, see docs/IMPLEMENTATION_PLAN.md). Retry the whole request
+      // a few times before giving up — the failure is model-side, not request-side.
+      let lastError: unknown;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          const json = await callChatCompletions(config, {
+            model: config.model,
+            messages: toWireMessages(opts),
+            temperature: opts.temperature ?? 0.3,
+            max_tokens: opts.maxTokens ?? 1024,
+            response_format: { type: 'json_object' },
+          });
+          const raw = json.choices?.[0]?.message?.content ?? '{}';
+          let parsed: unknown;
+          try {
+            parsed = JSON.parse(raw);
+          } catch {
+            throw new Error(`Provider ${config.id}: model did not return valid JSON — got: ${raw.slice(0, 200)}`);
+          }
+          return opts.schema.parse(parsed);
+        } catch (err) {
+          lastError = err;
+          // Non-retryable: schema validation failures (model answered structurally wrong) won't
+          // fix themselves on retry for free — but an empty body might, so retry regardless.
+          await new Promise((r) => setTimeout(r, 500));
+        }
       }
-      return opts.schema.parse(parsed);
+      throw lastError instanceof Error ? lastError : new Error(`Provider ${config.id}: structured generation failed`);
     },
   };
 }
