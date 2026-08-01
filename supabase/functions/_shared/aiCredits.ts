@@ -9,7 +9,7 @@
 import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 
 export type PlanType = "free" | "pro_monthly" | "pro_annual" | "lifetime";
-export type AiUsageKind = "description" | "translation" | "optimizer_run" | "import";
+export type AiUsageKind = "description" | "translation" | "optimizer_run" | "import" | "copilot" | "insights";
 
 export const PLAN_AI_CREDITS: Record<PlanType, number> = {
   free: 20,
@@ -24,6 +24,8 @@ export const AI_CREDIT_COSTS: Record<AiUsageKind, number> = {
   translation: 1,
   optimizer_run: 3,
   import: 15,
+  copilot: 2,
+  insights: 3,
 };
 
 export interface CreditCheckResult {

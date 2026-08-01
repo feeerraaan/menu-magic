@@ -16,6 +16,7 @@ import MenuEditor from "./pages/dashboard/MenuEditor";
 import QRCodePage from "./pages/dashboard/QRCode";
 import Analytics from "./pages/dashboard/Analytics";
 import AiOptimizer from "./pages/dashboard/AiOptimizer";
+import AiCopilot from "./pages/dashboard/AiCopilot";
 import Settings from "./pages/dashboard/Settings";
 import Billing from "./pages/dashboard/Billing";
 import PaymentSuccess from "./pages/dashboard/PaymentSuccess";
@@ -45,6 +46,7 @@ const App = () => (
                 <Route path="qr" element={<QRCodePage />} />
                 <Route path="analytics" element={<Analytics />} />
                 <Route path="ai-optimizer" element={<AiOptimizer />} />
+                <Route path="ai-copilot" element={<AiCopilot />} />
                 <Route path="settings" element={<Settings />} />
                 <Route path="billing" element={<Billing />} />
                 <Route path="billing/success" element={<PaymentSuccess />} />

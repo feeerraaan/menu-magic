@@ -8,6 +8,7 @@ import type {
   GenerateStructuredOptions,
   LLMMessage,
   LLMProvider,
+  LLMToolCall,
   ProviderId,
 } from './types.ts';
 
@@ -19,13 +20,62 @@ export interface OpenAiCompatibleConfig {
   extraHeaders?: Record<string, string>;
 }
 
-function toWireMessages(opts: CompleteOptions): LLMMessage[] {
-  return opts.system ? [{ role: 'system', content: opts.system }, ...opts.messages] : opts.messages;
+// Serializes internal LLMMessage objects into the OpenAI wire format. The provider contract
+// (types.ts) uses a compact shape for tool calls ({id,name,arguments}); the wire format
+// requires the nested `type: 'function'` + `function: {...}` wrapper, and DeepSeek (the
+// current Zen backend) rejects messages missing it with "missing field `type`".
+function toWireMessages(opts: CompleteOptions): Record<string, unknown>[] {
+  const messages: LLMMessage[] = opts.messages;
+  const all: LLMMessage[] = opts.system
+    ? [{ role: 'system', content: opts.system }, ...messages]
+    : messages;
+  return all.map((m): Record<string, unknown> => {
+    if (m.role === 'assistant' && m.tool_calls && m.tool_calls.length > 0) {
+      return {
+        role: 'assistant',
+        content: m.content ?? null,
+        tool_calls: m.tool_calls.map((tc) => ({
+          id: tc.id,
+          type: 'function',
+          function: { name: tc.name, arguments: tc.arguments },
+        })),
+      };
+    }
+    if (m.role === 'tool') {
+      return { role: 'tool', tool_call_id: m.tool_call_id, name: m.name, content: m.content ?? '' };
+    }
+    return { role: m.role, content: m.content ?? '' };
+  });
 }
 
 interface ChatCompletionsResponse {
-  choices?: Array<{ message?: { content?: string } }>;
+  choices?: Array<{ message?: { content?: string; tool_calls?: WireToolCall[] } }>;
   usage?: { prompt_tokens?: number; completion_tokens?: number };
+}
+
+function toUsage(usage: ChatCompletionsResponse['usage']): { inputTokens: number; outputTokens: number } | undefined {
+  if (!usage) return undefined;
+  return {
+    inputTokens: usage.prompt_tokens ?? 0,
+    outputTokens: usage.completion_tokens ?? 0,
+  };
+}
+
+interface WireToolCall {
+  id?: string;
+  type?: string;
+  function?: { name?: string; arguments?: string };
+}
+
+function toToolCalls(wire: WireToolCall[] | undefined): LLMToolCall[] | undefined {
+  if (!wire || wire.length === 0) return undefined;
+  return wire
+    .filter((tc) => tc.function?.name)
+    .map((tc) => ({
+      id: tc.id ?? `call_${Math.random().toString(36).slice(2)}`,
+      name: tc.function!.name!,
+      arguments: tc.function!.arguments ?? '{}',
+    }));
 }
 
 async function callChatCompletions(
@@ -83,13 +133,15 @@ export function createOpenAiCompatibleProvider(config: OpenAiCompatibleConfig): 
         messages: toWireMessages(opts),
         temperature: opts.temperature ?? 0.7,
         max_tokens: opts.maxTokens ?? 1024,
+        ...(opts.tools ? { tools: opts.tools, tool_choice: 'auto' } : {}),
+        ...(opts.disableThinking ? { thinking: { type: 'disabled' } } : {}),
       });
-      const text = json.choices?.[0]?.message?.content ?? '';
+      const message = json.choices?.[0]?.message;
+      const text = message?.content ?? '';
       return {
         text,
-        usage: json.usage
-          ? { inputTokens: json.usage.prompt_tokens, outputTokens: json.usage.completion_tokens }
-          : undefined,
+        toolCalls: toToolCalls(message?.tool_calls),
+        usage: toUsage(json.usage),
       };
     },
 

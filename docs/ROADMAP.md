@@ -32,9 +32,9 @@ The user's explicitly stated top-priority feature, built last of the four on pur
 
 Onboarding's alternate path: "upload your menu" next to the existing 3-step manual wizard (`OnboardingWizard.tsx`). Near-zero marginal cost once Import exists — it reuses the exact same pipeline tagged with a different job type (`job_type='ai_setup'`). Sequenced right after Import to capture new-signup conversion while that pipeline is fresh. **Built (2026-08-01):** fork after step 1, same upload UI as AI Import, same 15-credit cost, E2E-verified live.
 
-## Phase 6 — AI Restaurant Copilot *(future)*
+## Phase 6 — AI Restaurant Copilot ✅ done
 
-The riskiest phase: a chat that performs real mutations (price changes, bulk edits, new items) via natural language. Sequenced after every single-purpose pipeline it depends on (Description, Translation) is already reliable in isolation, because the Copilot's job is to orchestrate those pipelines plus direct table mutations behind a mandatory preview-and-confirm gate — see `FEATURE_SPECIFICATIONS.md` for the full tool-calling and audit-log design, already specified even though not yet built.
+The riskiest phase: a chat that performs real mutations (price changes, bulk edits, new items) via natural language. Sequenced after every single-purpose pipeline it depends on (Description, Translation) is already reliable in isolation, because the Copilot's job is to orchestrate those pipelines plus direct table mutations behind a mandatory preview-and-confirm gate. **Built (2026-08-01):** full 12-tool set, deterministic resolver + executor boundary, preview/confirm gate, audit trail (`ai_copilot_actions`), server-side conversation history, 2 credits/turn, E2E-verified live (price change previewed → confirmed → applied). Function-calling prerequisite validated against the real model first.
 
 ## Phase 7 — AI Business Insights + AI Recommendations *(future)*
 

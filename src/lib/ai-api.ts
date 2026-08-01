@@ -4,6 +4,20 @@ import type { TranslateFieldInput, TranslateFieldResult } from '@ai/translation'
 import type { OptimizerOutput, MenuScoreHistoryEntry } from '@ai/optimizer';
 import type { MenuImportStartInput, MenuImportStartResponse, MenuImportResult } from '@ai/menuImport';
 import type { AiJob } from '@ai/common';
+import type {
+  CopilotStartConversationInput,
+  CopilotStartConversationResponse,
+  CopilotMessageInput,
+  CopilotMessageTurn,
+  CopilotConfirmPreviewInput,
+  CopilotConfirmPreviewResponse,
+  CopilotCancelPreviewInput,
+  CopilotCancelPreviewResponse,
+  CopilotHistoryInput,
+  CopilotHistoryResponse,
+  CopilotListConversationsInput,
+  CopilotListConversationsResponse,
+} from '@ai/copilot';
 
 // One function per AI operation, mirroring src/lib/api.ts's convention. Every call goes
 // through supabase.functions.invoke — never a direct provider/agent import (see
@@ -72,6 +86,36 @@ export async function fetchAiJob(jobId: string): Promise<AiJob> {
     .single();
   if (error) throw error;
   return data as AiJob;
+}
+
+async function invokeCopilot(body: Record<string, unknown>): Promise<unknown> {
+  const { data, error } = await supabase.functions.invoke('ai-copilot', { body });
+  if (error) throw error;
+  return data;
+}
+
+export async function startCopilotConversation(input: CopilotStartConversationInput): Promise<CopilotStartConversationResponse> {
+  return (await invokeCopilot({ action: 'start_conversation', ...input })) as CopilotStartConversationResponse;
+}
+
+export async function sendCopilotMessage(input: CopilotMessageInput): Promise<CopilotMessageTurn> {
+  return (await invokeCopilot({ action: 'send_message', ...input })) as CopilotMessageTurn;
+}
+
+export async function confirmCopilotPreview(input: CopilotConfirmPreviewInput): Promise<CopilotConfirmPreviewResponse> {
+  return (await invokeCopilot({ action: 'confirm_preview', ...input })) as CopilotConfirmPreviewResponse;
+}
+
+export async function cancelCopilotPreview(input: CopilotCancelPreviewInput): Promise<CopilotCancelPreviewResponse> {
+  return (await invokeCopilot({ action: 'cancel_preview', ...input })) as CopilotCancelPreviewResponse;
+}
+
+export async function fetchCopilotHistory(input: CopilotHistoryInput): Promise<CopilotHistoryResponse> {
+  return (await invokeCopilot({ action: 'get_history', ...input })) as CopilotHistoryResponse;
+}
+
+export async function listCopilotConversations(input: CopilotListConversationsInput): Promise<CopilotListConversationsResponse> {
+  return (await invokeCopilot({ action: 'list_conversations', ...input })) as CopilotListConversationsResponse;
 }
 
 interface CommitImportedMenuInput {

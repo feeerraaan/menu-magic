@@ -30,7 +30,8 @@ import {
   LogOut,
   Crown,
   Sparkles,
-  Wand2
+  Wand2,
+  MessageSquare
 } from 'lucide-react';
 
 export function DashboardSidebar() {
@@ -62,6 +63,7 @@ export function DashboardSidebar() {
     { title: t('dashboard.qrCode'), url: '/dashboard/qr', icon: QrCode },
     { title: t('dashboard.analytics'), url: '/dashboard/analytics', icon: BarChart3 },
     { title: 'Optimizador IA', url: '/dashboard/ai-optimizer', icon: Wand2 },
+    { title: 'Copilot IA', url: '/dashboard/ai-copilot', icon: MessageSquare },
     { title: t('dashboard.settings'), url: '/dashboard/settings', icon: Settings },
     { title: t('dashboard.billing'), url: '/dashboard/billing', icon: CreditCard },
   ];

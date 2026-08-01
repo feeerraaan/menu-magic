@@ -89,13 +89,15 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
 // ============================================
 // AI CREDIT COSTS - per-operation cost against the unified aiCreditsPerMonth pool
 // ============================================
-export type AiUsageKind = 'description' | 'translation' | 'optimizer_run' | 'import';
+export type AiUsageKind = 'description' | 'translation' | 'optimizer_run' | 'import' | 'copilot' | 'insights';
 
 export const AI_CREDIT_COSTS: Record<AiUsageKind, number> = {
   description: 1,
   translation: 1,
   optimizer_run: 3,
   import: 15,
+  copilot: 2,
+  insights: 3,
 };
 
 // ============================================
