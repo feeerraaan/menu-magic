@@ -50,7 +50,7 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
     analytics: false,
     qrCustomization: false,
     manualSetup: false,
-    aiCreditsPerMonth: 20,
+    aiCreditsPerMonth: 100,
     aiCustomerAssistantEnabled: false,
   },
   pro_monthly: {

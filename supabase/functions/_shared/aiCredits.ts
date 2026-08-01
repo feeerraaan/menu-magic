@@ -12,7 +12,7 @@ export type PlanType = "free" | "pro_monthly" | "pro_annual" | "lifetime";
 export type AiUsageKind = "description" | "translation" | "optimizer_run" | "import" | "copilot" | "insights";
 
 export const PLAN_AI_CREDITS: Record<PlanType, number> = {
-  free: 20,
+  free: 100,
   pro_monthly: 300,
   pro_annual: 500,
   lifetime: 1000,
