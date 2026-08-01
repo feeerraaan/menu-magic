@@ -56,6 +56,14 @@ export async function startMenuImport(input: MenuImportStartInput): Promise<Menu
   return data as MenuImportStartResponse;
 }
 
+export async function startAiSetupImport(input: MenuImportStartInput): Promise<MenuImportStartResponse> {
+  const { data, error } = await supabase.functions.invoke('ai-import-start', {
+    body: { ...input, jobType: 'ai_setup' },
+  });
+  if (error) throw error;
+  return data as MenuImportStartResponse;
+}
+
 export async function fetchAiJob(jobId: string): Promise<AiJob> {
   const { data, error } = await supabase
     .from('ai_jobs')

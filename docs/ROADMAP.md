@@ -1,8 +1,10 @@
 # SaCarta AI Roadmap
 
-Nine features, sequenced across two horizons: **Phases 1-4 are built in this engagement.** Phases 5-9 are fully specified in `FEATURE_SPECIFICATIONS.md` but not implemented yet — they're sequenced for a future build.
+Nine features, sequenced across two horizons: **Phases 1-5 are built.** Phases 6-8 (Copilot, Insights + Recommendations, Customer Assistant) are fully specified in `FEATURE_SPECIFICATIONS.md` but not implemented yet — they're sequenced for a future build.
 
 AI Image Generation is not on this roadmap at all, in any phase — see `VISION.md` for why. It is not "phase 10," it is excluded.
+
+> **Numbering note:** the original plan reserved a "Phase 6" for the (now permanently excluded) AI Image Generator. In practice it never existed, so after Phase 5 the roadmap continues at **Phase 6 = Copilot**, **Phase 7 = Insights + Recommendations**, **Phase 8 = Customer Assistant** — matching `FEATURE_SPECIFICATIONS.md`.
 
 ## Sequencing logic (why this order, not feature-brief order)
 
@@ -26,21 +28,19 @@ The user's explicitly stated top-priority feature, built last of the four on pur
 
 ---
 
-## Phase 5 — AI Setup *(future)*
+## Phase 5 — AI Setup ✅ done
 
-Onboarding's alternate path: "upload your menu" next to the existing 3-step manual wizard (`OnboardingWizard.tsx`). Near-zero marginal cost once Import exists — it reuses the exact same pipeline tagged with a different job type. Sequenced right after Import (in a future engagement) to capture new-signup conversion while that pipeline is fresh.
+Onboarding's alternate path: "upload your menu" next to the existing 3-step manual wizard (`OnboardingWizard.tsx`). Near-zero marginal cost once Import exists — it reuses the exact same pipeline tagged with a different job type (`job_type='ai_setup'`). Sequenced right after Import to capture new-signup conversion while that pipeline is fresh. **Built (2026-08-01):** fork after step 1, same upload UI as AI Import, same 15-credit cost, E2E-verified live.
 
-## Phase 6 — *(intentionally skipped — was AI Image Generator, permanently excluded, see VISION.md)*
-
-## Phase 7 — AI Restaurant Copilot *(future)*
+## Phase 6 — AI Restaurant Copilot *(future)*
 
 The riskiest phase: a chat that performs real mutations (price changes, bulk edits, new items) via natural language. Sequenced after every single-purpose pipeline it depends on (Description, Translation) is already reliable in isolation, because the Copilot's job is to orchestrate those pipelines plus direct table mutations behind a mandatory preview-and-confirm gate — see `FEATURE_SPECIFICATIONS.md` for the full tool-calling and audit-log design, already specified even though not yet built.
 
-## Phase 8 — AI Business Insights + AI Recommendations *(future)*
+## Phase 7 — AI Business Insights + AI Recommendations *(future)*
 
 Bundled together: both are read-mostly (Insights narrates from existing analytics + Optimizer data; Recommendations derives dismissible suggestion cards from Optimizer/Insights output). Lower risk, ships as retention/polish once the core paid-tier value (Import, Translation, Copilot) is already justifying upgrades.
 
-## Phase 9 — AI Customer Assistant *(future)*
+## Phase 8 — AI Customer Assistant *(future)*
 
 Sequenced last because it is the only AI feature exposed to anonymous, potentially adversarial public internet traffic — a qualitatively different cost/abuse surface from every owner-facing feature before it. It has no dependency on any other AI feature to function (it only needs the already-public menu data), so there's no technical reason to rush it; shipping it last means its rate-limiting design benefits from real usage-cost data gathered from Phases 1-8.
 

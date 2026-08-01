@@ -13,9 +13,13 @@ interface RequestBody {
   url?: string;
   fileBase64?: string;
   fileName?: string;
+  // Phase 5: allows the onboarding flow to tag its import runs distinctly ('ai_setup') for
+  // analytics while reusing this exact function + importPipeline.ts. Defaults to 'menu_import'.
+  jobType?: "menu_import" | "ai_setup";
 }
 
 const VALID_SOURCE_TYPES: MenuImportSourceType[] = ["text", "url", "pdf"];
+const VALID_JOB_TYPES = ["menu_import", "ai_setup"];
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -42,6 +46,11 @@ serve(async (req) => {
       );
     }
 
+    const jobType = body.jobType ?? "menu_import";
+    if (!VALID_JOB_TYPES.includes(jobType)) {
+      return jsonResponse({ error: `jobType "${jobType}" is not supported` }, 400);
+    }
+
     const { data: restaurant, error: restaurantError } = await supabaseUser
       .from("restaurants")
       .select("id")
@@ -63,7 +72,7 @@ serve(async (req) => {
       .insert({
         restaurant_id: body.restaurantId,
         created_by: userId,
-        job_type: "menu_import",
+        job_type: jobType,
         status: "queued",
         input: { sourceType: body.sourceType, fileName: body.fileName ?? null },
       })

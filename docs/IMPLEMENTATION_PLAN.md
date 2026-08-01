@@ -62,6 +62,16 @@ Living document — update the checkboxes as each phase ships, per the project r
 
 **Note on Vercel:** `sacarta.vercel.app`'s `VITE_SUPABASE_*` production env vars already pointed at `dtmnomjbfziwfwheqcfx` before this session (confirmed live). The deployed bundle does not yet include this AI layer — it's still building from `main`, since these phases lived on `feature/ai-layer-phase-1-4` until this session merged and pushed it to `main` (see git history for the merge commit). A fresh Vercel deploy is triggered by that push.
 
-## Explicitly not in this engagement (see `ROADMAP.md` / `FEATURE_SPECIFICATIONS.md`)
+## Phase 5 — AI Setup ✅ done
 
-Phase 5 (AI Setup), Phase 6 (AI Copilot), Phase 7 (Insights + Recommendations), Phase 8 (Customer Assistant) are fully specified but not built. AI Image Generation is permanently excluded (see `VISION.md`), not merely deferred.
+- [x] Migration `20260801160000_...`: `ALTER TYPE public.ai_job_type ADD VALUE 'ai_setup'` (no new tables — reuses `ai_jobs` + `importPipeline.ts` entirely, per spec).
+- [x] Edge Function `ai-import-start` extended with an optional `jobType` body param (`menu_import` default, `ai_setup` allowed), so the onboarding flow tags its runs distinctly for analytics. Same pipeline, same 15-credit cost.
+- [x] `src/lib/ai-api.ts` + `src/hooks/useAiImport.ts` + `src/components/dashboard/AiImportDialog.tsx`: `jobType` prop threaded through.
+- [x] UI: `OnboardingWizard.tsx` fork after step 1 — "Crear mi menú a mano" (continues to the existing address/currency steps) vs. "Subir mi menú — la IA lo monta" (opens the AiImportDialog tagged `jobType="ai_setup"`; on commit, the auto-created empty default menu is deleted and the flow jumps to the existing `handleFinish()`).
+- [x] Migración aplicada al proyecto vivo + `ai-import-start` redeployada.
+- [x] Manual E2E test against the deployed function (2026-08-01): created a throwaway user/restaurant via the service-role admin API, called `ai-import-start` with `jobType="ai_setup"` and a 2-category plain-text menu — job went `queued→completed` with `job_type="ai_setup"`, correct parse, `ai_usage` charged 15 credits (kind `import`), then cleaned up.
+
+## Explicitly not built yet (see `ROADMAP.md` / `FEATURE_SPECIFICATIONS.md`)
+
+Phase 6 (AI Copilot), Phase 7 (Insights + Recommendations), Phase 8 (Customer Assistant) are fully specified but not yet built. AI Image Generation is permanently excluded (see `VISION.md`), not merely deferred.
+

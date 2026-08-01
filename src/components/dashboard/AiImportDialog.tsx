@@ -10,12 +10,16 @@ import { useAiImport } from '@/hooks/useAiImport';
 import { useToast } from '@/hooks/use-toast';
 import * as aiApi from '@/lib/ai-api';
 import type { MenuImportResult, MenuImportSourceType } from '@ai/menuImport';
+import type { AiJobType } from '@ai/common';
 
 interface AiImportDialogProps {
   open: boolean;
   restaurantId: string;
   onClose: () => void;
   onImported: () => void;
+  // Phase 5 (AI Setup): when set to 'ai_setup', the ai_jobs row is tagged distinctly so
+  // onboarding imports are separable in analytics. Same pipeline and cost as 'menu_import'.
+  jobType?: AiJobType;
 }
 
 function fileToBase64(file: File): Promise<string> {
@@ -30,8 +34,8 @@ function fileToBase64(file: File): Promise<string> {
   });
 }
 
-export function AiImportDialog({ open, restaurantId, onClose, onImported }: AiImportDialogProps) {
-  const { start, reset, starting, job, result, error } = useAiImport(restaurantId);
+export function AiImportDialog({ open, restaurantId, onClose, onImported, jobType }: AiImportDialogProps) {
+  const { start, reset, starting, job, result, error } = useAiImport(restaurantId, jobType);
   const { toast } = useToast();
   const [sourceMode, setSourceMode] = useState<MenuImportSourceType>('text');
   const [textValue, setTextValue] = useState('');

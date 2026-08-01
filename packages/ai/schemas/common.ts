@@ -5,7 +5,7 @@
 
 export type AiUsageKind = 'description' | 'translation' | 'optimizer_run' | 'import';
 
-export type AiJobType = 'menu_optimizer_run' | 'menu_import';
+export type AiJobType = 'menu_optimizer_run' | 'menu_import' | 'ai_setup';
 
 export type AiJobStatus = 'queued' | 'processing' | 'completed' | 'failed' | 'canceled';
 

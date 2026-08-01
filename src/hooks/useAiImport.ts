@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import * as aiApi from '@/lib/ai-api';
 import type { MenuImportSourceType, MenuImportResult } from '@ai/menuImport';
-import type { AiJob } from '@ai/common';
+import type { AiJob, AiJobType } from '@ai/common';
 
-export function useAiImport(restaurantId: string | undefined) {
+export function useAiImport(restaurantId: string | undefined, jobType: AiJobType = 'menu_import') {
   const [starting, setStarting] = useState(false);
   const [job, setJob] = useState<AiJob | null>(null);
   const [error, setError] = useState<Error | null>(null);
@@ -21,7 +21,10 @@ export function useAiImport(restaurantId: string | undefined) {
     setError(null);
     setJob(null);
     try {
-      const { jobId } = await aiApi.startMenuImport({ ...input, restaurantId });
+      const payload = { ...input, restaurantId, jobType };
+      const { jobId } = jobType === 'ai_setup'
+        ? await aiApi.startAiSetupImport(payload)
+        : await aiApi.startMenuImport(payload);
       const initial = await aiApi.fetchAiJob(jobId);
       setJob(initial);
       return jobId;
