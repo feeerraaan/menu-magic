@@ -10,10 +10,241 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.1"
+    PostgrestVersion: "14.15"
+  }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
   }
   public: {
     Tables: {
+      ai_generated_content: {
+        Row: {
+          ai_job_id: string | null
+          content: string
+          content_type: Database["public"]["Enums"]["ai_content_type"]
+          created_at: string
+          id: string
+          language: string | null
+          restaurant_id: string
+          reviewed_at: string | null
+          status: Database["public"]["Enums"]["ai_content_status"]
+          style: string | null
+          target_id: string
+          target_type: Database["public"]["Enums"]["ai_content_target"]
+        }
+        Insert: {
+          ai_job_id?: string | null
+          content: string
+          content_type: Database["public"]["Enums"]["ai_content_type"]
+          created_at?: string
+          id?: string
+          language?: string | null
+          restaurant_id: string
+          reviewed_at?: string | null
+          status?: Database["public"]["Enums"]["ai_content_status"]
+          style?: string | null
+          target_id: string
+          target_type: Database["public"]["Enums"]["ai_content_target"]
+        }
+        Update: {
+          ai_job_id?: string | null
+          content?: string
+          content_type?: Database["public"]["Enums"]["ai_content_type"]
+          created_at?: string
+          id?: string
+          language?: string | null
+          restaurant_id?: string
+          reviewed_at?: string | null
+          status?: Database["public"]["Enums"]["ai_content_status"]
+          style?: string | null
+          target_id?: string
+          target_type?: Database["public"]["Enums"]["ai_content_target"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_generated_content_ai_job_id_fkey"
+            columns: ["ai_job_id"]
+            isOneToOne: false
+            referencedRelation: "ai_jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_generated_content_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_jobs: {
+        Row: {
+          ai_credits_charged: number
+          completed_at: string | null
+          created_at: string
+          created_by: string
+          error: string | null
+          id: string
+          input: Json
+          job_type: Database["public"]["Enums"]["ai_job_type"]
+          output: Json | null
+          progress: number
+          restaurant_id: string
+          started_at: string | null
+          status: Database["public"]["Enums"]["ai_job_status"]
+          updated_at: string
+        }
+        Insert: {
+          ai_credits_charged?: number
+          completed_at?: string | null
+          created_at?: string
+          created_by: string
+          error?: string | null
+          id?: string
+          input?: Json
+          job_type: Database["public"]["Enums"]["ai_job_type"]
+          output?: Json | null
+          progress?: number
+          restaurant_id: string
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["ai_job_status"]
+          updated_at?: string
+        }
+        Update: {
+          ai_credits_charged?: number
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string
+          error?: string | null
+          id?: string
+          input?: Json
+          job_type?: Database["public"]["Enums"]["ai_job_type"]
+          output?: Json | null
+          progress?: number
+          restaurant_id?: string
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["ai_job_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_jobs_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_menu_scores: {
+        Row: {
+          ai_job_id: string | null
+          breakdown: Json
+          created_at: string
+          id: string
+          restaurant_id: string
+          score: number
+        }
+        Insert: {
+          ai_job_id?: string | null
+          breakdown?: Json
+          created_at?: string
+          id?: string
+          restaurant_id: string
+          score: number
+        }
+        Update: {
+          ai_job_id?: string | null
+          breakdown?: Json
+          created_at?: string
+          id?: string
+          restaurant_id?: string
+          score?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_menu_scores_ai_job_id_fkey"
+            columns: ["ai_job_id"]
+            isOneToOne: false
+            referencedRelation: "ai_jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_menu_scores_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_usage: {
+        Row: {
+          ai_job_id: string | null
+          created_at: string
+          credits_charged: number
+          id: string
+          kind: Database["public"]["Enums"]["ai_usage_kind"]
+          metadata: Json
+          restaurant_id: string
+        }
+        Insert: {
+          ai_job_id?: string | null
+          created_at?: string
+          credits_charged?: number
+          id?: string
+          kind: Database["public"]["Enums"]["ai_usage_kind"]
+          metadata?: Json
+          restaurant_id: string
+        }
+        Update: {
+          ai_job_id?: string | null
+          created_at?: string
+          credits_charged?: number
+          id?: string
+          kind?: Database["public"]["Enums"]["ai_usage_kind"]
+          metadata?: Json
+          restaurant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_usage_ai_job_id_fkey"
+            columns: ["ai_job_id"]
+            isOneToOne: false
+            referencedRelation: "ai_jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_usage_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       categories: {
         Row: {
           created_at: string
@@ -60,6 +291,7 @@ export type Database = {
           category_id: string
           created_at: string
           description: string | null
+          generated_by: Database["public"]["Enums"]["content_origin"]
           id: string
           language: string
           name: string
@@ -68,6 +300,7 @@ export type Database = {
           category_id: string
           created_at?: string
           description?: string | null
+          generated_by?: Database["public"]["Enums"]["content_origin"]
           id?: string
           language: string
           name: string
@@ -76,6 +309,7 @@ export type Database = {
           category_id?: string
           created_at?: string
           description?: string | null
+          generated_by?: Database["public"]["Enums"]["content_origin"]
           id?: string
           language?: string
           name?: string
@@ -94,6 +328,7 @@ export type Database = {
         Row: {
           created_at: string
           description: string | null
+          generated_by: Database["public"]["Enums"]["content_origin"]
           id: string
           item_id: string
           language: string
@@ -102,6 +337,7 @@ export type Database = {
         Insert: {
           created_at?: string
           description?: string | null
+          generated_by?: Database["public"]["Enums"]["content_origin"]
           id?: string
           item_id: string
           language: string
@@ -110,6 +346,7 @@ export type Database = {
         Update: {
           created_at?: string
           description?: string | null
+          generated_by?: Database["public"]["Enums"]["content_origin"]
           id?: string
           item_id?: string
           language?: string
@@ -131,6 +368,7 @@ export type Database = {
           category_id: string
           created_at: string
           description: string | null
+          description_generated_by: Database["public"]["Enums"]["content_origin"]
           display_order: number
           id: string
           is_active: boolean
@@ -149,6 +387,7 @@ export type Database = {
           category_id: string
           created_at?: string
           description?: string | null
+          description_generated_by?: Database["public"]["Enums"]["content_origin"]
           display_order?: number
           id?: string
           is_active?: boolean
@@ -167,6 +406,7 @@ export type Database = {
           category_id?: string
           created_at?: string
           description?: string | null
+          description_generated_by?: Database["public"]["Enums"]["content_origin"]
           display_order?: number
           id?: string
           is_active?: boolean
@@ -461,6 +701,10 @@ export type Database = {
     }
     Functions: {
       generate_unique_slug: { Args: { base_name: string }; Returns: string }
+      get_ai_credits_used_this_period: {
+        Args: { _restaurant_id: string }
+        Returns: number
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -470,7 +714,19 @@ export type Database = {
       }
     }
     Enums: {
+      ai_content_status: "pending" | "accepted" | "rejected"
+      ai_content_target: "item" | "category"
+      ai_content_type: "description" | "translation"
+      ai_job_status:
+        | "queued"
+        | "processing"
+        | "completed"
+        | "failed"
+        | "canceled"
+      ai_job_type: "menu_optimizer_run" | "menu_import"
+      ai_usage_kind: "description" | "translation" | "optimizer_run" | "import"
       app_role: "admin" | "owner" | "user"
+      content_origin: "human" | "ai_generated" | "ai_edited"
       plan_type: "free" | "pro_monthly" | "pro_annual" | "lifetime"
       subscription_status:
         | "active"
@@ -603,9 +859,25 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
+      ai_content_status: ["pending", "accepted", "rejected"],
+      ai_content_target: ["item", "category"],
+      ai_content_type: ["description", "translation"],
+      ai_job_status: [
+        "queued",
+        "processing",
+        "completed",
+        "failed",
+        "canceled",
+      ],
+      ai_job_type: ["menu_optimizer_run", "menu_import"],
+      ai_usage_kind: ["description", "translation", "optimizer_run", "import"],
       app_role: ["admin", "owner", "user"],
+      content_origin: ["human", "ai_generated", "ai_edited"],
       plan_type: ["free", "pro_monthly", "pro_annual", "lifetime"],
       subscription_status: [
         "active",

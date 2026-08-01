@@ -1,5 +1,4 @@
 import { supabase } from '@/integrations/supabase/client';
-import type { SupabaseClient } from '@supabase/supabase-js';
 import type { GenerateDescriptionInput, GenerateDescriptionResult } from '@ai/description';
 import type { TranslateFieldInput, TranslateFieldResult } from '@ai/translation';
 import type { OptimizerOutput, MenuScoreHistoryEntry } from '@ai/optimizer';
@@ -9,13 +8,6 @@ import type { AiJob } from '@ai/common';
 // One function per AI operation, mirroring src/lib/api.ts's convention. Every call goes
 // through supabase.functions.invoke — never a direct provider/agent import (see
 // docs/AI_ARCHITECTURE.md §1 and §5).
-
-// New AI tables (ai_jobs, ai_usage, ai_menu_scores, ai_generated_content) aren't in the
-// generated Database type yet — src/integrations/supabase/types.ts is regenerated from the
-// LIVE Supabase schema, and the Phase 0 migration hasn't been applied there yet (see
-// docs/IMPLEMENTATION_PLAN.md's Deployment checklist). Cast narrowly for these tables only;
-// remove this once `supabase gen types` is re-run after `supabase db push`.
-const untypedSupabase = supabase as unknown as SupabaseClient;
 
 export async function generateItemDescription(
   input: GenerateDescriptionInput,
@@ -46,14 +38,14 @@ export async function runMenuOptimizer(
 }
 
 export async function fetchMenuScoreHistory(restaurantId: string): Promise<MenuScoreHistoryEntry[]> {
-  const { data, error } = await untypedSupabase
+  const { data, error } = await supabase
     .from('ai_menu_scores')
     .select('id, score, breakdown, created_at')
     .eq('restaurant_id', restaurantId)
     .order('created_at', { ascending: false })
     .limit(30);
   if (error) throw error;
-  return (data ?? []) as MenuScoreHistoryEntry[];
+  return (data ?? []) as unknown as MenuScoreHistoryEntry[];
 }
 
 export async function startMenuImport(input: MenuImportStartInput): Promise<MenuImportStartResponse> {
@@ -65,7 +57,7 @@ export async function startMenuImport(input: MenuImportStartInput): Promise<Menu
 }
 
 export async function fetchAiJob(jobId: string): Promise<AiJob> {
-  const { data, error } = await untypedSupabase
+  const { data, error } = await supabase
     .from('ai_jobs')
     .select('*')
     .eq('id', jobId)
@@ -114,7 +106,7 @@ export async function commitImportedMenu(input: CommitImportedMenuInput): Promis
     for (const [lang, translation] of Object.entries(input.translationsByLanguage)) {
       const translatedCategory = translation.categories[categoryIndex];
       if (!translatedCategory) continue;
-      await untypedSupabase.from('category_translations').insert({
+      await supabase.from('category_translations').insert({
         category_id: categoryId,
         language: lang,
         name: translatedCategory.name,
@@ -148,7 +140,7 @@ export async function commitImportedMenu(input: CommitImportedMenuInput): Promis
       for (const [lang, translation] of Object.entries(input.translationsByLanguage)) {
         const translatedItem = translation.categories[categoryIndex]?.items[itemIndex];
         if (!translatedItem) continue;
-        await untypedSupabase.from('item_translations').insert({
+        await supabase.from('item_translations').insert({
           item_id: itemId,
           language: lang,
           name: translatedItem.name,
