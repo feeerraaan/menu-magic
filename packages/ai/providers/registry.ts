@@ -20,5 +20,8 @@ export function getProviderForFeature(feature: AiFeatureKey): LLMProvider {
   const keys = parseKeys(Deno.env.get('OPENCODE_ZEN_API_KEYS'));
   const model = Deno.env.get(`AI_MODEL_${feature.toUpperCase()}`) ?? Deno.env.get('AI_MODEL_DEFAULT');
   const fallbackModels = feature === 'menu_import' ? ['mimo-v2.5-free'] : [];
-  return createOpenCodeZenProvider(keys, { model, fallbackModels });
+  // Keep the two-model import sequence below Supabase Edge Functions' wall-clock limit even
+  // when Zen is unavailable: DeepSeek timeout -> Mimo timeout -> explicit failed job.
+  const requestTimeoutMs = feature === 'menu_import' ? 30_000 : undefined;
+  return createOpenCodeZenProvider(keys, { model, fallbackModels, requestTimeoutMs });
 }
