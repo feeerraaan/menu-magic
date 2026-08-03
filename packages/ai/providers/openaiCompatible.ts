@@ -19,6 +19,8 @@ export interface OpenAiCompatibleConfig {
   model: string;
   extraHeaders?: Record<string, string>;
   requestTimeoutMs?: number;
+  supportsJsonObjectResponseFormat?: boolean;
+  disableThinkingForStructured?: boolean;
 }
 
 const DEFAULT_REQUEST_TIMEOUT_MS = 60_000;
@@ -175,7 +177,10 @@ export function createOpenAiCompatibleProvider(config: OpenAiCompatibleConfig): 
             messages: toWireMessages(opts),
             temperature: opts.temperature ?? 0.3,
             max_tokens: opts.maxTokens ?? 1024,
-            response_format: { type: 'json_object' },
+            ...(config.disableThinkingForStructured ? { thinking: { type: 'disabled' } } : {}),
+            ...(config.supportsJsonObjectResponseFormat === false
+              ? {}
+              : { response_format: { type: 'json_object' } }),
           };
 
           let json: ChatCompletionsResponse;

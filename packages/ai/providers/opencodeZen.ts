@@ -28,5 +28,11 @@ export function createOpenCodeZenProvider(apiKeys: string[], opts?: { model?: st
     baseUrl: OPENCODE_ZEN_BASE_URL,
     apiKeys: keys,
     model: opts?.model ?? DEFAULT_MODEL,
+    // The current DFLASH-backed Zen models reject grammar-constrained decoding. The
+    // structured-output prompt plus local JSON extraction/schema validation remains active.
+    supportsJsonObjectResponseFormat: false,
+    // The provider's DeepSeek backend can spend the entire output budget on reasoning, while
+    // structured menu extraction only needs the JSON payload and does not echo reasoning.
+    disableThinkingForStructured: true,
   });
 }
