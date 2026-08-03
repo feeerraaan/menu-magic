@@ -16,7 +16,12 @@ const DEFAULT_MODEL = 'deepseek-v4-flash-free';
 
 export function createOpenCodeZenProvider(
   apiKeys: string[],
-  opts?: { model?: string; fallbackModels?: string[]; requestTimeoutMs?: number },
+  opts?: {
+    model?: string;
+    fallbackModels?: string[];
+    requestTimeoutMs?: number;
+    fallbackRequestTimeoutMs?: number;
+  },
 ): LLMProvider {
   const keys = apiKeys.map((k) => k.trim()).filter(Boolean);
   if (keys.length === 0) {
@@ -27,13 +32,13 @@ export function createOpenCodeZenProvider(
   }
 
   const models = [...new Set([opts?.model ?? DEFAULT_MODEL, ...(opts?.fallbackModels ?? [])].filter(Boolean))];
-  const providers = models.map((model) =>
+  const providers = models.map((model, index) =>
     createOpenAiCompatibleProvider({
       id: 'opencode-zen',
       baseUrl: OPENCODE_ZEN_BASE_URL,
       apiKeys: keys,
       model,
-      requestTimeoutMs: opts?.requestTimeoutMs,
+      requestTimeoutMs: index === 0 ? opts?.requestTimeoutMs : opts?.fallbackRequestTimeoutMs,
       // The current DFLASH-backed Zen models reject grammar-constrained decoding. The
       // structured-output prompt plus local JSON extraction/schema validation remains active.
       supportsJsonObjectResponseFormat: false,
