@@ -1,9 +1,7 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { extractText, getDocumentProxy } from 'unpdf';
 import { z } from 'zod';
-import { buildExtractionPrompt } from '../packages/ai/prompts/menuImport.ts';
-import { buildMenuBatchTranslationPrompt } from '../packages/ai/prompts/translation.ts';
-import type { Database } from '../src/integrations/supabase/types';
+import type { Database } from '../src/integrations/supabase/types.js';
 
 // This is the Vercel/Node backend for long menu imports. It intentionally keeps the same
 // HTTP contract and ai_jobs/ai_usage persistence as the Supabase Edge Function, so the
@@ -55,6 +53,73 @@ const translationSchema = z.object({
 
 type Extraction = z.infer<typeof extractionSchema>;
 type ServerSupabase = SupabaseClient<Database>;
+
+// Keep these pure prompt builders local to the Vercel function. Vercel's Node builder compiles
+// api/*.ts but does not bundle TypeScript modules imported from the packages/ tree; leaving these
+// imports external makes the deployed function fail at startup with ERR_MODULE_NOT_FOUND.
+type ApiMessage = { role: 'user'; content: string };
+
+const EXTRACTION_RESPONSE_SHAPE = [
+  '{"menuName": string, "categories": [',
+  '{"name": string, "description": string|null, "items": [',
+  '{"name": string, "description": string|null, "price": number|null,',
+  '"isVegetarian"?: boolean, "isVegan"?: boolean, "isSpicy"?: boolean, "isGlutenFree"?: boolean,',
+  '"allergens"?: string[]}',
+  ']}',
+  ']}'
+].join(' ');
+
+function buildExtractionPrompt(
+  rawText: string,
+  locale: string,
+  options?: { fragment?: boolean },
+): { system: string; messages: ApiMessage[] } {
+  const system = [
+    'Eres un asistente experto en digitalizar menús de restaurante a partir de texto extraído de un documento, imagen o página web.',
+    'Extrae ÚNICAMENTE lo que esté realmente presente en el texto — nunca inventes platos, precios o categorías que no aparezcan.',
+    'Agrupa los platos en categorías razonables si el texto no las marca explícitamente (ej: Entrantes, Principales, Postres, Bebidas).',
+    'El precio debe ser un número (sin símbolo de moneda) o null si no aparece o es ilegible.',
+    'Sé CONSERVADOR con las etiquetas dietéticas (vegetariano/vegano/picante/sin gluten): solo márcalas true si el texto lo indica explícitamente o es evidente sin ambigüedad; en caso de duda, usa false.',
+    'Para mantener la respuesta compacta, omite las etiquetas que sean false y omite allergens si no hay alérgenos explícitos; la aplicación completa los valores por defecto.',
+    `El idioma del texto original y de tu respuesta debe ser el de código "${locale}" (no traduzcas).`,
+    ...(options?.fragment
+      ? ['Este es un fragmento de un menú más largo: devuelve únicamente las categorías y platos que aparecen en este fragmento, sin inventar ni completar las partes que no ves.']
+      : []),
+    `Responde EXCLUSIVAMENTE con un objeto JSON válido con esta forma exacta: ${EXTRACTION_RESPONSE_SHAPE}. Sin texto adicional, sin markdown.`,
+  ].join(' ');
+  return { system, messages: [{ role: 'user', content: rawText }] };
+}
+
+type MenuBatchTranslationInput = {
+  menuName: string;
+  categories: Array<{
+    name: string;
+    description?: string | null;
+    items: Array<{ name: string; description?: string | null }>;
+  }>;
+};
+
+const TRANSLATION_RESPONSE_SHAPE = [
+  '{"menuName": string, "categories": [',
+  '{"name": string, "description": string|null, "items": [{"name": string, "description": string|null}]}',
+  ']}'
+].join(' ');
+
+function buildMenuBatchTranslationPrompt(
+  input: MenuBatchTranslationInput,
+  sourceLocale: string,
+  targetLocale: string,
+): { system: string; messages: ApiMessage[] } {
+  const system = [
+    'Eres un traductor experto especializado en menús de restaurantes.',
+    'Traduces contenido gastronómico preservando el significado culinario real — nunca traduces palabra por palabra.',
+    'Si un plato tiene un nombre local o tradicional sin equivalente directo, consérvalo y añade una breve explicación entre paréntesis en el idioma de destino.',
+    `Traduce TODO el árbol de menú (nombre del menú, cada categoría y cada plato) del idioma "${sourceLocale}" al idioma "${targetLocale}".`,
+    'Devuelve EXACTAMENTE la misma estructura y el mismo número de categorías y platos, en el mismo orden — solo traduces los textos, nunca añades, quitas o reordenas elementos.',
+    `Responde EXCLUSIVAMENTE con un objeto JSON válido con esta forma exacta: ${TRANSLATION_RESPONSE_SHAPE}. Sin texto adicional, sin markdown.`,
+  ].join(' ');
+  return { system, messages: [{ role: 'user', content: JSON.stringify(input) }] };
+}
 
 function response(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
