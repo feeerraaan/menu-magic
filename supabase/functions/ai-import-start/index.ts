@@ -93,9 +93,12 @@ serve(async (req) => {
       fileBase64: body.fileBase64,
     };
 
-    // Long-running (PDF extraction + one translation call per supported language) — kick it
-    // off in the background and respond immediately with the job id; the frontend follows
-    // progress via a Realtime subscription on this ai_jobs row (see docs/AI_ARCHITECTURE.md §4).
+    // Run the job before returning. EdgeRuntime.waitUntil used to let the request return quickly,
+    // but Supabase can shut down the isolate while a multi-chunk import is still running. That
+    // left ai_jobs stuck in `processing` after the provider work had already started. The UI still
+    // receives the job id immediately for the normal short path, while long imports now either
+    // write `completed`/`failed` or return a bounded provider error. The frontend keeps its
+    // existing analysing state while this request is in flight and then fetches the job row.
     const backgroundWork = (async () => {
       try {
         const provider = getProviderForFeature("menu_import");
@@ -126,14 +129,7 @@ serve(async (req) => {
       }
     })();
 
-    const edgeRuntime = (globalThis as unknown as { EdgeRuntime?: { waitUntil?: (p: Promise<unknown>) => void } })
-      .EdgeRuntime;
-    if (edgeRuntime?.waitUntil) {
-      edgeRuntime.waitUntil(backgroundWork);
-    } else {
-      // Local/dev fallback where EdgeRuntime isn't available — just await it.
-      await backgroundWork;
-    }
+    await backgroundWork;
 
     return jsonResponse({ jobId, status: "processing" });
   } catch (error) {
