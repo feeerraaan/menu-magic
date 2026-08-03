@@ -158,15 +158,29 @@ export function createOpenAiCompatibleProvider(config: OpenAiCompatibleConfig): 
       let lastError: unknown;
       for (let attempt = 0; attempt < 3; attempt++) {
         try {
-          const json = await callChatCompletions(config, {
+          const requestBody: Record<string, unknown> = {
             model: config.model,
             messages: toWireMessages(opts),
             temperature: opts.temperature ?? 0.3,
             max_tokens: opts.maxTokens ?? 1024,
             response_format: { type: 'json_object' },
-          });
+          };
+
+          let json: ChatCompletionsResponse;
+          try {
+            json = await callChatCompletions(config, requestBody);
+          } catch (err) {
+            // OpenCode Zen's DFLASH models currently reject grammar-constrained decoding,
+            // which is what response_format=json_object enables upstream. Retry the same
+            // request without that optional hint; the prompts already require JSON and the
+            // local parser + schema validation still enforce the response contract.
+            if (!isGrammarConstrainedDecodingUnsupported(err)) throw err;
+            delete requestBody.response_format;
+            json = await callChatCompletions(config, requestBody);
+          }
+
           const raw = json.choices?.[0]?.message?.content ?? '';
-          let parsed: unknown = tryParseJson(raw);
+          const parsed: unknown = tryParseJson(raw);
           if (parsed === undefined) {
             throw new Error(`Provider ${config.id}: model did not return valid JSON — got: ${raw.slice(0, 200)}`);
           }
@@ -181,6 +195,11 @@ export function createOpenAiCompatibleProvider(config: OpenAiCompatibleConfig): 
       throw lastError instanceof Error ? lastError : new Error(`Provider ${config.id}: structured generation failed`);
     },
   };
+}
+
+function isGrammarConstrainedDecodingUnsupported(err: unknown): boolean {
+  const message = err instanceof Error ? err.message : String(err);
+  return /speculative decoding does not support grammar-constrained decoding/i.test(message);
 }
 
 // Parses JSON leniently: extracts the first balanced {...}, then falls back to repairing a
