@@ -1,4 +1,9 @@
 {
+  "functions": {
+    "api/ai-import-start.ts": {
+      "maxDuration": 300
+    }
+  },
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]

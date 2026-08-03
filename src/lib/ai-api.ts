@@ -93,11 +93,36 @@ export async function fetchMenuScoreHistory(restaurantId: string): Promise<MenuS
 }
 
 export async function startMenuImport(input: MenuImportStartInput): Promise<MenuImportStartResponse> {
-  return invokeAi<MenuImportStartResponse>('ai-import-start', input);
+  return invokeMenuImportBackend(input);
 }
 
 export async function startAiSetupImport(input: MenuImportStartInput): Promise<MenuImportStartResponse> {
-  return invokeAi<MenuImportStartResponse>('ai-import-start', { ...input, jobType: 'ai_setup' });
+  return invokeMenuImportBackend({ ...input, jobType: 'ai_setup' });
+}
+
+/**
+ * Long menu imports run through the Vercel Node function in production. The old Edge Function
+ * remains available for local development and as a controlled rollback via VITE_AI_IMPORT_BACKEND.
+ */
+async function invokeMenuImportBackend(input: MenuImportStartInput): Promise<MenuImportStartResponse> {
+  if (import.meta.env.VITE_AI_IMPORT_BACKEND !== 'vercel') {
+    return invokeAi<MenuImportStartResponse>('ai-import-start', input);
+  }
+  const { data: sessionData } = await supabase.auth.getSession();
+  const accessToken = sessionData.session?.access_token;
+  if (!accessToken) throw new Error('Tu sesión ha caducado. Vuelve a iniciar sesión.');
+  const response = await fetch('/api/ai-import-start', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
+    body: JSON.stringify(input),
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const error = new Error(typeof payload?.error === 'string' ? payload.error : `Importación fallida (${response.status})`);
+    (error as { status?: number }).status = response.status;
+    throw error;
+  }
+  return payload as MenuImportStartResponse;
 }
 
 export async function fetchAiJob(jobId: string): Promise<AiJob> {
