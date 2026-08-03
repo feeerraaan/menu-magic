@@ -18,7 +18,10 @@ export interface OpenAiCompatibleConfig {
   apiKeys: string[]; // rotated on 429 / rate-limit / insufficient-balance responses
   model: string;
   extraHeaders?: Record<string, string>;
+  requestTimeoutMs?: number;
 }
+
+const DEFAULT_REQUEST_TIMEOUT_MS = 60_000;
 
 // Serializes internal LLMMessage objects into the OpenAI wire format. The provider contract
 // (types.ts) uses a compact shape for tool calls ({id,name,arguments}); the wire format
@@ -83,9 +86,12 @@ async function callChatCompletions(
   body: Record<string, unknown>,
 ): Promise<ChatCompletionsResponse> {
   let lastError: Error | null = null;
+  const timeoutMs = config.requestTimeoutMs ?? DEFAULT_REQUEST_TIMEOUT_MS;
 
   for (let i = 0; i < config.apiKeys.length; i++) {
     const key = config.apiKeys[i];
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
     try {
       const res = await fetch(`${config.baseUrl}/chat/completions`, {
         method: 'POST',
@@ -95,6 +101,7 @@ async function callChatCompletions(
           ...config.extraHeaders,
         },
         body: JSON.stringify(body),
+        signal: controller.signal,
       });
 
       // Rate-limited or out of balance on this key — try the next one before failing.
@@ -112,7 +119,12 @@ async function callChatCompletions(
 
       return await res.json();
     } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        throw new Error(`Provider ${config.id} request timed out after ${timeoutMs}ms`);
+      }
       lastError = err instanceof Error ? err : new Error(String(err));
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
@@ -186,6 +198,7 @@ export function createOpenAiCompatibleProvider(config: OpenAiCompatibleConfig): 
           }
           return opts.schema.parse(parsed);
         } catch (err) {
+          if (isProviderTimeout(err)) throw err;
           lastError = err;
           // Schema validation failures won't fix themselves on retry, but an empty body, a
           // fence-wrapped payload, or a truncated one might — retry regardless.
@@ -200,6 +213,11 @@ export function createOpenAiCompatibleProvider(config: OpenAiCompatibleConfig): 
 function isGrammarConstrainedDecodingUnsupported(err: unknown): boolean {
   const message = err instanceof Error ? err.message : String(err);
   return /speculative decoding does not support grammar-constrained decoding/i.test(message);
+}
+
+function isProviderTimeout(err: unknown): boolean {
+  const message = err instanceof Error ? err.message : String(err);
+  return /request timed out after \d+ms/i.test(message);
 }
 
 // Parses JSON leniently: extracts the first balanced {...}, then falls back to repairing a
