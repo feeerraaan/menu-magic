@@ -203,10 +203,11 @@ export function createOpenAiCompatibleProvider(config: OpenAiCompatibleConfig): 
           }
           return opts.schema.parse(parsed);
         } catch (err) {
-          if (isProviderTimeout(err)) throw err;
+          if (isProviderTimeout(err) || isProviderRequestFailure(err)) throw err;
           lastError = err;
-          // Schema validation failures won't fix themselves on retry, but an empty body, a
-          // fence-wrapped payload, or a truncated one might — retry regardless.
+          // An empty body, a fence-wrapped payload, or a transient schema mismatch might fix
+          // themselves on retry. Transport/provider failures are surfaced immediately so the
+          // OpenCode Zen model fallback can take over without wasting two more attempts.
           await new Promise((r) => setTimeout(r, 500));
         }
       }
@@ -223,6 +224,11 @@ function isGrammarConstrainedDecodingUnsupported(err: unknown): boolean {
 function isProviderTimeout(err: unknown): boolean {
   const message = err instanceof Error ? err.message : String(err);
   return /request timed out after \d+ms/i.test(message);
+}
+
+function isProviderRequestFailure(err: unknown): boolean {
+  const message = err instanceof Error ? err.message : String(err);
+  return /^Provider [\w-]+ (?:error \d{3}:|rejected key)/i.test(message);
 }
 
 // Parses JSON leniently: extracts the first balanced {...}, then falls back to repairing a

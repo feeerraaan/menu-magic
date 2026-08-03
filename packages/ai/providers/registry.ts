@@ -19,5 +19,6 @@ function parseKeys(raw: string | undefined): string[] {
 export function getProviderForFeature(feature: AiFeatureKey): LLMProvider {
   const keys = parseKeys(Deno.env.get('OPENCODE_ZEN_API_KEYS'));
   const model = Deno.env.get(`AI_MODEL_${feature.toUpperCase()}`) ?? Deno.env.get('AI_MODEL_DEFAULT');
-  return createOpenCodeZenProvider(keys, { model });
+  const fallbackModels = feature === 'menu_import' ? ['mimo-v2.5-free'] : [];
+  return createOpenCodeZenProvider(keys, { model, fallbackModels });
 }

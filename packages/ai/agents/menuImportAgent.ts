@@ -120,6 +120,7 @@ export async function extractMenuStructure(
   locale: string,
 ): Promise<MenuImportExtraction> {
   const chunks = splitMenuText(rawText);
+  console.info(`[menu-import] extracting ${chunks.length} chunk(s) with primary/fallback provider support`);
   const extractions = await Promise.all(
     chunks.map(async (chunk) => {
       const { system, messages } = buildExtractionPrompt(chunk, locale, { fragment: chunks.length > 1 });
