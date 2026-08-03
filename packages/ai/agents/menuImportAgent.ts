@@ -30,8 +30,8 @@ const MenuImportOutputSchema = z.object({
 
 export type MenuImportExtraction = z.infer<typeof MenuImportOutputSchema>;
 
-const MAX_EXTRACTION_CHUNK_CHARS = 5_500;
-const EXTRACTION_CHUNK_OVERLAP_CHARS = 700;
+const MAX_EXTRACTION_CHUNK_CHARS = 4_000;
+const EXTRACTION_CHUNK_OVERLAP_CHARS = 500;
 
 function splitMenuText(rawText: string): string[] {
   const text = rawText.trim();
@@ -131,7 +131,7 @@ export async function extractMenuStructure(
         messages,
         schema: MenuImportOutputSchema,
         temperature: 0.2,
-        maxTokens: 4000,
+        maxTokens: 6000,
         rejectTruncatedJson: true,
       }),
     );

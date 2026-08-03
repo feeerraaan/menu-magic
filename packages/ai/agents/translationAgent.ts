@@ -63,6 +63,6 @@ export async function translateMenuBatch(
     messages,
     schema: MenuBatchTranslationOutputSchema,
     temperature: 0.3,
-    maxTokens: 4000,
+    maxTokens: 6000,
   });
 }
