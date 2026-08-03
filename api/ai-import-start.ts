@@ -1,4 +1,5 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { waitUntil } from '@vercel/functions';
 import { extractText, getDocumentProxy } from 'unpdf';
 import { z } from 'zod';
 import type { Database } from '../src/integrations/supabase/types.js';
@@ -11,8 +12,9 @@ export const config = { maxDuration: 300 };
 
 const OPENCODE_URL = 'https://opencode.ai/zen/v1/chat/completions';
 const MAX_RAW_TEXT_LENGTH = 20_000;
-const CHUNK_SIZE = 4_000;
-const CHUNK_OVERLAP = 500;
+const CHUNK_SIZE = 2_800;
+const CHUNK_OVERLAP = 350;
+const MODEL_MAX_TOKENS = 4_500;
 const PRIMARY_MODEL = process.env.AI_MODEL_MENU_IMPORT ?? 'deepseek-v4-flash-free';
 const MODELS = [PRIMARY_MODEL, 'mimo-v2.5-free'].filter((model, index, all) => all.indexOf(model) === index);
 const KEYS = (process.env.OPENCODE_ZEN_API_KEYS ?? '').split(',').map((key) => key.trim()).filter(Boolean);
@@ -53,6 +55,7 @@ const translationSchema = z.object({
 
 type Extraction = z.infer<typeof extractionSchema>;
 type ServerSupabase = SupabaseClient<Database>;
+type ProgressReporter = (progress: number, stage: string) => Promise<void>;
 
 // Keep these pure prompt builders local to the Vercel function. Vercel's Node builder compiles
 // api/*.ts but does not bundle TypeScript modules imported from the packages/ tree; leaving these
@@ -197,10 +200,72 @@ function mergeExtractions(extractions: Extraction[]): Extraction {
 
 function jsonFromText(raw: string): unknown {
   const cleaned = raw.replace(/```json\s*/gi, '').replace(/```/g, '').trim();
-  const start = cleaned.indexOf('{');
-  const end = cleaned.lastIndexOf('}');
-  if (start < 0 || end <= start) throw new Error('El modelo no devolvió un objeto JSON completo');
-  return JSON.parse(cleaned.slice(start, end + 1));
+  const candidate = extractJsonObject(cleaned);
+  try {
+    return JSON.parse(candidate);
+  } catch {
+    try {
+      return JSON.parse(repairTruncatedJson(candidate));
+    } catch {
+      throw new Error('El modelo no devolvió un objeto JSON completo');
+    }
+  }
+}
+
+function extractJsonObject(raw: string): string {
+  const start = raw.indexOf('{');
+  if (start === -1) return raw.trim();
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+  for (let index = start; index < raw.length; index++) {
+    const character = raw[index];
+    if (inString) {
+      if (escaped) escaped = false;
+      else if (character === '\\') escaped = true;
+      else if (character === '"') inString = false;
+      continue;
+    }
+    if (character === '"') inString = true;
+    else if (character === '{') depth++;
+    else if (character === '}' && --depth === 0) return raw.slice(start, index + 1);
+  }
+  return raw.slice(start);
+}
+
+function repairTruncatedJson(raw: string): string {
+  const stack: string[] = [];
+  let repaired = '';
+  let inString = false;
+  let escaped = false;
+  for (const character of raw) {
+    if (inString) {
+      repaired += character;
+      if (escaped) escaped = false;
+      else if (character === '\\') escaped = true;
+      else if (character === '"') inString = false;
+      continue;
+    }
+    if (character === '"') {
+      inString = true;
+      repaired += character;
+    } else if (character === '{') {
+      stack.push('}');
+      repaired += character;
+    } else if (character === '[') {
+      stack.push(']');
+      repaired += character;
+    } else if (character === '}' || character === ']') {
+      if (stack[stack.length - 1] === character) stack.pop();
+      repaired += character;
+    } else {
+      repaired += character;
+    }
+  }
+  if (inString) repaired += '"';
+  repaired = repaired.replace(/,\s*$/, '');
+  while (stack.length > 0) repaired += stack.pop();
+  return repaired;
 }
 
 async function callStructured<T>(
@@ -236,7 +301,7 @@ async function callStructured<T>(
           model,
           messages: [{ role: 'system', content: system }, { role: 'user', content: userContent }],
           temperature: 0.2,
-          max_tokens: 6000,
+          max_tokens: MODEL_MAX_TOKENS,
           stream: true,
           thinking: { type: 'disabled' },
         }),
@@ -339,7 +404,12 @@ async function sourceText(body: Record<string, unknown>): Promise<string> {
   throw new Error('Tipo de importación no soportado');
 }
 
-async function runImport(supabase: ServerSupabase, restaurantId: string, body: Record<string, unknown>) {
+async function runImport(
+  supabase: ServerSupabase,
+  restaurantId: string,
+  body: Record<string, unknown>,
+  reportProgress?: ProgressReporter,
+) {
   const { data: restaurant, error: restaurantError } = await supabase.from('restaurants')
     .select('default_language, supported_languages').eq('id', restaurantId).maybeSingle();
   if (restaurantError) throw restaurantError;
@@ -347,19 +417,30 @@ async function runImport(supabase: ServerSupabase, restaurantId: string, body: R
   const raw = await sourceText(body);
   if (!raw) throw new Error('No se pudo extraer texto del menú');
   const chunks = splitText(raw);
+  await reportProgress?.(8, `Texto preparado · ${chunks.length} bloques por analizar`);
   const extractions: Extraction[] = [];
-  for (const chunk of chunks) {
+  for (const [index, chunk] of chunks.entries()) {
     const locale = String(restaurant.default_language ?? 'es');
+    await reportProgress?.(
+      10 + Math.round((index / chunks.length) * 52),
+      `Analizando bloque ${index + 1} de ${chunks.length}`,
+    );
     const prompt = buildExtractionPrompt(chunk, locale, { fragment: chunks.length > 1 });
     extractions.push(await withFallback((model, inactivity, hard) => callStructured(
       model, prompt.system, chunk, extractionSchema, inactivity, hard,
     )));
+    await reportProgress?.(
+      10 + Math.round(((index + 1) / chunks.length) * 52),
+      `Bloque ${index + 1} de ${chunks.length} analizado`,
+    );
   }
   const extracted = mergeExtractions(extractions);
   const defaultLanguage = String(restaurant.default_language ?? 'es');
   const languages = Array.isArray(restaurant.supported_languages) ? restaurant.supported_languages : [defaultLanguage];
+  const extraLanguages = languages.filter((value: unknown) => value !== defaultLanguage);
   const translationsByLanguage: Record<string, unknown> = {};
-  for (const language of languages.filter((value: unknown) => value !== defaultLanguage)) {
+  await reportProgress?.(65, extraLanguages.length ? 'Preparando traducciones' : 'Extracción completada');
+  for (const [index, language] of extraLanguages.entries()) {
     const translationInput = {
       menuName: extracted.menuName,
       categories: extracted.categories.map((category) => ({
@@ -369,10 +450,19 @@ async function runImport(supabase: ServerSupabase, restaurantId: string, body: R
       })),
     };
     const prompt = buildMenuBatchTranslationPrompt(translationInput, defaultLanguage, String(language));
+    await reportProgress?.(
+      65 + Math.round((index / extraLanguages.length) * 30),
+      `Traduciendo al idioma ${String(language)}`,
+    );
     translationsByLanguage[String(language)] = await withFallback((model, inactivity, hard) => callStructured(
       model, prompt.system, JSON.stringify(extracted), translationSchema, inactivity, hard,
     ));
+    await reportProgress?.(
+      65 + Math.round(((index + 1) / extraLanguages.length) * 30),
+      `Traducción al idioma ${String(language)} completada`,
+    );
   }
+  await reportProgress?.(97, 'Preparando el resultado para revisión');
   return { ...extracted, translationsByLanguage };
 }
 
@@ -419,23 +509,51 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const limit = limits[String(subscription?.plan ?? 'free')] ?? 100;
     if (Number(used ?? 0) + 15 > limit) return res.status(402).json({ error: 'AI credit limit reached for this plan' });
     const jobType = body.jobType === 'ai_setup' ? 'ai_setup' : 'menu_import';
+    const jobInput = {
+      sourceType: body.sourceType,
+      fileName: body.fileName ?? null,
+      progressStage: 'Preparando la importación',
+    };
     const { data: job, error: jobError } = await supabase.from('ai_jobs').insert({
       restaurant_id: restaurantId, created_by: userData.user.id, job_type: jobType,
-      status: 'processing', input: { sourceType: body.sourceType, fileName: body.fileName ?? null }, started_at: new Date().toISOString(),
+      status: 'processing', input: jobInput, progress: 3, started_at: new Date().toISOString(),
     }).select('id').single();
     if (jobError) throw jobError;
-    try {
-      const result = await runImport(supabase, restaurantId, body);
-      const { error: chargeError } = await supabase.from('ai_usage').insert({
-        restaurant_id: restaurantId, kind: 'import', credits_charged: 15, ai_job_id: job.id,
-        metadata: { sourceType: body.sourceType, backend: 'vercel' },
-      });
-      if (chargeError) throw chargeError;
-      await supabase.from('ai_jobs').update({ status: 'completed', output: result, progress: 100, ai_credits_charged: 15, completed_at: new Date().toISOString() }).eq('id', job.id);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      await supabase.from('ai_jobs').update({ status: 'failed', error: message, completed_at: new Date().toISOString() }).eq('id', job.id);
-    }
+    const reportProgress: ProgressReporter = async (progress, stage) => {
+      const { error } = await supabase.from('ai_jobs').update({
+        progress,
+        input: { ...jobInput, progressStage: stage },
+      }).eq('id', job.id);
+      if (error) console.error('[ai-import-start] progress update failed', error.message);
+    };
+    const backgroundWork = (async () => {
+      try {
+        const result = await runImport(supabase, restaurantId, body, reportProgress);
+        const { error: chargeError } = await supabase.from('ai_usage').insert({
+          restaurant_id: restaurantId, kind: 'import', credits_charged: 15, ai_job_id: job.id,
+          metadata: { sourceType: body.sourceType, backend: 'vercel' },
+        });
+        if (chargeError) throw chargeError;
+        await supabase.from('ai_jobs').update({
+          status: 'completed',
+          output: result,
+          progress: 100,
+          ai_credits_charged: 15,
+          input: { ...jobInput, progressStage: 'Importación completada' },
+          completed_at: new Date().toISOString(),
+        }).eq('id', job.id);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        console.error('[ai-import-start] import job failed', message);
+        await supabase.from('ai_jobs').update({
+          status: 'failed',
+          error: message,
+          input: { ...jobInput, progressStage: 'La importación ha fallado' },
+          completed_at: new Date().toISOString(),
+        }).eq('id', job.id);
+      }
+    })();
+    waitUntil(backgroundWork);
     return res.status(200).json({ jobId: job.id, status: 'processing' });
   } catch (error) {
     return res.status(500).json({ error: error instanceof Error ? error.message : String(error) });

@@ -61,6 +61,25 @@ export function useAiImport(restaurantId: string | undefined, jobType: AiJobType
     };
   }, [job?.id]);
 
+  // Realtime is the fast path, but polling keeps the progress visible when the browser,
+  // proxy, or a freshly-created channel misses a Postgres change event.
+  useEffect(() => {
+    if (!job?.id || job.status === 'completed' || job.status === 'failed') return;
+    let disposed = false;
+    const timer = window.setInterval(async () => {
+      try {
+        const latest = await aiApi.fetchAiJob(job.id);
+        if (!disposed) setJob(latest);
+      } catch {
+        // Realtime may still deliver the update; a transient polling failure is harmless.
+      }
+    }, 3000);
+    return () => {
+      disposed = true;
+      window.clearInterval(timer);
+    };
+  }, [job?.id, job?.status]);
+
   const result = (job?.status === 'completed' ? (job.output as unknown as MenuImportResult) : null);
 
   return { start, reset, starting, job, result, error };

@@ -9,6 +9,7 @@ import { Loader2, Sparkles, Trash2, Upload, Link as LinkIcon, FileText } from 'l
 import { useAiImport } from '@/hooks/useAiImport';
 import { useToast } from '@/hooks/use-toast';
 import * as aiApi from '@/lib/ai-api';
+import { Progress } from '@/components/ui/progress';
 import type { MenuImportResult, MenuImportSourceType } from '@ai/menuImport';
 import type { AiJobType } from '@ai/common';
 
@@ -170,6 +171,10 @@ export function AiImportDialog({ open, restaurantId, onClose, onImported, jobTyp
 
   const isProcessing = starting || job?.status === 'queued' || job?.status === 'processing';
   const isFailed = job?.status === 'failed';
+  const progress = Math.max(1, Math.min(99, job?.progress ?? (starting ? 2 : 0)));
+  const progressStage = typeof job?.input?.progressStage === 'string'
+    ? job.input.progressStage
+    : 'Preparando la importación';
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
@@ -229,11 +234,21 @@ export function AiImportDialog({ open, restaurantId, onClose, onImported, jobTyp
         )}
 
         {isProcessing && (
-          <div className="py-12 text-center space-y-3">
+          <div className="py-10 text-center space-y-4">
             <Loader2 className="h-8 w-8 mx-auto animate-spin text-primary" />
-            <p className="font-medium">Analizando tu menú con IA...</p>
+            <div className="space-y-1">
+              <p className="font-medium">Importando tu menú con IA...</p>
+              <p className="text-sm text-muted-foreground">{progressStage}</p>
+            </div>
+            <div className="mx-auto w-full max-w-md space-y-2 text-left">
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>Progreso real del trabajo</span>
+                <span className="font-medium text-foreground">{progress}%</span>
+              </div>
+              <Progress value={progress} aria-label={`Progreso de importación: ${progress}%`} />
+            </div>
             <p className="text-sm text-muted-foreground">
-              Esto puede tardar un minuto, especialmente si tienes varios idiomas activados.
+              Puedes dejar esta ventana abierta. El progreso se actualiza al terminar cada bloque y cada traducción.
             </p>
           </div>
         )}
