@@ -102,10 +102,15 @@ export async function startAiSetupImport(input: MenuImportStartInput): Promise<M
 
 /**
  * Long menu imports run through the Vercel Node function in production. The old Edge Function
- * remains available for local development and as a controlled rollback via VITE_AI_IMPORT_BACKEND.
+ * remains available for local development and as a controlled rollback via
+ * VITE_AI_IMPORT_BACKEND=edge. Set VITE_AI_IMPORT_BACKEND=vercel to force the Vercel route in
+ * another environment.
  */
 async function invokeMenuImportBackend(input: MenuImportStartInput): Promise<MenuImportStartResponse> {
-  if (import.meta.env.VITE_AI_IMPORT_BACKEND !== 'vercel') {
+  const configuredBackend = import.meta.env.VITE_AI_IMPORT_BACKEND;
+  const useVercelBackend = configuredBackend === 'vercel' ||
+    (configuredBackend !== 'edge' && import.meta.env.PROD);
+  if (!useVercelBackend) {
     return invokeAi<MenuImportStartResponse>('ai-import-start', input);
   }
   const { data: sessionData } = await supabase.auth.getSession();
