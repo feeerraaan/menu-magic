@@ -1,8 +1,8 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { extractText, getDocumentProxy } from 'unpdf';
 import { z } from 'zod';
-import { buildExtractionPrompt } from '../packages/ai/prompts/menuImport';
-import { buildMenuBatchTranslationPrompt } from '../packages/ai/prompts/translation';
+import { buildExtractionPrompt } from '../packages/ai/prompts/menuImport.ts';
+import { buildMenuBatchTranslationPrompt } from '../packages/ai/prompts/translation.ts';
 import type { Database } from '../src/integrations/supabase/types';
 
 // This is the Vercel/Node backend for long menu imports. It intentionally keeps the same
