@@ -121,18 +121,20 @@ export async function extractMenuStructure(
 ): Promise<MenuImportExtraction> {
   const chunks = splitMenuText(rawText);
   console.info(`[menu-import] extracting ${chunks.length} chunk(s) with primary/fallback provider support`);
-  const extractions = await Promise.all(
-    chunks.map(async (chunk) => {
-      const { system, messages } = buildExtractionPrompt(chunk, locale, { fragment: chunks.length > 1 });
-      return provider.generateStructured({
+  const extractions: MenuImportExtraction[] = [];
+  for (const [index, chunk] of chunks.entries()) {
+    console.info(`[menu-import] extracting chunk ${index + 1}/${chunks.length}`);
+    const { system, messages } = buildExtractionPrompt(chunk, locale, { fragment: chunks.length > 1 });
+    extractions.push(
+      await provider.generateStructured({
         system,
         messages,
         schema: MenuImportOutputSchema,
         temperature: 0.2,
         maxTokens: 4000,
         rejectTruncatedJson: true,
-      });
-    }),
-  );
+      }),
+    );
+  }
   return mergeExtractions(extractions);
 }
