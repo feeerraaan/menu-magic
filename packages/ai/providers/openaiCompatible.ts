@@ -197,7 +197,7 @@ export function createOpenAiCompatibleProvider(config: OpenAiCompatibleConfig): 
           }
 
           const raw = json.choices?.[0]?.message?.content ?? '';
-          const parsed: unknown = tryParseJson(raw);
+          const parsed: unknown = tryParseJson(raw, opts.rejectTruncatedJson !== true);
           if (parsed === undefined) {
             throw new Error(`Provider ${config.id}: model did not return valid JSON — got: ${raw.slice(0, 200)}`);
           }
@@ -228,7 +228,7 @@ function isProviderTimeout(err: unknown): boolean {
 // Parses JSON leniently: extracts the first balanced {...}, then falls back to repairing a
 // truncated payload (closes dangling string/brackets) before giving up. Returns undefined on
 // genuine failure.
-function tryParseJson(raw: string): unknown | undefined {
+function tryParseJson(raw: string, allowRepair = true): unknown | undefined {
   if (!raw) return undefined;
   const balanced = extractJsonObject(raw);
   try {
@@ -236,6 +236,7 @@ function tryParseJson(raw: string): unknown | undefined {
   } catch {
     // balanced === raw.trim() means the object was unclosed — try a repair pass.
   }
+  if (!allowRepair) return undefined;
   try {
     return JSON.parse(repairTruncatedJson(balanced));
   } catch {

@@ -64,6 +64,9 @@ export interface StructuredSchema<T> {
 
 export interface GenerateStructuredOptions<T> extends CompleteOptions {
   schema: StructuredSchema<T>;
+  // Large menu responses must not be accepted after synthetic bracket repair: that can turn
+  // a truncated but parseable prefix into a silently incomplete import.
+  rejectTruncatedJson?: boolean;
 }
 
 export interface LLMProvider {
