@@ -21,6 +21,8 @@ export function createOpenCodeZenProvider(
     fallbackModels?: string[];
     requestTimeoutMs?: number;
     fallbackRequestTimeoutMs?: number;
+    maxRequestDurationMs?: number;
+    fallbackMaxRequestDurationMs?: number;
   },
 ): LLMProvider {
   const keys = apiKeys.map((k) => k.trim()).filter(Boolean);
@@ -39,6 +41,7 @@ export function createOpenCodeZenProvider(
       apiKeys: keys,
       model,
       requestTimeoutMs: index === 0 ? opts?.requestTimeoutMs : opts?.fallbackRequestTimeoutMs,
+      maxRequestDurationMs: index === 0 ? opts?.maxRequestDurationMs : opts?.fallbackMaxRequestDurationMs,
       // The current DFLASH-backed Zen models reject grammar-constrained decoding. The
       // structured-output prompt plus local JSON extraction/schema validation remains active.
       supportsJsonObjectResponseFormat: false,

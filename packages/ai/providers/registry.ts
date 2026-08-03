@@ -20,14 +20,18 @@ export function getProviderForFeature(feature: AiFeatureKey): LLMProvider {
   const keys = parseKeys(Deno.env.get('OPENCODE_ZEN_API_KEYS'));
   const model = Deno.env.get(`AI_MODEL_${feature.toUpperCase()}`) ?? Deno.env.get('AI_MODEL_DEFAULT');
   const fallbackModels = feature === 'menu_import' ? ['mimo-v2.5-free'] : [];
-  // Keep the two-model import sequence below Supabase Edge Functions' wall-clock limit while
-  // allowing a realistic response time for a complete menu: DeepSeek 40s -> Mimo 25s.
-  const requestTimeoutMs = feature === 'menu_import' ? 40_000 : undefined;
-  const fallbackRequestTimeoutMs = feature === 'menu_import' ? 25_000 : undefined;
+  // Streaming gets an inactivity timeout plus a hard per-block cap. This lets active model
+  // output run past 30s without allowing two chunks + fallback to hit Supabase's CPU/wall limit.
+  const requestTimeoutMs = feature === 'menu_import' ? 30_000 : undefined;
+  const fallbackRequestTimeoutMs = feature === 'menu_import' ? 20_000 : undefined;
+  const maxRequestDurationMs = feature === 'menu_import' ? 40_000 : undefined;
+  const fallbackMaxRequestDurationMs = feature === 'menu_import' ? 30_000 : undefined;
   return createOpenCodeZenProvider(keys, {
     model,
     fallbackModels,
     requestTimeoutMs,
     fallbackRequestTimeoutMs,
+    maxRequestDurationMs,
+    fallbackMaxRequestDurationMs,
   });
 }

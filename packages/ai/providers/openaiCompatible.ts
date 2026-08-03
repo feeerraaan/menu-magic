@@ -19,6 +19,7 @@ export interface OpenAiCompatibleConfig {
   model: string;
   extraHeaders?: Record<string, string>;
   requestTimeoutMs?: number;
+  maxRequestDurationMs?: number;
   supportsJsonObjectResponseFormat?: boolean;
   disableThinkingForStructured?: boolean;
 }
@@ -94,6 +95,9 @@ async function callChatCompletions(
     const key = config.apiKeys[i];
     const controller = new AbortController();
     let timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+    const hardTimeoutId = body.stream === true && config.maxRequestDurationMs
+      ? setTimeout(() => controller.abort(), config.maxRequestDurationMs)
+      : undefined;
     try {
       const res = await fetch(`${config.baseUrl}/chat/completions`, {
         method: 'POST',
@@ -140,6 +144,7 @@ async function callChatCompletions(
       lastError = err instanceof Error ? err : new Error(String(err));
     } finally {
       clearTimeout(timeoutId);
+      if (hardTimeoutId) clearTimeout(hardTimeoutId);
     }
   }
 
