@@ -93,7 +93,7 @@ async function callChatCompletions(
   for (let i = 0; i < config.apiKeys.length; i++) {
     const key = config.apiKeys[i];
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+    let timeoutId = setTimeout(() => controller.abort(), timeoutMs);
     try {
       const res = await fetch(`${config.baseUrl}/chat/completions`, {
         method: 'POST',
@@ -119,6 +119,19 @@ async function callChatCompletions(
         throw new Error(`Provider ${config.id} error ${res.status}: ${text}`);
       }
 
+      if (body.stream === true) {
+        // Streaming uses an inactivity timeout rather than a total response timeout. A large
+        // menu may take longer than 40 seconds overall, but should remain alive as long as Zen
+        // keeps sending chunks. If the provider never sends the first chunk, or goes silent,
+        // the same bounded timeout still triggers the model fallback.
+        const resetInactivityTimeout = () => {
+          clearTimeout(timeoutId);
+          timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+        };
+        resetInactivityTimeout();
+        return await readStreamingChatCompletions(res, resetInactivityTimeout);
+      }
+
       return await res.json();
     } catch (err) {
       if (err instanceof Error && err.name === 'AbortError') {
@@ -131,6 +144,58 @@ async function callChatCompletions(
   }
 
   throw lastError ?? new Error(`Provider ${config.id}: no API keys configured`);
+}
+
+async function readStreamingChatCompletions(
+  response: Response,
+  resetInactivityTimeout: () => void,
+): Promise<ChatCompletionsResponse> {
+  if (!response.body) throw new Error('Provider returned an empty streaming response');
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  let rawBody = '';
+  let sawSseData = false;
+  let content = '';
+  let usage: ChatCompletionsResponse['usage'];
+
+  const processLine = (line: string) => {
+    const trimmed = line.trim();
+    if (!trimmed) return;
+    if (!trimmed.startsWith('data:')) {
+      rawBody += trimmed;
+      return;
+    }
+    const data = trimmed.slice(5).trim();
+    if (!data || data === '[DONE]') return;
+    sawSseData = true;
+    const event = JSON.parse(data) as {
+      choices?: Array<{ delta?: { content?: string }; message?: { content?: string } }>;
+      usage?: ChatCompletionsResponse['usage'];
+    };
+    const choice = event.choices?.[0];
+    content += choice?.delta?.content ?? choice?.message?.content ?? '';
+    usage = event.usage ?? usage;
+  };
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    resetInactivityTimeout();
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split(/\r?\n/);
+    buffer = lines.pop() ?? '';
+    for (const line of lines) processLine(line);
+  }
+  buffer += decoder.decode();
+  if (buffer) processLine(buffer);
+
+  if (!sawSseData) {
+    const parsed = JSON.parse(rawBody) as ChatCompletionsResponse;
+    return parsed;
+  }
+  return { choices: [{ message: { content } }], usage };
 }
 
 export function createOpenAiCompatibleProvider(config: OpenAiCompatibleConfig): LLMProvider {
@@ -177,6 +242,7 @@ export function createOpenAiCompatibleProvider(config: OpenAiCompatibleConfig): 
             messages: toWireMessages(opts),
             temperature: opts.temperature ?? 0.3,
             max_tokens: opts.maxTokens ?? 1024,
+            stream: true,
             ...(config.disableThinkingForStructured ? { thinking: { type: 'disabled' } } : {}),
             ...(config.supportsJsonObjectResponseFormat === false
               ? {}
