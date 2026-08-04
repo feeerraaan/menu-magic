@@ -140,6 +140,40 @@ export async function fetchAiJob(jobId: string): Promise<AiJob> {
   return data as AiJob;
 }
 
+/**
+ * Executes exactly one step of a menu import (prepare / one chunk extraction / one language
+ * translation) on the Vercel backend and returns the fresh job row. The frontend drives the
+ * loop, so each invocation is short and a menu of any length can be imported without hitting
+ * Vercel's per-function duration cap. Retries transient failures since a step reads the job's
+ * persisted state fresh on each call, so retrying is safe.
+ */
+export async function continueImportStep(jobId: string): Promise<AiJob> {
+  const { data: sessionData } = await supabase.auth.getSession();
+  const accessToken = sessionData.session?.access_token;
+  if (!accessToken) throw new Error('Tu sesión ha caducado. Vuelve a iniciar sesión.');
+  let lastError: Error | null = null;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const response = await fetch('/api/ai-import-step', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
+        body: JSON.stringify({ jobId }),
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (response.ok) return payload as AiJob;
+      lastError = new Error(
+        typeof payload?.error === 'string' && payload.error.length > 0
+          ? payload.error
+          : `Error en la importación (${response.status})`,
+      );
+    } catch (e) {
+      lastError = e as Error;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 800 * (attempt + 1)));
+  }
+  throw lastError ?? new Error('No se pudo continuar la importación');
+}
+
 async function invokeCopilot(body: Record<string, unknown>): Promise<unknown> {
   return invokeAi<unknown>('ai-copilot', body);
 }

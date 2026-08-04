@@ -2,6 +2,9 @@
   "functions": {
     "api/ai-import-start.ts": {
       "maxDuration": 300
+    },
+    "api/ai-import-step.ts": {
+      "maxDuration": 300
     }
   },
   "rewrites": [

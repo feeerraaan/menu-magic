@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import * as aiApi from '@/lib/ai-api';
 import type { MenuImportSourceType, MenuImportResult } from '@ai/menuImport';
 import type { AiJob, AiJobType } from '@ai/common';
@@ -41,42 +40,32 @@ export function useAiImport(restaurantId: string | undefined, jobType: AiJobType
     setError(null);
   };
 
-  // Follows the job's queued -> processing -> completed/failed transitions live, since
-  // ai-import-start returns as soon as the job is queued and does the real work in the
-  // background (see docs/AI_ARCHITECTURE.md §4).
-  useEffect(() => {
-    if (!job?.id) return;
-    const channel = supabase
-      .channel(`ai_jobs:import:${job.id}`)
-      .on(
-        'postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'ai_jobs', filter: `id=eq.${job.id}` },
-        (payload) => {
-          setJob(payload.new as AiJob);
-        },
-      )
-      .subscribe();
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [job?.id]);
-
-  // Realtime is the fast path, but polling keeps the progress visible when the browser,
-  // proxy, or a freshly-created channel misses a Postgres change event.
+  // Drives the import one step at a time: each call to /api/ai-import-step performs one
+  // chunk extraction or one language translation and returns the fresh job row. Because the
+  // client (not the function itself) chains the steps, a menu of any length can be imported
+  // without hitting Vercel's 300s per-function cap, and there is no self-invocation so the
+  // 508 loop-protection can never fire.
   useEffect(() => {
     if (!job?.id || job.status === 'completed' || job.status === 'failed') return;
     let disposed = false;
-    const timer = window.setInterval(async () => {
-      try {
-        const latest = await aiApi.fetchAiJob(job.id);
-        if (!disposed) setJob(latest);
-      } catch {
-        // Realtime may still deliver the update; a transient polling failure is harmless.
+    const drive = async () => {
+      while (!disposed) {
+        try {
+          const next = await aiApi.continueImportStep(job.id);
+          if (disposed) return;
+          setJob(next);
+          if (next.status === 'completed' || next.status === 'failed') return;
+        } catch (e) {
+          if (disposed) return;
+          setError(e as Error);
+          return;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 350));
       }
-    }, 3000);
+    };
+    drive();
     return () => {
       disposed = true;
-      window.clearInterval(timer);
     };
   }, [job?.id, job?.status]);
 
