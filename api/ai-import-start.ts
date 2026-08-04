@@ -12,12 +12,18 @@ export const config = { maxDuration: 300 };
 
 export const OPENCODE_URL = 'https://opencode.ai/zen/v1/chat/completions';
 export const MAX_RAW_TEXT_LENGTH = 20_000;
-export const CHUNK_SIZE = 2_800;
-export const CHUNK_OVERLAP = 350;
+export const CHUNK_SIZE = 6_000;
+export const CHUNK_OVERLAP = 600;
 export const MODEL_MAX_TOKENS = 4_500;
 const PRIMARY_MODEL = process.env.AI_MODEL_MENU_IMPORT ?? 'deepseek-v4-flash-free';
 const MODELS = [PRIMARY_MODEL, 'mimo-v2.5-free'].filter((model, index, all) => all.indexOf(model) === index);
 const KEYS = (process.env.OPENCODE_ZEN_API_KEYS ?? '').split(',').map((key) => key.trim()).filter(Boolean);
+
+// Single-invocation budget: the Vercel Hobby plan caps a function (including its
+// waitUntil background work) at 300s. Reserve a margin so the whole import runs in one
+// call and fails cleanly with a message if a huge menu would hit the platform timeout,
+// instead of being silently killed mid-run.
+export const TOTAL_BUDGET_MS = 270_000;
 
 const itemSchema = z.object({
   name: z.string().min(1).max(200),
@@ -129,6 +135,15 @@ function response(body: unknown, status = 200): Response {
     status,
     headers: { 'Content-Type': 'application/json' },
   });
+}
+
+function ensureBudget(deadline: number | undefined, stage: string): void {
+  if (deadline && Date.now() > deadline) {
+    throw new Error(
+      `El menú es demasiado largo para importarlo en una sola llamada y se agotó el tiempo disponible (${stage}). ` +
+      'Prueba a importar un texto más corto o reparte el menú en varias importaciones.',
+    );
+  }
 }
 
 function menuKey(value: string): string {
@@ -409,6 +424,7 @@ async function runImport(
   restaurantId: string,
   body: Record<string, unknown>,
   reportProgress?: ProgressReporter,
+  deadline?: number,
 ) {
   const { data: restaurant, error: restaurantError } = await supabase.from('restaurants')
     .select('default_language, supported_languages').eq('id', restaurantId).maybeSingle();
@@ -420,6 +436,7 @@ async function runImport(
   await reportProgress?.(8, `Texto preparado · ${chunks.length} bloques por analizar`);
   const extractions: Extraction[] = [];
   for (const [index, chunk] of chunks.entries()) {
+    ensureBudget(deadline, `analizando el bloque ${index + 1} de ${chunks.length}`);
     const locale = String(restaurant.default_language ?? 'es');
     await reportProgress?.(
       10 + Math.round((index / chunks.length) * 52),
@@ -441,6 +458,7 @@ async function runImport(
   const translationsByLanguage: Record<string, unknown> = {};
   await reportProgress?.(65, extraLanguages.length ? 'Preparando traducciones' : 'Extracción completada');
   for (const [index, language] of extraLanguages.entries()) {
+    ensureBudget(deadline, `traduciendo al idioma ${String(language)}`);
     const translationInput = {
       menuName: extracted.menuName,
       categories: extracted.categories.map((category) => ({
@@ -478,23 +496,51 @@ interface VercelResponse {
   end(): void;
 }
 
-const PRODUCTION_ORIGIN = process.env.VERCEL_PROJECT_PRODUCTION_URL
-  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-  : 'https://sacarta.vercel.app';
-
-export async function enqueueImportWorker(jobId: string): Promise<void> {
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!serviceRoleKey) throw new Error('Falta configurar SUPABASE_SERVICE_ROLE_KEY en Vercel');
-  const workerResponse = await fetch(`${PRODUCTION_ORIGIN}/api/ai-import-worker`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${serviceRoleKey}`,
-    },
-    body: JSON.stringify({ jobId }),
-  });
-  if (!workerResponse.ok) {
-    throw new Error(`El worker de importación respondió ${workerResponse.status}`);
+// Runs the whole import pipeline inside a single invocation's background work (waitUntil).
+// There is deliberately no self-enqueueing: the previous design chained worker invocations by
+// POSTing back to /api/ai-import-worker, which Vercel's loop protection kills with a 508
+// (INFINITE_LOOP_DETECTED) mid-run. Progress still reaches the frontend live because every
+// step writes to ai_jobs, which the client follows via Realtime + polling.
+async function runImportAndFinish(
+  supabase: ServerSupabase,
+  jobId: string,
+  restaurantId: string,
+  body: Record<string, unknown>,
+): Promise<void> {
+  const jobInfo = { sourceType: body.sourceType, fileName: body.fileName ?? null };
+  const deadline = Date.now() + TOTAL_BUDGET_MS;
+  try {
+    const reportProgress = async (progress: number, progressStage: string): Promise<void> => {
+      await supabase.from('ai_jobs').update({
+        progress,
+        input: { ...jobInfo, progressStage } as unknown as Database['public']['Tables']['ai_jobs']['Row']['input'],
+      }).eq('id', jobId);
+    };
+    const result = await runImport(supabase, restaurantId, body, reportProgress, deadline);
+    await supabase.from('ai_usage').insert({
+      restaurant_id: restaurantId,
+      kind: 'import',
+      credits_charged: 15,
+      ai_job_id: jobId,
+      metadata: { sourceType: body.sourceType, backend: 'vercel' },
+    });
+    await supabase.from('ai_jobs').update({
+      status: 'completed',
+      output: result as unknown as Database['public']['Tables']['ai_jobs']['Row']['output'],
+      progress: 100,
+      ai_credits_charged: 15,
+      input: { ...jobInfo, progressStage: 'Importación completada' } as unknown as Database['public']['Tables']['ai_jobs']['Row']['input'],
+      completed_at: new Date().toISOString(),
+    }).eq('id', jobId);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error('[ai-import-start] failed', message);
+    await supabase.from('ai_jobs').update({
+      status: 'failed',
+      error: message,
+      input: { progressStage: 'La importación ha fallado' } as unknown as Database['public']['Tables']['ai_jobs']['Row']['input'],
+      completed_at: new Date().toISOString(),
+    }).eq('id', jobId);
   }
 }
 
@@ -533,20 +579,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       sourceType: body.sourceType,
       fileName: body.fileName ?? null,
       progressStage: 'Preparando la importación',
-      phase: 'prepare',
-      source: {
-        sourceType: body.sourceType,
-        text: body.text,
-        url: body.url,
-        fileBase64: body.fileBase64,
-      },
     };
     const { data: job, error: jobError } = await supabase.from('ai_jobs').insert({
       restaurant_id: restaurantId, created_by: userData.user.id, job_type: jobType,
       status: 'processing', input: jobInput, progress: 3, started_at: new Date().toISOString(),
     }).select('id').single();
     if (jobError) throw jobError;
-    waitUntil(enqueueImportWorker(job.id));
+    waitUntil(runImportAndFinish(supabase, job.id, restaurantId, body));
     return res.status(200).json({ jobId: job.id, status: 'processing' });
   } catch (error) {
     return res.status(500).json({ error: error instanceof Error ? error.message : String(error) });
