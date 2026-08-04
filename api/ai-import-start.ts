@@ -15,9 +15,10 @@ export const MAX_RAW_TEXT_LENGTH = 20_000;
 export const CHUNK_SIZE = 6_000;
 export const CHUNK_OVERLAP = 600;
 export const MODEL_MAX_TOKENS = 4_500;
-const PRIMARY_MODEL = process.env.AI_MODEL_MENU_IMPORT ?? 'deepseek-v4-flash-free';
-const MODELS = [PRIMARY_MODEL, 'mimo-v2.5-free'].filter((model, index, all) => all.indexOf(model) === index);
+const PRIMARY_MODEL = process.env.AI_MODEL_MENU_IMPORT ?? 'ling-3.0-flash-free';
+const MODELS = [PRIMARY_MODEL, 'deepseek-v4-flash-free'].filter((model, index, all) => all.indexOf(model) === index);
 const KEYS = (process.env.OPENCODE_ZEN_API_KEYS ?? '').split(',').map((key) => key.trim()).filter(Boolean);
+const ATTEMPTS_PER_MODEL = 2;
 
 // Single-invocation budget: the Vercel Hobby plan caps a function (including its
 // waitUntil background work) at 300s. Reserve a margin so the whole import runs in one
@@ -383,12 +384,14 @@ export async function callStructured<T>(
 export async function withFallback<T>(operation: (model: string, inactivity: number, hard: number) => Promise<T>): Promise<T> {
   const failures: string[] = [];
   const limits = [[60_000, 120_000], [45_000, 90_000]] as const;
-  for (let index = 0; index < MODELS.length; index++) {
-    try {
-      const [inactivity, hard] = limits[Math.min(index, limits.length - 1)];
-      return await operation(MODELS[index], inactivity, hard);
-    } catch (error) {
-      failures.push(`${MODELS[index]}: ${error instanceof Error ? error.message : String(error)}`);
+  for (let attempt = 0; attempt < ATTEMPTS_PER_MODEL; attempt++) {
+    for (let index = 0; index < MODELS.length; index++) {
+      try {
+        const [inactivity, hard] = limits[Math.min(index, limits.length - 1)];
+        return await operation(MODELS[index], inactivity, hard);
+      } catch (error) {
+        failures.push(`${MODELS[index]}: ${error instanceof Error ? error.message : String(error)}`);
+      }
     }
   }
   throw new Error(`OpenCode Zen falló en todos los modelos: ${failures.join(' | ')}`);
