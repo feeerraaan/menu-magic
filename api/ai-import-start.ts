@@ -21,10 +21,12 @@ const KEYS = (process.env.OPENCODE_ZEN_API_KEYS ?? '').split(',').map((key) => k
 const ATTEMPTS_PER_MODEL = 2;
 
 // Single-invocation budget: the Vercel Hobby plan caps a function (including its
-// waitUntil background work) at 300s. Reserve a margin so the whole import runs in one
-// call and fails cleanly with a message if a huge menu would hit the platform timeout,
-// instead of being silently killed mid-run.
-export const TOTAL_BUDGET_MS = 270_000;
+// waitUntil background work) at 300s. We run the whole import in one call and set the
+// guard just under that ceiling (290s) so a genuinely huge menu fails cleanly with a
+// message instead of being silently killed by the platform at 300s and stuck in
+// "processing" forever. Per-LLM-call timeouts are deliberately generous: a streaming
+// call is only aborted after 90s without any data, or 240s total.
+export const TOTAL_BUDGET_MS = 290_000;
 
 const itemSchema = z.object({
   name: z.string().min(1).max(200),
@@ -383,7 +385,7 @@ export async function callStructured<T>(
 
 export async function withFallback<T>(operation: (model: string, inactivity: number, hard: number) => Promise<T>): Promise<T> {
   const failures: string[] = [];
-  const limits = [[60_000, 120_000], [45_000, 90_000]] as const;
+  const limits = [[90_000, 240_000], [75_000, 200_000]] as const;
   for (let attempt = 0; attempt < ATTEMPTS_PER_MODEL; attempt++) {
     for (let index = 0; index < MODELS.length; index++) {
       try {
