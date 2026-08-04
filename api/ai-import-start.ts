@@ -293,8 +293,10 @@ export async function callStructured<T>(
   schema: z.ZodType<T>,
   inactivityMs: number,
   hardMs: number,
+  deadline?: number,
 ): Promise<T> {
   if (!KEYS.length) throw new Error('Falta configurar OPENCODE_ZEN_API_KEYS en Vercel');
+  const deadlineRemaining = (): number => (deadline ? Math.max(0, deadline - Date.now()) : Number.POSITIVE_INFINITY);
   let lastError: Error | null = null;
   for (const key of KEYS) {
     const controller = new AbortController();
@@ -302,14 +304,14 @@ export async function callStructured<T>(
     const hardTimer: ReturnType<typeof setTimeout> = setTimeout(() => {
       timeoutReason = 'hard';
       controller.abort();
-    }, hardMs);
+    }, Math.min(hardMs, deadlineRemaining()));
     let timeoutReason: 'inactivity' | 'hard' | null = null;
     const resetInactivity = () => {
       if (inactivityTimer) clearTimeout(inactivityTimer);
       inactivityTimer = setTimeout(() => {
         timeoutReason = 'inactivity';
         controller.abort();
-      }, inactivityMs);
+      }, Math.min(inactivityMs, deadlineRemaining()));
     };
     try {
       const upstream = await fetch(OPENCODE_URL, {
@@ -371,7 +373,9 @@ export async function callStructured<T>(
       return schema.parse(jsonFromText(content));
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
-        lastError = new Error(`OpenCode ${model} sin respuesta (${timeoutReason === 'hard' ? hardMs : inactivityMs}ms)`);
+        lastError = deadline && Date.now() >= deadline
+          ? new Error('Se agotó el tiempo máximo de ejecución de la importación (el plan Hobby de Vercel limita cada función a 300 segundos). Intenta con un menú más corto o reparte la importación.')
+          : new Error(`OpenCode ${model} sin respuesta (${timeoutReason === 'hard' ? Math.min(hardMs, deadlineRemaining()) : inactivityMs}ms)`);
       } else {
         lastError = error instanceof Error ? error : new Error(String(error));
       }
@@ -383,14 +387,17 @@ export async function callStructured<T>(
   throw lastError ?? new Error(`OpenCode ${model} no pudo procesar la petición`);
 }
 
-export async function withFallback<T>(operation: (model: string, inactivity: number, hard: number) => Promise<T>): Promise<T> {
+export async function withFallback<T>(
+  operation: (model: string, inactivity: number, hard: number, deadline?: number) => Promise<T>,
+  deadline?: number,
+): Promise<T> {
   const failures: string[] = [];
   const limits = [[90_000, 240_000], [75_000, 200_000]] as const;
   for (let attempt = 0; attempt < ATTEMPTS_PER_MODEL; attempt++) {
     for (let index = 0; index < MODELS.length; index++) {
       try {
         const [inactivity, hard] = limits[Math.min(index, limits.length - 1)];
-        return await operation(MODELS[index], inactivity, hard);
+        return await operation(MODELS[index], inactivity, hard, deadline);
       } catch (error) {
         failures.push(`${MODELS[index]}: ${error instanceof Error ? error.message : String(error)}`);
       }
@@ -448,9 +455,9 @@ async function runImport(
       `Analizando bloque ${index + 1} de ${chunks.length}`,
     );
     const prompt = buildExtractionPrompt(chunk, locale, { fragment: chunks.length > 1 });
-    extractions.push(await withFallback((model, inactivity, hard) => callStructured(
-      model, prompt.system, chunk, extractionSchema, inactivity, hard,
-    )));
+    extractions.push(await withFallback((model, inactivity, hard, callDeadline) => callStructured(
+      model, prompt.system, chunk, extractionSchema, inactivity, hard, callDeadline,
+    ), deadline));
     await reportProgress?.(
       10 + Math.round(((index + 1) / chunks.length) * 52),
       `Bloque ${index + 1} de ${chunks.length} analizado`,
@@ -477,9 +484,9 @@ async function runImport(
       65 + Math.round((index / extraLanguages.length) * 30),
       `Traduciendo al idioma ${String(language)}`,
     );
-    translationsByLanguage[String(language)] = await withFallback((model, inactivity, hard) => callStructured(
-      model, prompt.system, JSON.stringify(extracted), translationSchema, inactivity, hard,
-    ));
+    translationsByLanguage[String(language)] = await withFallback((model, inactivity, hard, callDeadline) => callStructured(
+      model, prompt.system, JSON.stringify(extracted), translationSchema, inactivity, hard, callDeadline,
+    ), deadline);
     await reportProgress?.(
       65 + Math.round(((index + 1) / extraLanguages.length) * 30),
       `Traducción al idioma ${String(language)} completada`,
