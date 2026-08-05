@@ -42,8 +42,8 @@ Update this same file (`docs/HACKATHON_POLISH_PLAN.md`):
 |---|---|---|---|---|
 | 1 | Rewrite the README | ✅ | Medium | — |
 | 2 | Create the Hackathon Video Script | 🕐 | Medium | — |
-| 3 | Redesign Dashboard Overview | ⬜ | High | — |
-| 4 | Improve the "Today" section | ⬜ | Medium | 3 |
+| 3 | Redesign Dashboard Overview | ✅ | High | — |
+| 4 | Improve the "Today" section | ✅ | Medium | 3 |
 | 5 | Review product copy | ⬜ | Medium | — |
 | 6 | AI Welcome Experience | ⬜ | Medium | — |
 | 7 | Better empty states | ⬜ | Low-Med | 5 |
@@ -773,7 +773,8 @@ Task 16 (accurate generated types).
 
 | Date | Task | Files changed | Notes | Remaining |
 |---|---|---|---|---|
-| 2026-08-05 | Task 1 — Rewrite the README | `README.md` | Full rewrite in `feat/01-readme` branch. All 13 sections; env-var table audited from `grep` of `import.meta.env` / `process.env` / `Deno.env.get`; architecture SVG linked (Task 12). Zero Lovable/placeholder/media. | Live-demo link & hero fine; confirm clean-clone local dev when env vars available. |
+| 2026-08-05 | Task 3 + 4 — Dashboard Overview redesign + Today | `Overview.tsx`, `lib/restaurant-health.ts`, `hooks/useRestaurantHealth.ts`, `hooks/useTodayAiActions.ts`, `components/dashboard/overview/*` (GreetingHeader, HealthScoreCard, TodaySection, RecommendationsPreview, InsightsStrip), `locales/{en,es,ca}.json` | Pushed to prod (commit `858ad9f`). Deterministic 8-factor health engine (no LLM, no migrations), localStorage trend, Today card with 4 stats + sparkline, top-3 recs preview, deterministic insights strip, staggered entrance. tsc/build/lint green. | Empty states & copy polish come in Tasks 5/7; AI-actions tile uses local tz start-of-day. |
+| 2026-08-05 | Task 1 — Rewrite the README | `README.md` | Pushed to prod (commit `9ae6e2b`). 13 sections, env table audited from code, architecture SVG linked (Task 12). Zero Lovable/media. | — |
 
 ---
 
