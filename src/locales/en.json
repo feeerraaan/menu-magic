@@ -185,7 +185,62 @@
     "canceledDescription": "The payment process has been canceled. No charge has been made to your account.",
     "contactSupport": "If you had any problems during the payment process or have questions about the plans, feel free to contact us.",
     "backToPlans": "Back to plans",
-    "backToDashboard": "Go to dashboard"
+    "backToDashboard": "Go to dashboard",
+    "configureMenu": "Configure your menu",
+    "ov": {
+      "greetingMorning": "Good morning, {name}.",
+      "greetingAfternoon": "Good afternoon, {name}.",
+      "greetingEvening": "Good evening, {name}.",
+      "statusFirst": "Welcome! Your AI assistant is ready.",
+      "statusBetter": "Your restaurant is healthier than yesterday.",
+      "statusWorse": "Your restaurant needs a little attention today.",
+      "statusSteady": "Here's how your restaurant is doing today.",
+      "continueImproving": "Continue improving",
+      "health": {
+        "title": "Restaurant Health",
+        "subtitle": "Based on your menu, languages and activity",
+        "vsLastCheck": "vs last check",
+        "noChange": "Same as last check",
+        "factors": {
+          "images": "Images",
+          "descriptions": "Descriptions",
+          "languages": "Languages",
+          "accessibility": "Accessibility",
+          "categories": "Categories",
+          "pricing": "Pricing",
+          "popularity": "Popularity",
+          "seo": "SEO"
+        },
+        "notes": {
+          "single-language": "Add another language to reach more customers",
+          "coverage-pct": "{done}% translated",
+          "category-count": "{done} categories (ideal 3-8)",
+          "prices-hidden": "Prices hidden by choice",
+          "views-30d": "{done} views in 30 days",
+          "seo-essentials": "{done}/{total} essentials complete"
+        }
+      },
+      "today": {
+        "title": "Today",
+        "views": "menu views",
+        "aiActions": "AI actions",
+        "recs": "recommendations",
+        "pendingTranslations": "pending translations",
+        "weekLabel": "Last 7 days"
+      },
+      "recs": {
+        "title": "AI recommendations",
+        "viewAll": "View all",
+        "empty": "No open recommendations yet. Run AI insights from Analytics to get new ones."
+      },
+      "insights": {
+        "title": "Insights",
+        "topLanguage": "{pct}% of your views are in {language}",
+        "topItem": "{name} is your most viewed dish",
+        "missingTranslations": "{count} dishes need translation",
+        "weekViews": "{count} views this week"
+      }
+    }
   },
   "menu": {
     "featured": "Featured",

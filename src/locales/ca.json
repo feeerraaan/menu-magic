@@ -182,7 +182,62 @@
     "canceledDescription": "El procés de pagament ha estat cancel·lat. No s'ha realitzat cap càrrec al teu compte.",
     "contactSupport": "Si has tingut algún problema durant el procés de pagament o tens preguntes sobre els plans, no dubtis en contactar-nos.",
     "backToPlans": "Tornar als plans",
-    "backToDashboard": "Anar al panell"
+    "backToDashboard": "Anar al panell",
+    "configureMenu": "Configura el teu menú",
+    "ov": {
+      "greetingMorning": "Bon dia, {name}.",
+      "greetingAfternoon": "Bona tarda, {name}.",
+      "greetingEvening": "Bona nit, {name}.",
+      "statusFirst": "Benvingut! El teu assistent IA està a punt.",
+      "statusBetter": "El teu restaurant està més sa que ahir.",
+      "statusWorse": "El teu restaurant necessita una mica d'atenció avui.",
+      "statusSteady": "Així està el teu restaurant avui.",
+      "continueImproving": "Continuar millorant",
+      "health": {
+        "title": "Salut del Restaurant",
+        "subtitle": "Segons la teva carta, idiomes i activitat",
+        "vsLastCheck": "vs darrera revisió",
+        "noChange": "Igual que la darrera revisió",
+        "factors": {
+          "images": "Imatges",
+          "descriptions": "Descripcions",
+          "languages": "Idiomes",
+          "accessibility": "Accessibilitat",
+          "categories": "Categories",
+          "pricing": "Preus",
+          "popularity": "Popularitat",
+          "seo": "SEO"
+        },
+        "notes": {
+          "single-language": "Afegeix un altre idioma per arribar a més clients",
+          "coverage-pct": "{done}% traduït",
+          "category-count": "{done} categories (ideal 3-8)",
+          "prices-hidden": "Preus amagats expressament",
+          "views-30d": "{done} visites en 30 dies",
+          "seo-essentials": "{done}/{total} essencials complets"
+        }
+      },
+      "today": {
+        "title": "Avui",
+        "views": "visites al menú",
+        "aiActions": "accions IA",
+        "recs": "recomanacions",
+        "pendingTranslations": "traduccions pendents",
+        "weekLabel": "Últims 7 dies"
+      },
+      "recs": {
+        "title": "Recomanacions IA",
+        "viewAll": "Veure totes",
+        "empty": "Encara no hi ha recomanacions obertes. Executa els insights IA des d'Analítiques per obtenir-ne de noves."
+      },
+      "insights": {
+        "title": "Insights",
+        "topLanguage": "El {pct}% de les teves visites són en {language}",
+        "topItem": "{name} és el teu plat més vist",
+        "missingTranslations": "{count} plats necessiten traducció",
+        "weekViews": "{count} visites aquesta setmana"
+      }
+    }
   },
   "menu": {
     "featured": "Destacats",

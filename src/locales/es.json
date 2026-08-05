@@ -182,7 +182,62 @@
     "canceledDescription": "El proceso de pago ha sido cancelado. No se ha realizado ningún cargo a tu cuenta.",
     "contactSupport": "Si has tenido algún problema durante el proceso de pago o tienes preguntas sobre los planes, no dudes en contactarnos.",
     "backToPlans": "Volver a planes",
-    "backToDashboard": "Ir al dashboard"
+    "backToDashboard": "Ir al dashboard",
+    "configureMenu": "Configura tu menú",
+    "ov": {
+      "greetingMorning": "Buenos días, {name}.",
+      "greetingAfternoon": "Buenas tardes, {name}.",
+      "greetingEvening": "Buenas noches, {name}.",
+      "statusFirst": "¡Bienvenido! Tu asistente IA está listo.",
+      "statusBetter": "Tu restaurante está más sano que ayer.",
+      "statusWorse": "Tu restaurante necesita un poco de atención hoy.",
+      "statusSteady": "Así está tu restaurante hoy.",
+      "continueImproving": "Seguir mejorando",
+      "health": {
+        "title": "Salud del Restaurante",
+        "subtitle": "Según tu carta, idiomas y actividad",
+        "vsLastCheck": "vs última revisión",
+        "noChange": "Igual que la última revisión",
+        "factors": {
+          "images": "Imágenes",
+          "descriptions": "Descripciones",
+          "languages": "Idiomas",
+          "accessibility": "Accesibilidad",
+          "categories": "Categorías",
+          "pricing": "Precios",
+          "popularity": "Popularidad",
+          "seo": "SEO"
+        },
+        "notes": {
+          "single-language": "Añade otro idioma para llegar a más clientes",
+          "coverage-pct": "{done}% traducido",
+          "category-count": "{done} categorías (ideal 3-8)",
+          "prices-hidden": "Precios ocultos a propósito",
+          "views-30d": "{done} visitas en 30 días",
+          "seo-essentials": "{done}/{total} esenciales completos"
+        }
+      },
+      "today": {
+        "title": "Hoy",
+        "views": "visitas al menú",
+        "aiActions": "acciones IA",
+        "recs": "recomendaciones",
+        "pendingTranslations": "traducciones pendientes",
+        "weekLabel": "Últimos 7 días"
+      },
+      "recs": {
+        "title": "Recomendaciones IA",
+        "viewAll": "Ver todas",
+        "empty": "Aún no hay recomendaciones abiertas. Ejecuta los insights IA desde Analíticas para obtener nuevas."
+      },
+      "insights": {
+        "title": "Insights",
+        "topLanguage": "El {pct}% de tus visitas son en {language}",
+        "topItem": "{name} es tu plato más visto",
+        "missingTranslations": "{count} platos necesitan traducción",
+        "weekViews": "{count} visitas esta semana"
+      }
+    }
   },
   "menu": {
     "featured": "Destacados",
