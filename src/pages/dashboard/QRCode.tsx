@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useState, useRef, useMemo } from 'react';
+import { Link, useOutletContext } from 'react-router-dom';
 import { Restaurant } from '@/types/database';
 import { useTranslation } from '@/hooks/useTranslation';
 import { QRCodeSVG, QRCodeCanvas } from 'qrcode.react';
@@ -8,16 +8,66 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { useSubscriptionContext } from '@/contexts/SubscriptionContext';
 import { useToast } from '@/hooks/use-toast';
 import { Download, FileImage, FileText, Printer, Copy, Check } from 'lucide-react';
+
+// Logo modes for the QR center. The free plan is locked to the SaCarta logo (branding);
+// paid plans can use their own uploaded logo or go back to a plain QR. The QR always stays
+// scannable: level H (30% error correction) + imageSettings.excavate removes the modules the
+// logo covers, and the logo is kept small (22% of the QR) well inside the correction budget.
+type LogoMode = 'normal' | 'sacarta' | 'restaurant';
+
+const LOGO_STORAGE_KEY = (slug: string) => `sacarta-qr-logo-${slug}`;
+const LOGO_SIZE_RATIO = 0.22;
 
 export default function QRCodePage() {
   const { restaurant } = useOutletContext<{ restaurant: Restaurant }>();
   const { t } = useTranslation();
+  const { limits } = useSubscriptionContext();
   const [size, setSize] = useState(256);
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
   const canvasRef = useRef<HTMLDivElement>(null);
+
+  const canCustomize = limits.qrCustomization;
+
+  const [logoMode, setLogoMode] = useState<LogoMode>(() => {
+    const saved = localStorage.getItem(LOGO_STORAGE_KEY(restaurant.slug));
+    return saved === 'normal' || saved === 'sacarta' || saved === 'restaurant' ? saved : 'sacarta';
+  });
+
+  const handleLogoModeChange = (mode: LogoMode) => {
+    setLogoMode(mode);
+    try {
+      localStorage.setItem(LOGO_STORAGE_KEY(restaurant.slug), mode);
+    } catch {
+      // Storage unavailable — keep the choice in-memory for this session.
+    }
+  };
+
+  // Free plan: always the SaCarta logo in the center, choice is locked.
+  const effectiveMode: LogoMode = canCustomize ? logoMode : 'sacarta';
+
+  const logoSrc = useMemo(() => {
+    if (effectiveMode === 'restaurant' && restaurant.logo_url) return restaurant.logo_url;
+    if (effectiveMode === 'sacarta') return `${window.location.origin}/logo.svg`;
+    return null;
+  }, [effectiveMode, restaurant.logo_url]);
+
+  // imageSettings are expressed relative to the target pixel size, so the logo keeps the same
+  // visual proportion on the preview and on the (larger) canvas used for the PNG download.
+  const makeImageSettings = (px: number) =>
+    logoSrc
+      ? {
+          src: logoSrc,
+          width: Math.floor(px * LOGO_SIZE_RATIO),
+          height: Math.floor(px * LOGO_SIZE_RATIO),
+          excavate: true,
+          crossOrigin: 'anonymous' as const,
+        }
+      : undefined;
 
   const menuUrl = `${window.location.origin}/m/${restaurant.slug}`;
 
@@ -137,6 +187,7 @@ export default function QRCodePage() {
                 includeMargin
                 bgColor="#ffffff"
                 fgColor="#000000"
+                imageSettings={makeImageSettings(size)}
               />
             </div>
 
@@ -147,7 +198,57 @@ export default function QRCodePage() {
                 size={512}
                 level="H"
                 includeMargin
+                imageSettings={makeImageSettings(512)}
               />
+            </div>
+
+            {/* Logo in the center */}
+            <div className="w-full space-y-2">
+              <Label>Logo en el centro del QR</Label>
+              <RadioGroup
+                value={effectiveMode}
+                onValueChange={(v) => handleLogoModeChange(v as LogoMode)}
+                disabled={!canCustomize}
+                className="gap-1.5"
+              >
+                <label className="flex items-center gap-2 text-sm rounded-md px-2 py-1.5 hover:bg-muted/60 cursor-pointer disabled:cursor-not-allowed">
+                  <RadioGroupItem value="normal" />
+                  QR normal (sin logo)
+                </label>
+                <label className="flex items-center gap-2 text-sm rounded-md px-2 py-1.5 hover:bg-muted/60 cursor-pointer disabled:cursor-not-allowed">
+                  <RadioGroupItem value="sacarta" />
+                  Logo de SaCarta
+                </label>
+                <label className="flex items-center gap-2 text-sm rounded-md px-2 py-1.5 hover:bg-muted/60 cursor-pointer disabled:cursor-not-allowed">
+                  <RadioGroupItem value="restaurant" disabled={!restaurant.logo_url} />
+                  Mi logo
+                  {!restaurant.logo_url && (
+                    <span className="text-xs text-muted-foreground">(sube uno en Ajustes)</span>
+                  )}
+                </label>
+              </RadioGroup>
+              {!canCustomize ? (
+                <p className="text-xs text-muted-foreground">
+                  En el plan Sargantana el QR lleva el logo de SaCarta.{' '}
+                  <Link to="/dashboard/billing" className="underline hover:text-foreground">
+                    Mejora tu plan
+                  </Link>{' '}
+                  para usar tu propio logo.
+                </p>
+              ) : effectiveMode === 'restaurant' && !restaurant.logo_url ? (
+                <p className="text-xs text-muted-foreground">
+                  Aún no has subido un logo. Sube uno en{' '}
+                  <Link to="/dashboard/settings" className="underline hover:text-foreground">
+                    Ajustes
+                  </Link>
+                  .
+                </p>
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  El logo se incrusta en el centro y el QR sigue siendo escaneable (corrección de
+                  errores alta).
+                </p>
+              )}
             </div>
 
             {/* URL Display */}
