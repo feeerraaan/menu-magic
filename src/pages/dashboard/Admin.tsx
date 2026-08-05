@@ -328,6 +328,9 @@ function CouponsTab() {
     }
   };
 
+  // Only active coupons are shown — deactivated ones leave the panel.
+  const activeCoupons = coupons.filter((c) => c.active);
+
   return (
     <div className="space-y-4">
       <Card>
@@ -370,8 +373,8 @@ function CouponsTab() {
             <div className="flex items-center justify-center py-10">
               <Loader2 className="h-6 w-6 animate-spin text-primary" />
             </div>
-          ) : coupons.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No hay cupones.</p>
+          ) : activeCoupons.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No hay cupones activos.</p>
           ) : (
             <div className="overflow-x-auto">
               <Table>
@@ -381,26 +384,20 @@ function CouponsTab() {
                     <TableHead>Descuento</TableHead>
                     <TableHead>Canjes</TableHead>
                     <TableHead>Caduca</TableHead>
-                    <TableHead>Estado</TableHead>
                     <TableHead className="text-right">Acción</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {coupons.map((c) => (
+                  {activeCoupons.map((c) => (
                     <TableRow key={c.id}>
                       <TableCell className="font-mono font-medium">{c.code}</TableCell>
                       <TableCell>{c.percent_off != null ? `${c.percent_off}%` : '—'}</TableCell>
                       <TableCell>{c.times_redeemed}{c.max_redemptions ? `/${c.max_redemptions}` : ''}</TableCell>
                       <TableCell>{c.expires_at ? new Date(c.expires_at * 1000).toLocaleDateString() : '—'}</TableCell>
-                      <TableCell>
-                        <Badge variant={c.active ? 'default' : 'secondary'}>{c.active ? 'Activo' : 'Desactivado'}</Badge>
-                      </TableCell>
                       <TableCell className="text-right">
-                        {c.active && (
-                          <Button variant="outline" size="sm" onClick={() => deactivate(c.id)}>
-                            Desactivar
-                          </Button>
-                        )}
+                        <Button variant="outline" size="sm" onClick={() => deactivate(c.id)}>
+                          Desactivar
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
