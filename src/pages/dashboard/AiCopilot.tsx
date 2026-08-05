@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
+import { EmptyState } from '@/components/ui/empty-state';
 import { cn } from '@/lib/utils';
 import { Bot, Send, Loader2, ShieldAlert, Check, X, Plus, MessageSquare, Trash2 } from 'lucide-react';
 import type { MutationChange } from '@ai/copilot';
@@ -241,31 +242,32 @@ export default function AiCopilot() {
             <ScrollArea className="flex-1 p-4">
               <div className="space-y-4">
                 {messages.length === 0 && (
-                  <div className="text-center py-16 space-y-2">
-                    <Bot className="h-12 w-12 mx-auto text-muted-foreground opacity-40" />
-                    <p className="font-medium">{t('copilot.placeholder')}</p>
-                    <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                      {t('copilot.subtitle')}
-                    </p>
-                    <div className="flex flex-wrap justify-center gap-2 pt-2">
-                      {[
-                        t('copilot.suggested1'),
-                        t('copilot.suggested2'),
-                        t('copilot.suggested3'),
-                      ].map((s) => (
-                        <Badge
-                          key={s}
-                          variant="outline"
-                          className="cursor-pointer hover:bg-primary/10"
-                          onClick={() => {
-                            setInput(s);
-                          }}
-                        >
-                          {s}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
+                  <EmptyState
+                    icon={Bot}
+                    title={t('copilot.emptyTitle')}
+                    description={t('copilot.emptyDesc')}
+                    className="py-16"
+                    action={
+                      <div className="flex flex-wrap justify-center gap-2 pt-1">
+                        {[
+                          t('copilot.suggested1'),
+                          t('copilot.suggested2'),
+                          t('copilot.suggested3'),
+                        ].map((s) => (
+                          <Badge
+                            key={s}
+                            variant="outline"
+                            className="cursor-pointer hover:bg-primary/10"
+                            onClick={() => {
+                              setInput(s);
+                            }}
+                          >
+                            {s}
+                          </Badge>
+                        ))}
+                      </div>
+                    }
+                  />
                 )}
                 {messages.map((m) => (
                   <MessageBubble

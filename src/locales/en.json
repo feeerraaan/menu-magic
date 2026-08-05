@@ -221,12 +221,17 @@
         "aiActions": "AI actions",
         "recs": "recommendations",
         "pendingTranslations": "pending translations",
-        "weekLabel": "Last 7 days"
+        "weekLabel": "Last 7 days",
+        "emptyViews": "Your first views will appear here",
+        "emptyViewsDesc": "Share your QR code to start seeing daily activity."
       },
       "recs": {
         "title": "AI recommendations",
         "viewAll": "View all",
-        "empty": "No open recommendations yet. Run AI insights from Analytics to get new ones."
+        "empty": "No open recommendations yet. Run AI insights from Analytics to get new ones.",
+        "emptyTitle": "No open recommendations",
+        "emptyDesc": "Run AI Insights from Analytics and the assistant will suggest concrete improvements.",
+        "emptyAction": "Open Analytics"
       },
       "insights": {
         "title": "Insights",
@@ -349,7 +354,10 @@
     "recommendations": "Recommendations",
     "done": "Done",
     "dismiss": "Dismiss",
-    "generated": "Analysis generated"
+    "generated": "Analysis generated",
+    "emptyViewsTitle": "Your menu has no views yet",
+    "emptyViewsDesc": "Share your QR code to start seeing how customers interact with your menu.",
+    "emptyViewsAction": "Go to QR code"
   },
   "qrCode": {
     "title": "QR Code",
@@ -483,7 +491,9 @@
     "newCategory": "New category",
     "categoryNameExample": "e.g. Starters, Main courses",
     "unlockFeatures": "Unlock unlimited photos, more languages, menus and advanced features.",
-    "editorFallback": "Menu Editor"
+    "editorFallback": "Menu Editor",
+    "emptyCategoriesTitle": "Your menu is ready to grow",
+    "emptyCategoriesDesc": "Upload your menu and let AI build the categories, dishes and descriptions for you."
   },
   "onboarding": {
     "step1Title": "Let's get started",
@@ -601,15 +611,17 @@
       "allergens": "Allergens",
       "create": "Create",
       "translation": "Translation"
-    }
+    },
+    "emptyTitle": "Ask anything about your menu",
+    "emptyDesc": "Describe a change and the AI Copilot will prepare it for your confirmation. Start with one of the suggestions below."
   },
   "optimizer": {
     "title": "AI Menu Optimizer",
     "subtitle": "Analyzes your menu and shows you how to improve it.",
     "analyze": "Analyze menu",
     "analyzing": "Analyzing...",
-    "emptyTitle": "You haven't analyzed your menu yet",
-    "emptyDesc": "Press \"Analyze menu\" to get a score from 0 to 100 and concrete recommendations.",
+    "emptyTitle": "Your menu hasn't been analyzed yet",
+    "emptyDesc": "Run the AI optimizer to get a score from 0 to 100 and concrete improvements.",
     "globalScore": "Overall score",
     "evolution": "Progress",
     "scoreLabel": "Score",
@@ -623,7 +635,8 @@
       "categoryQuality": "Category quality",
       "menuLength": "Menu length",
       "duplicates": "Duplicates"
-    }
+    },
+    "emptyAction": "Analyze menu"
   },
   "aiImport": {
     "title": "Import menu with AI",
@@ -701,6 +714,10 @@
     "menuSaved": "Menu saved",
     "menuDeleted": "Menu deleted",
     "confirmDeleteMenu": "Delete this menu? Its categories and dishes will be removed.",
-    "price": "{price} {currency}"
+    "price": "{price} {currency}",
+    "emptyCoupons": "No active coupons yet.",
+    "emptyCouponsDesc": "Create a discount code to share with customers.",
+    "emptyMenus": "No menus yet.",
+    "emptyCategories": "No categories yet."
   }
 }

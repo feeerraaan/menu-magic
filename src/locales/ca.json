@@ -218,12 +218,17 @@
         "aiActions": "accions IA",
         "recs": "recomanacions",
         "pendingTranslations": "traduccions pendents",
-        "weekLabel": "Últims 7 dies"
+        "weekLabel": "Últims 7 dies",
+        "emptyViews": "Les teves primeres visites apareixeran aquí",
+        "emptyViewsDesc": "Comparteix el teu codi QR per començar a veure l'activitat diària."
       },
       "recs": {
         "title": "Recomanacions IA",
         "viewAll": "Veure totes",
-        "empty": "Encara no hi ha recomanacions obertes. Executa els insights IA des d'Analítiques per obtenir-ne de noves."
+        "empty": "Encara no hi ha recomanacions obertes. Executa els insights IA des d'Analítiques per obtenir-ne de noves.",
+        "emptyTitle": "No hi ha recomanacions obertes",
+        "emptyDesc": "Executa els Insights IA des d'Analítiques i l'assistent et suggerirà millores concretes.",
+        "emptyAction": "Obrir Analítiques"
       },
       "insights": {
         "title": "Insights",
@@ -346,7 +351,10 @@
     "recommendations": "Recomanacions",
     "done": "Fet",
     "dismiss": "Descartar",
-    "generated": "Anàlisi generada"
+    "generated": "Anàlisi generada",
+    "emptyViewsTitle": "El teu menú encara no té visites",
+    "emptyViewsDesc": "Comparteix el teu codi QR per començar a veure com interactuen els clients amb el teu menú.",
+    "emptyViewsAction": "Anar al codi QR"
   },
   "qrCode": {
     "title": "Codi QR",
@@ -480,7 +488,9 @@
     "newCategory": "Nova categoria",
     "categoryNameExample": "ex: Entrants, Plats principals",
     "unlockFeatures": "Desbloqueja fotos il·limitades, més idiomes, menús i funcions avançades.",
-    "editorFallback": "Editor de menú"
+    "editorFallback": "Editor de menú",
+    "emptyCategoriesTitle": "El teu menú està llest per créixer",
+    "emptyCategoriesDesc": "Puja el teu menú i deixa que la IA creï les categories, plats i descripcions per tu."
   },
   "onboarding": {
     "step1Title": "Comencem",
@@ -598,15 +608,17 @@
       "allergens": "Al·lèrgens",
       "create": "Crear",
       "translation": "Traducció"
-    }
+    },
+    "emptyTitle": "Pregunta el que vulguis sobre el teu menú",
+    "emptyDesc": "Descriu un canvi i el Copilot IA el prepararà per a la teva confirmació. Comença amb una de les suggerències de sota."
   },
   "optimizer": {
     "title": "Optimitzador de menú IA",
     "subtitle": "Analitza el teu menú i descobreix com millorar-lo.",
     "analyze": "Analitzar menú",
     "analyzing": "Analitzant...",
-    "emptyTitle": "Encara no has analitzat el teu menú",
-    "emptyDesc": "Prem \"Analitzar menú\" per obtenir una puntuació de 0 a 100 i recomanacions concretes.",
+    "emptyTitle": "El teu menú encara no s'ha analitzat",
+    "emptyDesc": "Executa l'optimitzador IA per obtenir una puntuació de 0 a 100 i millores concretes.",
     "globalScore": "Puntuació global",
     "evolution": "Evolució",
     "scoreLabel": "Puntuació",
@@ -620,7 +632,8 @@
       "categoryQuality": "Qualitat de categories",
       "menuLength": "Longitud del menú",
       "duplicates": "Duplicats"
-    }
+    },
+    "emptyAction": "Analitzar menú"
   },
   "aiImport": {
     "title": "Importar menú amb IA",
@@ -698,6 +711,10 @@
     "menuSaved": "Menú desat",
     "menuDeleted": "Menú eliminat",
     "confirmDeleteMenu": "Esborrar aquest menú? Se n'eliminaran les categories i plats.",
-    "price": "{price} {currency}"
+    "price": "{price} {currency}",
+    "emptyCoupons": "Encara no hi ha cupons actius.",
+    "emptyCouponsDesc": "Crea un codi de descompte per compartir amb els clients.",
+    "emptyMenus": "Encara no hi ha menús.",
+    "emptyCategories": "Encara no hi ha categories."
   }
 }

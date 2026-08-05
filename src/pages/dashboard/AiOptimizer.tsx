@@ -5,9 +5,10 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { EmptyState } from '@/components/ui/empty-state';
 import { ChartContainer } from '@/components/ui/chart';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
-import { Sparkles, Wand2 } from 'lucide-react';
+import { Sparkles, Wand2, Loader2 } from 'lucide-react';
 import type { OptimizerBreakdown } from '@ai/optimizer';
 
 function DIMENSION_LABELS(t: (k: string) => string): Record<keyof OptimizerBreakdown, string> {
@@ -68,11 +69,17 @@ export default function AiOptimizer() {
 
       {!latestResult ? (
         <Card>
-          <CardContent className="pt-6 text-center py-12 space-y-3">
-            <Wand2 className="h-10 w-10 mx-auto text-muted-foreground" />
-            <p className="font-medium">{t('optimizer.emptyTitle')}</p>
-            <p className="text-sm text-muted-foreground">{t('optimizer.emptyDesc')}</p>
-          </CardContent>
+          <EmptyState
+            icon={Wand2}
+            title={t('optimizer.emptyTitle')}
+            description={t('optimizer.emptyDesc')}
+            action={
+              <Button onClick={() => run()} disabled={loading} className="gap-2">
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wand2 className="h-4 w-4" />}
+                {loading ? t('optimizer.analyzing') : t('optimizer.emptyAction')}
+              </Button>
+            }
+          />
         </Card>
       ) : (
         <>

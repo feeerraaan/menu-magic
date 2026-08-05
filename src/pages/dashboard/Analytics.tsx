@@ -1,4 +1,4 @@
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, Link } from 'react-router-dom';
 import { Restaurant } from '@/types/database';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAnalytics } from '@/hooks/useAnalytics';
@@ -10,6 +10,7 @@ import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, PieChart, Pie, Cell }
 import { BarChart3, Eye, Globe, TrendingUp, Calendar, Sparkles, Lightbulb, X, Check, Loader2 } from 'lucide-react';
 import { languages } from '@/lib/i18n';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { EmptyState } from '@/components/ui/empty-state';
 import { Button } from '@/components/ui/button';
 
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
@@ -144,12 +145,17 @@ export default function Analytics() {
               </ResponsiveContainer>
             </ChartContainer>
           ) : (
-            <div className="h-64 flex items-center justify-center text-muted-foreground">
-              <div className="text-center">
-                <Eye className="h-12 w-12 mx-auto mb-4 opacity-20" />
-                <p>{t('analytics.noViews')}</p>
-                <p className="text-sm mt-1">{t('analytics.startSharing')}</p>
-              </div>
+            <div className="h-64 flex items-center justify-center">
+              <EmptyState
+                icon={Eye}
+                title={t('analytics.emptyViewsTitle')}
+                description={t('analytics.emptyViewsDesc')}
+                action={
+                  <Link to="/dashboard/qr">
+                    <Button variant="outline">{t('analytics.emptyViewsAction')}</Button>
+                  </Link>
+                }
+              />
             </div>
           )}
         </CardContent>

@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -82,6 +83,14 @@ export function TodaySection({
         ) : (
           <>
             <Sparkline data={viewsByDay} />
+            {viewsByDay.every((d) => d.views === 0) && (
+              <p className="text-xs text-muted-foreground">
+                {t('dashboard.ov.today.emptyViews')}{' '}
+                <Link to="/dashboard/qr" className="text-primary underline">
+                  {t('analytics.emptyViewsAction')}
+                </Link>
+              </p>
+            )}
             <div className="grid grid-cols-2 gap-3">
               {tiles.map((tile) => (
                 <div key={tile.label} className="rounded-lg bg-muted/50 px-3 py-2.5">

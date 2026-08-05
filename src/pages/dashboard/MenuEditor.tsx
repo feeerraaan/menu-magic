@@ -61,6 +61,7 @@ import {
 import { cn } from '@/lib/utils';
 import { ImageUpload } from '@/components/ui/image-upload';
 import { Badge } from '@/components/ui/badge';
+import { EmptyState } from '@/components/ui/empty-state';
 import { supabase } from '@/integrations/supabase/client';
 
 interface SortableItemProps {
@@ -643,19 +644,26 @@ export default function MenuEditor() {
       </div>
 
       {categories.length === 0 ? (
-        <Card className="p-12 text-center space-y-3">
-          <p className="text-muted-foreground mb-1">{t('menuEditor.noCategories')}</p>
-          <div className="flex items-center justify-center gap-2">
-            <Button
-              onClick={() => setCategoryDialog({ open: true })}
-              disabled={!canCreateCategory}
-            >
-              <Plus className="mr-2 h-4 w-4" /> {t('menuEditor.addCategory')}
-            </Button>
-            <Button variant="outline" onClick={() => setAiImportOpen(true)} className="gap-2">
-              <Sparkles className="h-4 w-4" /> {t('menuEditor.importWithAI')}
-            </Button>
-          </div>
+        <Card>
+          <EmptyState
+            icon={Sparkles}
+            title={t('menuEditor.emptyCategoriesTitle')}
+            description={t('menuEditor.emptyCategoriesDesc')}
+            action={
+              <>
+                <Button onClick={() => setAiImportOpen(true)} className="gap-2">
+                  <Sparkles className="h-4 w-4" /> {t('menuEditor.importWithAI')}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setCategoryDialog({ open: true })}
+                  disabled={!canCreateCategory}
+                >
+                  <Plus className="mr-2 h-4 w-4" /> {t('menuEditor.addCategory')}
+                </Button>
+              </>
+            }
+          />
         </Card>
       ) : (
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleCategoryDragEnd}>

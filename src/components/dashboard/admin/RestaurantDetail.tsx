@@ -297,7 +297,7 @@ export function RestaurantDetail({ restaurantId, restaurantName, onClose, onChan
               </CardHeader>
               <CardContent className="space-y-2">
                 {menus.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">Sin menús.</p>
+                  <p className="py-4 text-sm text-muted-foreground">{t('admin.emptyMenus')}</p>
                 ) : (
                   menus.map((menu) => (
                     <div key={menu.menu_id} className="border rounded-lg">
@@ -382,7 +382,7 @@ function MenuTree({ menuId, details }: { menuId: string; details?: adminApi.Admi
     return <p className="text-xs text-muted-foreground py-2">Cargando…</p>;
   }
   if (details.categories.length === 0) {
-    return <p className="text-xs text-muted-foreground py-2">Sin categorías.</p>;
+    return <p className="text-xs text-muted-foreground py-2">{t('admin.emptyCategories')}</p>;
   }
   return (
     <div className="py-2 space-y-2">

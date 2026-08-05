@@ -218,12 +218,17 @@
         "aiActions": "acciones IA",
         "recs": "recomendaciones",
         "pendingTranslations": "traducciones pendientes",
-        "weekLabel": "Últimos 7 días"
+        "weekLabel": "Últimos 7 días",
+        "emptyViews": "Tus primeras visitas aparecerán aquí",
+        "emptyViewsDesc": "Comparte tu código QR para empezar a ver la actividad diaria."
       },
       "recs": {
         "title": "Recomendaciones IA",
         "viewAll": "Ver todas",
-        "empty": "Aún no hay recomendaciones abiertas. Ejecuta los insights IA desde Analíticas para obtener nuevas."
+        "empty": "Aún no hay recomendaciones abiertas. Ejecuta los insights IA desde Analíticas para obtener nuevas.",
+        "emptyTitle": "No hay recomendaciones abiertas",
+        "emptyDesc": "Ejecuta los Insights IA desde Analíticas y el asistente te sugerirá mejoras concretas.",
+        "emptyAction": "Abrir Analíticas"
       },
       "insights": {
         "title": "Insights",
@@ -346,7 +351,10 @@
     "recommendations": "Recomendaciones",
     "done": "Hecho",
     "dismiss": "Descartar",
-    "generated": "Análisis generado"
+    "generated": "Análisis generado",
+    "emptyViewsTitle": "Tu menú aún no tiene visitas",
+    "emptyViewsDesc": "Comparte tu código QR para empezar a ver cómo interactúan los clientes con tu menú.",
+    "emptyViewsAction": "Ir al código QR"
   },
   "qrCode": {
     "title": "Código QR",
@@ -480,7 +488,9 @@
     "newCategory": "Nueva categoría",
     "categoryNameExample": "ej: Entrantes, Platos principales",
     "unlockFeatures": "Desbloquea fotos ilimitadas, más idiomas, menús y funciones avanzadas.",
-    "editorFallback": "Editor de Menú"
+    "editorFallback": "Editor de Menú",
+    "emptyCategoriesTitle": "Tu menú está listo para crecer",
+    "emptyCategoriesDesc": "Sube tu menú y deja que la IA cree las categorías, platos y descripciones por ti."
   },
   "onboarding": {
     "step1Title": "Empecemos",
@@ -598,15 +608,17 @@
       "allergens": "Alérgenos",
       "create": "Crear",
       "translation": "Traducción"
-    }
+    },
+    "emptyTitle": "Pregunta lo que quieras sobre tu menú",
+    "emptyDesc": "Describe un cambio y el Copilot IA lo preparará para tu confirmación. Empieza con una de las sugerencias de abajo."
   },
   "optimizer": {
     "title": "Optimizador de menú IA",
     "subtitle": "Analiza tu menú y descubre cómo mejorarlo.",
     "analyze": "Analizar menú",
     "analyzing": "Analizando...",
-    "emptyTitle": "Todavía no has analizado tu menú",
-    "emptyDesc": "Pulsa \"Analizar menú\" para obtener una puntuación de 0 a 100 y recomendaciones concretas.",
+    "emptyTitle": "Tu menú todavía no se ha analizado",
+    "emptyDesc": "Ejecuta el optimizador IA para obtener una puntuación de 0 a 100 y mejoras concretas.",
     "globalScore": "Puntuación global",
     "evolution": "Evolución",
     "scoreLabel": "Puntuación",
@@ -620,7 +632,8 @@
       "categoryQuality": "Calidad de categorías",
       "menuLength": "Longitud del menú",
       "duplicates": "Duplicados"
-    }
+    },
+    "emptyAction": "Analizar menú"
   },
   "aiImport": {
     "title": "Importar menú con IA",
@@ -698,6 +711,10 @@
     "menuSaved": "Menú guardado",
     "menuDeleted": "Menú eliminado",
     "confirmDeleteMenu": "¿Borrar este menú? Se eliminarán sus categorías y platos.",
-    "price": "{price} {currency}"
+    "price": "{price} {currency}",
+    "emptyCoupons": "Aún no hay cupones activos.",
+    "emptyCouponsDesc": "Crea un código de descuento para compartir con los clientes.",
+    "emptyMenus": "Aún no hay menús.",
+    "emptyCategories": "Aún no hay categorías."
   }
 }

@@ -2,6 +2,8 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import type { InsightsRecommendation } from '@ai/insights';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { EmptyState } from '@/components/ui/empty-state';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTranslation } from '@/hooks/useTranslation';
 
@@ -30,7 +32,19 @@ export function RecommendationsPreview({ recommendations }: RecommendationsPrevi
       </CardHeader>
       <CardContent className="space-y-2">
         {shown.length === 0 ? (
-          <p className="py-2 text-sm text-muted-foreground">{t('dashboard.ov.recs.empty')}</p>
+          <EmptyState
+            icon={Sparkles}
+            title={t('dashboard.ov.recs.emptyTitle')}
+            description={t('dashboard.ov.recs.emptyDesc')}
+            className="py-6"
+            action={
+              <Link to="/dashboard/analytics">
+                <Button variant="outline" size="sm">
+                  {t('dashboard.ov.recs.emptyAction')}
+                </Button>
+              </Link>
+            }
+          />
         ) : (
           shown.map((rec) => (
             <Link

@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import { EmptyState } from '@/components/ui/empty-state';
 import { Loader2, ShieldCheck, Users, Ticket } from 'lucide-react';
 import { useIsAdmin } from '@/hooks/useIsAdmin';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -377,7 +378,12 @@ function CouponsTab() {
               <Loader2 className="h-6 w-6 animate-spin text-primary" />
             </div>
           ) : activeCoupons.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No hay cupones activos.</p>
+            <EmptyState
+              icon={Ticket}
+              title={t('admin.emptyCoupons')}
+              description={t('admin.emptyCouponsDesc')}
+              className="py-8"
+            />
           ) : (
             <div className="overflow-x-auto">
               <Table>
