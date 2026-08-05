@@ -19,8 +19,8 @@ export const MAX_RAW_TEXT_LENGTH = 20_000;
 export const CHUNK_SIZE = 6_000;
 export const CHUNK_OVERLAP = 600;
 export const MODEL_MAX_TOKENS = 4_500;
-const PRIMARY_MODEL = process.env.AI_MODEL_MENU_IMPORT ?? 'deepseek-v4-flash-free';
-const MODELS = [PRIMARY_MODEL, 'ling-3.0-flash-free'].filter((model, index, all) => all.indexOf(model) === index);
+const PRIMARY_MODEL = process.env.AI_MODEL_MENU_IMPORT ?? 'ling-3.0-flash-free';
+const MODELS = [PRIMARY_MODEL, 'deepseek-v4-flash-free'].filter((model, index, all) => all.indexOf(model) === index);
 const KEYS = (process.env.OPENCODE_ZEN_API_KEYS ?? '').split(',').map((key) => key.trim()).filter(Boolean);
 const ATTEMPTS_PER_MODEL = 2;
 
