@@ -120,10 +120,12 @@ export function ImageUpload({
 
   const confirmCrop = useCallback(async () => {
     if (!cropSrc || !cropPixels) return;
-    closeCropper();
+    const src = cropSrc;
+    setCropOpen(false);
+    setCropSrc(null);
     setUploading(true);
     try {
-      const cropped = await cropToSquareBlob(cropSrc, cropPixels, maxWidth, quality);
+      const cropped = await cropToSquareBlob(src, cropPixels, maxWidth, quality);
 
       const fileName = `${restaurantId}/${folder}/${Date.now()}.webp`;
       const { error: uploadError } = await supabase.storage
@@ -138,12 +140,14 @@ export function ImageUpload({
       onChange(data.publicUrl);
       toast({ title: t('imageUpload.uploaded') });
     } catch (e: unknown) {
+      // cropToSquareBlob revokes the URL only on a successful load; revoke here on failure
+      URL.revokeObjectURL(src);
       const message = e instanceof Error ? e.message : 'Unknown error';
       toast({ title: t('imageUpload.failed'), description: message, variant: 'destructive' });
     } finally {
       setUploading(false);
     }
-  }, [cropSrc, cropPixels, closeCropper, maxWidth, quality, restaurantId, folder, onChange, toast, t]);
+  }, [cropSrc, cropPixels, maxWidth, quality, restaurantId, folder, onChange, toast, t]);
 
   const handleRemove = useCallback(async () => {
     if (!value) return;
@@ -260,7 +264,6 @@ export function ImageUpload({
                 onCropChange={setCrop}
                 onZoomChange={setZoom}
                 onCropComplete={(_, areaPixels) => setCropPixels(areaPixels)}
-                style={{ containerStyle: { position: 'relative' } }}
               />
             )}
           </div>
