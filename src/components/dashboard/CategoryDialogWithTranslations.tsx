@@ -213,7 +213,7 @@ export function CategoryDialogWithTranslations({
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            {category ? 'Editar categoría' : 'Nueva categoría'}
+            {category ? t('menuEditor.editCategory') : t('menuEditor.newCategory')}
             {hasMultipleLanguages && <Globe className="h-4 w-4 text-muted-foreground" />}
           </DialogTitle>
         </DialogHeader>
@@ -241,7 +241,7 @@ export function CategoryDialogWithTranslations({
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Label htmlFor={`cat-name-${lang}`}>
-                      Nombre {lang === defaultLanguage && <span className="text-destructive">*</span>}
+                      {t('menuEditor.categoryName')} {lang === defaultLanguage && <span className="text-destructive">*</span>}
                     </Label>
                     {lang !== defaultLanguage && (
                       <Button
@@ -253,7 +253,7 @@ export function CategoryDialogWithTranslations({
                         onClick={() => handleTranslateField(lang, 'name')}
                       >
                         {aiTranslating ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
-                        Traducir con IA
+                        {t('menuEditor.translateWithAI')}
                       </Button>
                     )}
                   </div>
@@ -261,12 +261,12 @@ export function CategoryDialogWithTranslations({
                     id={`cat-name-${lang}`}
                     value={translations[lang]?.name || ''}
                     onChange={(e) => handleTranslationChange(lang, 'name', e.target.value)}
-                    placeholder={lang === defaultLanguage ? 'ej: Entrantes, Platos principales' : `Traducción en ${LANGUAGE_NAMES[lang] || lang}`}
+                    placeholder={lang === defaultLanguage ? t('menuEditor.categoryNameExample') : t('menuEditor.translationIn', { lang: LANGUAGE_NAMES[lang] || lang })}
                   />
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <Label htmlFor={`cat-desc-${lang}`}>Descripción (opcional)</Label>
+                    <Label htmlFor={`cat-desc-${lang}`}>{t('menuEditor.descriptionOptional')}</Label>
                     {lang !== defaultLanguage && (
                       <Button
                         type="button"
@@ -277,7 +277,7 @@ export function CategoryDialogWithTranslations({
                         onClick={() => handleTranslateField(lang, 'description')}
                       >
                         {aiTranslating ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
-                        Traducir con IA
+                        {t('menuEditor.translateWithAI')}
                       </Button>
                     )}
                   </div>

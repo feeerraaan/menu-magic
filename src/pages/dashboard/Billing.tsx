@@ -85,7 +85,7 @@ export default function Billing() {
         window.open(data.url, '_blank');
       }
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to start checkout';
+      const errorMessage = error instanceof Error ? error.message : t('billing.failedCheckout');
       toast({
         title: t('billing.error'),
         description: errorMessage,
@@ -107,7 +107,7 @@ export default function Billing() {
         window.open(data.url, '_blank');
       }
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to open customer portal';
+      const errorMessage = error instanceof Error ? error.message : t('billing.failedPortal');
       toast({
         title: t('billing.error'),
         description: errorMessage,

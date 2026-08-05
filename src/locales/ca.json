@@ -232,7 +232,10 @@
         "missingTranslations": "{count} plats necessiten traducció",
         "weekViews": "{count} visites aquesta setmana"
       }
-    }
+    },
+    "optimizer": "Optimitzador IA",
+    "copilot": "Copilot IA",
+    "backoffice": "Backoffice"
   },
   "menu": {
     "featured": "Destacats",
@@ -261,7 +264,14 @@
     "paymentDesc": "Tots els pagaments es processen de forma segura a través de Stripe. Pots gestionar la teva subscripció, actualitzar mètodes de pagament o cancel·lar en qualsevol moment a través del portal del client.",
     "error": "Error",
     "failedCheckout": "Error al iniciar el checkout",
-    "failedPortal": "Error al obrir el portal del client"
+    "failedPortal": "Error al obrir el portal del client",
+    "activated": "La teva subscripció s'ha activat correctament. Ja pots gaudir de totes les funcions Pro.",
+    "includes": "Què inclou el teu pla?",
+    "feat1": "Fins a 10 menús",
+    "feat2": "Fins a 10 idiomes",
+    "feat3": "Fins a 50 fotos",
+    "feat4": "Horaris programats",
+    "feat5": "Totes les plantilles"
   },
   "settings": {
     "title": "Configuració",
@@ -290,7 +300,9 @@
     "light": "Clar",
     "dark": "Fosc",
     "logoUpdated": "Logo actualitzat",
-    "logoRemoved": "Logo eliminat"
+    "logoRemoved": "Logo eliminat",
+    "hidePricesPublic": "No mostrar preus al menú públic",
+    "makeMenuVisible": "Fes que el teu menú sigui visible per als clients"
   },
   "analytics": {
     "title": "Analítiques",
@@ -311,7 +323,19 @@
     "byLanguage": "Per Idioma",
     "byLanguageDesc": "Distribució de visions per idioma",
     "noLanguageData": "Sense dades d'idioma encara",
-    "noItemViews": "Sense visions d'articles encara"
+    "noItemViews": "Sense visions d'articles encara",
+    "aiTitle": "Anàlisi IA del negoci",
+    "aiSubtitle": "Narrativa consultora sobre les teves dades i suggeriments accionables.",
+    "aiDesc": "Genera una anàlisi consultora de les teves dades i recomanacions concretes (3 crèdits IA).",
+    "generate": "Generar anàlisi",
+    "updateAnalysis": "Actualitzar anàlisi",
+    "analyzing": "Analitzant...",
+    "generatedPrefix": "Generat el {date}",
+    "aiEmptyDesc": "Prem \"Generar anàlisi\" perquè la IA revisi les teves vistes, el teu menú i l'evolució de l'optimitzador, i et proposi millores concretes.",
+    "recommendations": "Recomanacions",
+    "done": "Fet",
+    "dismiss": "Descartar",
+    "generated": "Anàlisi generada"
   },
   "qrCode": {
     "title": "Codi QR",
@@ -336,15 +360,27 @@
     "downloadedSVG": "Codi QR descarregat com SVG",
     "downloadedPDF": "Codi QR descarregat com PDF",
     "popupError": "Si us plau, permet les finestres emergents per descarregar el PDF",
-    "scanToView": "Escaneja per veure el nostre menú"
+    "scanToView": "Escaneja per veure el nostre menú",
+    "centerLogo": "Logo al centre del QR",
+    "normalQR": "QR normal (sense logo)",
+    "saCartaLogo": "Logo de SaCarta",
+    "myLogo": "El meu logo",
+    "uploadInSettings": "(puja'n un a Ajustos)",
+    "planLogoNote": "Al pla Sargantana el QR porta el logo de SaCarta. ",
+    "upgradePlan": "Millora el teu pla",
+    "planLogoNote2": " per utilitzar el teu propi logo.",
+    "noLogoYet": "Encara no has pujat cap logo. Puja'n un a ",
+    "settings": "Ajustos",
+    "noLogoYet2": ".",
+    "logoNote": "El logo s'incrusta al centre i el QR continua sent escanejable (correcció d'errors alta)."
   },
   "menuEditor": {
     "title": "Editor de Menú",
     "items": "Articles",
     "addCategory": "Afegir Categoria",
-    "editCategory": "Editar Categoría",
+    "editCategory": "Edita categoria",
     "deleteCategory": "Eliminar Categoría",
-    "categoryName": "Nom de Categoría",
+    "categoryName": "Nom",
     "categoryDesc": "Descripció de Categoría (opcional)",
     "categoryNamePlaceholder": "p.ex., Appetizers",
     "categoryDescPlaceholder": "Una breu descripció d'aquesta categoria",
@@ -410,7 +446,30 @@
     "editMenu": "Editar menú",
     "deleteMenu": "Eliminar menú",
     "manageDescription": "Gestiona les teves categories i plats",
-    "noCategories": "Sense categories encara. Comença afegint-ne una."
+    "noCategories": "Sense categories encara. Comença afegint-ne una.",
+    "importWithAI": "Importar amb IA",
+    "deleteMenuTitle": "Eliminar menú?",
+    "deleteMenuMessage": "Això eliminarà el menú i totes les seves categories i plats. Aquesta acció no es pot desfer.",
+    "deleteCategoryTitle": "Eliminar categoria?",
+    "deleteCategoryMessage": "Això eliminarà la categoria i tots els seus plats. Aquesta acció no es pot desfer.",
+    "deleteItemTitle": "Eliminar plat?",
+    "deleteItemMessage": "Aquesta acció no es pot desfer.",
+    "scheduleConflict": "Conflicte d'horari",
+    "scheduleConflictDesc": "Aquest horari se solapa amb el menú",
+    "schedulePro": "Els horaris programats estan disponibles al pla Pro",
+    "menuNamePlaceholder": "ex: Menú del dia, Carta de vins...",
+    "descriptionOptional": "Descripció (opcional)",
+    "menuActive": "Menú actiu",
+    "menuActiveDesc": "Pots tenir diversos menús actius amb diferents horaris",
+    "translateWithAI": "Tradueix amb IA",
+    "generateWithAI": "Genera amb IA",
+    "nameExample": "ex: Pizza Margherita",
+    "describeDish": "Descriu el plat...",
+    "translationIn": "Traducció en {lang}",
+    "newCategory": "Nova categoria",
+    "categoryNameExample": "ex: Entrants, Plats principals",
+    "unlockFeatures": "Desbloqueja fotos il·limitades, més idiomes, menús i funcions avançades.",
+    "editorFallback": "Editor de menú"
   },
   "onboarding": {
     "step1Title": "Comencem",
@@ -435,14 +494,25 @@
     "finishSetup": "Finalitzar Configuració",
     "welcomeMessage": "Benvingut a SaCarta!",
     "welcomeDescription": "El teu restaurant està preparat.",
-    "pleaseEnterName": "Si us plau, introdueix el nom del teu restaurant"
+    "pleaseEnterName": "Si us plau, introdueix el nom del teu restaurant",
+    "manualTitle": "Crear el meu menú a mà",
+    "manualDesc": "Afegeix categories i plats manualment des de l'editor.",
+    "aiTitle": "Puja el meu menú. La IA el munta.",
+    "aiDesc": "Enganxa el text, puja un PDF o comparteix la URL de la teva pàgina web i revisa el resultat abans de publicar.",
+    "menuChoiceTitle": "Com vols crear el teu menú?",
+    "menuChoiceDescription": "Crea la teva carta a mà o deixa que la IA la munti per tu a partir d'un text, PDF o pàgina web."
   },
   "imageUpload": {
     "uploading": "Pujant...",
     "uploaded": "Imatge pujada",
     "failed": "Error en pujar",
     "invalidFile": "Si us plau, puja un fitxer d'imatge",
-    "sizeLimit": "La imatge ha de pesar menys de {size}MB"
+    "sizeLimit": "La imatge ha de pesar menys de {size}MB",
+    "dropHere": "Deixa anar la imatge aquí o fes clic per pujar",
+    "cropToSquare": "Màx {max}MB · es retalla a quadrat",
+    "cropTitle": "Retalla la teva imatge",
+    "zoom": "Zoom",
+    "useImage": "Fes servir la imatge"
   },
   "schedule": {
     "title": "Horari programat",
@@ -460,7 +530,10 @@
       "4": "Dij",
       "5": "Div",
       "6": "Dis"
-    }
+    },
+    "alwaysActive": "Sempre actiu",
+    "noDays": "Sense dies",
+    "allDays": "Tots els dies"
   },
   "common": {
     "error": "Error",
@@ -475,6 +548,145 @@
     "success": "¡Èxit!",
     "nameRequired": "El nom és obligatori",
     "unknownError": "Error desconegut",
-    "status": "Estat"
+    "status": "Estat",
+    "menuNotFound": "Menú no trobat",
+    "menuEmpty": "Encara no hi ha cap menú disponible",
+    "menuUnavailableNow": "El menú no està disponible ara mateix",
+    "menuLoadFailed": "No hem pogut carregar aquest menú. Torna-ho a provar."
+  },
+  "copilot": {
+    "title": "Copilot IA",
+    "subtitle": "Demana canvis al teu menú en llenguatge natural. Cada canvi requereix la teva confirmació abans d'aplicar-se.",
+    "newConversation": "Nova conversa",
+    "conversations": "Converses",
+    "emptyConversations": "Encara no hi ha converses.",
+    "defaultTitle": "Conversa",
+    "working": "El Copilot està treballant...",
+    "placeholder": "Descriu el canvi que vols fer al teu menú...",
+    "previewNote": "Els canvis es mostren com a vista prèvia i només s'apliquen quan els confirmes.",
+    "creditsNote": "2 crèdits IA per missatge",
+    "confirm": "Confirmar",
+    "cancel": "Cancel·lar",
+    "applied": "Aplicat ({count} canvi/s)",
+    "canceled": "Cancel·lada",
+    "suggested1": "Puja un 10% el preu dels vins",
+    "suggested2": "Amaga tots els plats picants",
+    "suggested3": "Afegeix 3 opcions veganes a Entrants",
+    "elementCount": "{count} element(s) afectat(s)",
+    "yes": "Sí",
+    "no": "No",
+    "field": {
+      "name": "Nom",
+      "description": "Descripció",
+      "price": "Preu",
+      "active": "Actiu",
+      "vegan": "Vegà",
+      "vegetarian": "Vegetarià",
+      "spicy": "Picant",
+      "glutenFree": "Sense gluten",
+      "allergens": "Al·lèrgens",
+      "create": "Crear",
+      "translation": "Traducció"
+    }
+  },
+  "optimizer": {
+    "title": "Optimitzador de menú IA",
+    "subtitle": "Analitza el teu menú i descobreix com millorar-lo.",
+    "analyze": "Analitzar menú",
+    "analyzing": "Analitzant...",
+    "emptyTitle": "Encara no has analitzat el teu menú",
+    "emptyDesc": "Prem \"Analitzar menú\" per obtenir una puntuació de 0 a 100 i recomanacions concretes.",
+    "globalScore": "Puntuació global",
+    "evolution": "Evolució",
+    "scoreLabel": "Puntuació",
+    "recommendations": "Recomanacions principals",
+    "dimensions": {
+      "balance": "Equilibri del menú",
+      "priceDistribution": "Distribució de preus",
+      "descriptionQuality": "Qualitat de descripcions",
+      "imageCoverage": "Cobertura de fotos",
+      "languageCoverage": "Cobertura d'idiomes",
+      "categoryQuality": "Qualitat de categories",
+      "menuLength": "Longitud del menú",
+      "duplicates": "Duplicats"
+    }
+  },
+  "aiImport": {
+    "title": "Importar menú amb IA",
+    "pasteText": "Enganxar text",
+    "pdf": "PDF",
+    "pastePlaceholder": "Enganxa aquí el text del teu menú (noms de plats, preus, descripcions...)",
+    "importing": "Important el teu menú amb IA...",
+    "progressTitle": "Progrés real del treball",
+    "progressNote": "Pots deixar aquesta finestra oberta. El progrés s'actualitza en acabar cada bloc i cada traducció.",
+    "reviewNote": "Revisa i edita el que ha extret la IA abans de desar-lo. Res no es publica encara.",
+    "menuName": "Nom del menú",
+    "description": "Descripció",
+    "price": "Preu",
+    "analyze": "Analitzar amb IA",
+    "save": "Desa al meu menú",
+    "imported": "Menú importat correctament",
+    "saveError": "Error en desar",
+    "creditsExhausted": "Crèdits IA exhaurits",
+    "preparing": "Preparant la importació"
+  },
+  "plans": {
+    "sargantana": "Sargantana",
+    "ferreretMonthly": "Ferreret (mensual)",
+    "ferreretAnnual": "Ferreret (anual)",
+    "myotragus": "Myotragus (de per vida)"
+  },
+  "credits": {
+    "title": "Crèdits IA",
+    "subtitle": "Un sol dipòsit mensual compartit per totes les funcions d'IA.",
+    "planCredits": "Crèdits del pla",
+    "usedThisPeriod": "Usats aquest període",
+    "available": "Disponibles",
+    "periodUsage": "Ús del període",
+    "lowCredits": "Et queden pocs crèdits. Si s'exhaureixen, millora el teu pla (Ferreret) per aconseguir-ne més.",
+    "loadFailed": "No s'ha pogut carregar el saldo de crèdits.",
+    "costTitle": "Quant costa cada operació",
+    "perMonth": "/ mes",
+    "costRows": {
+      "description": "Descripció amb IA (1 plat)",
+      "translation": "Traducció amb IA (1 camp)",
+      "optimizer": "Optimitzador de menú",
+      "import": "Importar menú amb IA",
+      "copilot": "Missatge del Copilot IA",
+      "insights": "Informe d'Insights IA"
+    }
+  },
+  "publicWidget": {
+    "tooMany": "Massa missatges. Torna-ho a provar més tard.",
+    "connectError": "Hi ha hagut un problema de connexió. Torna-ho a provar.",
+    "title": "Assistent del menú",
+    "hint": "Pregunta'm què demanar (al·lèrgens, vegà, pressupost...)",
+    "hello": "Hola! Sóc l'assistent d'aquest menú.",
+    "examples": "Exemples: \"Què hi ha vegà per menys de 15€?\", \"Sense gluten\", \"Alguna cosa picant\".",
+    "thinking": "Pensant...",
+    "placeholder": "Escriu la teva pregunta...",
+    "send": "Envia"
+  },
+  "notFound": {
+    "oops": "Vaja",
+    "back": "Torna a l'inici"
+  },
+  "upgrade": {
+    "title": "Millora el teu pla",
+    "upgrade": "Millora",
+    "viewPlans": "Veure plans"
+  },
+  "admin": {
+    "saved": "Desat",
+    "changesApplied": "Canvis aplicats al restaurant.",
+    "couponCreated": "Cupó creat",
+    "code": "Codi {code} ({pct}%)",
+    "couponDeactivated": "Cupó desactivat",
+    "couponDeactivated2": "Cupó desactivat.",
+    "configUpdated": "Configuració del restaurant actualitzada.",
+    "menuSaved": "Menú desat",
+    "menuDeleted": "Menú eliminat",
+    "confirmDeleteMenu": "Esborrar aquest menú? Se n'eliminaran les categories i plats.",
+    "price": "{price} {currency}"
   }
 }

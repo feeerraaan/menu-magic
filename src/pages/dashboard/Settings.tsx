@@ -295,7 +295,7 @@ export default function Settings() {
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium">{t('settings.hideAllPrices')}</p>
-              <p className="text-sm text-muted-foreground">Don't show prices on the public menu</p>
+              <p className="text-sm text-muted-foreground">{t('settings.hidePricesPublic')}</p>
             </div>
             <Switch
               checked={formData.hide_prices}
@@ -306,7 +306,7 @@ export default function Settings() {
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium">{t('settings.publishMenu')}</p>
-              <p className="text-sm text-muted-foreground">Make your menu visible to customers</p>
+              <p className="text-sm text-muted-foreground">{t('settings.makeMenuVisible')}</p>
             </div>
             <Switch
               checked={formData.is_published}

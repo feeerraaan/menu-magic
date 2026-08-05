@@ -4,18 +4,21 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { useAiCredits } from '@/hooks/useAiCredits';
+import { useTranslation } from '@/hooks/useTranslation';
 import { AI_CREDIT_COSTS, PLAN_LIMITS, PLANS } from '@/lib/subscription-limits';
 
 // Operation -> credit cost, mirroring AI_CREDIT_COSTS in subscription-limits.ts (source of
 // truth for enforcement; this is only the human-readable description).
-const COST_ROWS: Array<{ label: string; credits: number }> = [
-  { label: 'Descripción con IA (1 plato)', credits: AI_CREDIT_COSTS.description },
-  { label: 'Traducción con IA (1 campo)', credits: AI_CREDIT_COSTS.translation },
-  { label: 'Optimizador de menú', credits: AI_CREDIT_COSTS.optimizer_run },
-  { label: 'Importar menú con IA', credits: AI_CREDIT_COSTS.import },
-  { label: 'Mensaje del Copilot IA', credits: AI_CREDIT_COSTS.copilot },
-  { label: 'Informe de Insights IA', credits: AI_CREDIT_COSTS.insights },
-];
+function COST_ROWS(t: (k: string) => string): Array<{ label: string; credits: number }> {
+  return [
+    { label: t('credits.costRows.description'), credits: AI_CREDIT_COSTS.description },
+    { label: t('credits.costRows.translation'), credits: AI_CREDIT_COSTS.translation },
+    { label: t('credits.costRows.optimizer'), credits: AI_CREDIT_COSTS.optimizer_run },
+    { label: t('credits.costRows.import'), credits: AI_CREDIT_COSTS.import },
+    { label: t('credits.costRows.copilot'), credits: AI_CREDIT_COSTS.copilot },
+    { label: t('credits.costRows.insights'), credits: AI_CREDIT_COSTS.insights },
+  ];
+}
 
 const PLAN_CREDIT_ROW: Array<{ id: 'free' | 'pro_monthly' | 'pro_annual' | 'lifetime'; credits: number }> = [
   { id: 'free', credits: PLAN_LIMITS.free.aiCreditsPerMonth },
@@ -26,7 +29,9 @@ const PLAN_CREDIT_ROW: Array<{ id: 'free' | 'pro_monthly' | 'pro_annual' | 'life
 
 export function AiCreditsCard({ restaurantId }: { restaurantId: string | null | undefined }) {
   const { used, limit, remaining, percentage, loading, error, refetch } = useAiCredits(restaurantId);
+  const { t } = useTranslation();
   const lowCredits = !loading && limit > 0 && percentage >= 80;
+  const rows = COST_ROWS(t);
 
   return (
     <Card>
@@ -34,28 +39,28 @@ export function AiCreditsCard({ restaurantId }: { restaurantId: string | null | 
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-primary" />
-            Créditos IA
+            {t('credits.title')}
           </CardTitle>
           <Button variant="ghost" size="icon" onClick={refetch} disabled={loading}>
             <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
           </Button>
         </div>
         <CardDescription>
-          Un solo depósito mensual compartido por todas las funciones de IA.
+          {t('credits.subtitle')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-5">
         <div className="grid gap-4 sm:grid-cols-3">
           <div>
-            <p className="text-sm text-muted-foreground">Créditos del plan</p>
+            <p className="text-sm text-muted-foreground">{t('credits.planCredits')}</p>
             <p className="font-semibold">{loading ? '…' : limit}</p>
           </div>
           <div>
-            <p className="text-sm text-muted-foreground">Usados este periodo</p>
+            <p className="text-sm text-muted-foreground">{t('credits.usedThisPeriod')}</p>
             <p className="font-semibold">{loading ? '…' : used}</p>
           </div>
           <div>
-            <p className="text-sm text-muted-foreground">Disponibles</p>
+            <p className="text-sm text-muted-foreground">{t('credits.available')}</p>
             <p className={`font-semibold ${lowCredits ? 'text-destructive' : ''}`}>
               {loading ? '…' : remaining}
             </p>
@@ -65,39 +70,37 @@ export function AiCreditsCard({ restaurantId }: { restaurantId: string | null | 
         {!loading && (
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>Uso del periodo</span>
+              <span>{t('credits.periodUsage')}</span>
               <span className="font-medium text-foreground">{percentage}%</span>
             </div>
-            <Progress value={percentage} aria-label={`Créditos IA usados: ${percentage}%`} />
+            <Progress value={percentage} aria-label={`${t('credits.title')}: ${percentage}%`} />
             {lowCredits && (
-              <p className="text-xs text-destructive">
-                Te quedan pocos créditos. Si se agotan, mejora tu plan (Ferreret) para conseguir más.
-              </p>
+              <p className="text-xs text-destructive">{t('credits.lowCredits')}</p>
             )}
           </div>
         )}
 
-        {error && <p className="text-xs text-destructive">No se pudo cargar el saldo de créditos.</p>}
+        {error && <p className="text-xs text-destructive">{t('credits.loadFailed')}</p>}
 
         <div className="space-y-1.5">
-          <p className="text-sm font-medium">Cuánto cuesta cada operación</p>
+          <p className="text-sm font-medium">{t('credits.costTitle')}</p>
           <ul className="space-y-1">
-            {COST_ROWS.map((row) => (
+            {rows.map((row) => (
               <li key={row.label} className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">{row.label}</span>
-                <Badge variant="outline">{row.credits} créd.</Badge>
+                <Badge variant="outline">{row.credits}</Badge>
               </li>
             ))}
           </ul>
         </div>
 
         <div className="space-y-1.5">
-          <p className="text-sm font-medium">Créditos por plan</p>
+          <p className="text-sm font-medium">{t('credits.planCredits')}</p>
           <ul className="space-y-1">
             {PLAN_CREDIT_ROW.map((row) => (
               <li key={row.id} className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">{PLANS[row.id].name}</span>
-                <span className="font-medium">{row.credits} / mes</span>
+                <span className="font-medium">{row.credits} {t('credits.perMonth')}</span>
               </li>
             ))}
           </ul>

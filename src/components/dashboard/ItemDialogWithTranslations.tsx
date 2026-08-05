@@ -350,7 +350,7 @@ export function ItemDialogWithTranslations({
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <Label htmlFor={`item-name-${lang}`}>
-                        Nombre {lang === defaultLanguage && <span className="text-destructive">*</span>}
+                        {t('menuEditor.name')} {lang === defaultLanguage && <span className="text-destructive">*</span>}
                       </Label>
                       {lang !== defaultLanguage && (
                         <Button
@@ -362,7 +362,7 @@ export function ItemDialogWithTranslations({
                           onClick={() => handleTranslateField(lang, 'name')}
                         >
                           {aiTranslating ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
-                          Traducir con IA
+                          {t('menuEditor.translateWithAI')}
                         </Button>
                       )}
                     </div>
@@ -370,12 +370,12 @@ export function ItemDialogWithTranslations({
                       id={`item-name-${lang}`}
                       value={translations[lang]?.name || ''}
                       onChange={(e) => handleTranslationChange(lang, 'name', e.target.value)}
-                      placeholder={lang === defaultLanguage ? 'ej: Pizza Margherita' : `Traducción en ${LANGUAGE_NAMES[lang] || lang}`}
+                      placeholder={lang === defaultLanguage ? t('menuEditor.nameExample') : t('menuEditor.translationIn', { lang: LANGUAGE_NAMES[lang] || lang })}
                     />
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <Label htmlFor={`item-desc-${lang}`}>Descripción</Label>
+                      <Label htmlFor={`item-desc-${lang}`}>{t('menuEditor.description')}</Label>
                       {lang !== defaultLanguage && (
                         <Button
                           type="button"
@@ -386,7 +386,7 @@ export function ItemDialogWithTranslations({
                           onClick={() => handleTranslateField(lang, 'description')}
                         >
                           {aiTranslating ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
-                          Traducir con IA
+                          {t('menuEditor.translateWithAI')}
                         </Button>
                       )}
                     </div>
@@ -394,7 +394,7 @@ export function ItemDialogWithTranslations({
                       id={`item-desc-${lang}`}
                       value={translations[lang]?.description || ''}
                       onChange={(e) => handleTranslationChange(lang, 'description', e.target.value)}
-                      placeholder="Describe el plato..."
+                      placeholder={t('menuEditor.describeDish')}
                     />
                     {item && (
                       <div className="flex items-center gap-2">
@@ -417,7 +417,7 @@ export function ItemDialogWithTranslations({
                           onClick={() => handleGenerateDescription(lang)}
                         >
                           {aiGenerating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
-                          Generar con IA
+                          {t('menuEditor.generateWithAI')}
                         </Button>
                       </div>
                     )}
@@ -428,21 +428,21 @@ export function ItemDialogWithTranslations({
           ) : (
             <>
               <div className="space-y-2">
-                <Label htmlFor="item-name">Nombre <span className="text-destructive">*</span></Label>
+                <Label htmlFor="item-name">{t('menuEditor.name')} <span className="text-destructive">*</span></Label>
                 <Input
                   id="item-name"
                   value={translations[defaultLanguage]?.name || ''}
                   onChange={(e) => handleTranslationChange(defaultLanguage, 'name', e.target.value)}
-                  placeholder="ej: Pizza Margherita"
+                  placeholder={t('menuEditor.nameExample')}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="item-desc">Descripción</Label>
+                <Label htmlFor="item-desc">{t('menuEditor.description')}</Label>
                 <Textarea
                   id="item-desc"
                   value={translations[defaultLanguage]?.description || ''}
                   onChange={(e) => handleTranslationChange(defaultLanguage, 'description', e.target.value)}
-                  placeholder="Describe el plato..."
+                  placeholder={t('menuEditor.describeDish')}
                 />
                 {item && (
                   <div className="flex items-center gap-2">

@@ -8,6 +8,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Loader2, Sparkles, Trash2, Upload, FileText } from 'lucide-react';
 import { useAiImport } from '@/hooks/useAiImport';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from '@/hooks/useTranslation';
 import * as aiApi from '@/lib/ai-api';
 import { Progress } from '@/components/ui/progress';
 import type { MenuImportResult, MenuImportSourceType } from '@ai/menuImport';
@@ -38,6 +39,7 @@ function fileToBase64(file: File): Promise<string> {
 export function AiImportDialog({ open, restaurantId, onClose, onImported, jobType }: AiImportDialogProps) {
   const { start, reset, starting, job, result, error } = useAiImport(restaurantId, jobType);
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [sourceMode, setSourceMode] = useState<MenuImportSourceType>('text');
   const [textValue, setTextValue] = useState('');
   const [file, setFile] = useState<File | null>(null);
@@ -69,8 +71,8 @@ export function AiImportDialog({ open, restaurantId, onClose, onImported, jobTyp
     } catch (e: unknown) {
       const isCreditError = (e as { status?: number })?.status === 402;
       toast({
-        title: isCreditError ? 'Créditos IA agotados' : 'Error',
-        description: e instanceof Error ? e.message : 'Error desconocido',
+        title: isCreditError ? t('aiImport.creditsExhausted') : t('common.error'),
+        description: e instanceof Error ? e.message : t('common.unknownError'),
         variant: 'destructive',
       });
     }
@@ -150,13 +152,13 @@ export function AiImportDialog({ open, restaurantId, onClose, onImported, jobTyp
         categories: editable.categories,
         translationsByLanguage: editable.translationsByLanguage,
       });
-      toast({ title: 'Menú importado correctamente' });
+      toast({ title: t('aiImport.imported') });
       onImported();
       handleClose();
     } catch (e: unknown) {
       toast({
-        title: 'Error al guardar',
-        description: e instanceof Error ? e.message : 'Error desconocido',
+        title: t('aiImport.saveError'),
+        description: e instanceof Error ? e.message : t('common.unknownError'),
         variant: 'destructive',
       });
     } finally {
@@ -169,7 +171,7 @@ export function AiImportDialog({ open, restaurantId, onClose, onImported, jobTyp
   const progress = Math.max(1, Math.min(99, job?.progress ?? (starting ? 2 : 0)));
   const progressStage = typeof job?.input?.progressStage === 'string'
     ? job.input.progressStage
-    : 'Preparando la importación';
+    : t('aiImport.preparing');
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
@@ -177,7 +179,7 @@ export function AiImportDialog({ open, restaurantId, onClose, onImported, jobTyp
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-primary" />
-            Importar menú con IA
+            {t('aiImport.title')}
           </DialogTitle>
         </DialogHeader>
 
@@ -187,17 +189,17 @@ export function AiImportDialog({ open, restaurantId, onClose, onImported, jobTyp
               <TabsList className="w-full">
                 <TabsTrigger value="text" className="flex-1 gap-1.5">
                   <FileText className="h-4 w-4" />
-                  Pegar texto
+                  {t('aiImport.pasteText')}
                 </TabsTrigger>
                 <TabsTrigger value="pdf" className="flex-1 gap-1.5">
                   <Upload className="h-4 w-4" />
-                  PDF
+                  {t('aiImport.pdf')}
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="text" className="mt-4">
                 <Textarea
                   rows={10}
-                  placeholder="Pega aquí el texto de tu menú (nombres de platos, precios, descripciones...)"
+                  placeholder={t('aiImport.pastePlaceholder')}
                   value={textValue}
                   onChange={(e) => setTextValue(e.target.value)}
                 />
@@ -220,36 +222,32 @@ export function AiImportDialog({ open, restaurantId, onClose, onImported, jobTyp
           <div className="py-10 text-center space-y-4">
             <Loader2 className="h-8 w-8 mx-auto animate-spin text-primary" />
             <div className="space-y-1">
-              <p className="font-medium">Importando tu menú con IA...</p>
+              <p className="font-medium">{t('aiImport.importing')}</p>
               <p className="text-sm text-muted-foreground">{progressStage}</p>
             </div>
             <div className="mx-auto w-full max-w-md space-y-2 text-left">
               <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <span>Progreso real del trabajo</span>
+                <span>{t('aiImport.progressTitle')}</span>
                 <span className="font-medium text-foreground">{progress}%</span>
               </div>
-              <Progress value={progress} aria-label={`Progreso de importación: ${progress}%`} />
+              <Progress value={progress} aria-label={t('aiImport.importing')} />
             </div>
-            <p className="text-sm text-muted-foreground">
-              Puedes dejar esta ventana abierta. El progreso se actualiza al terminar cada bloque y cada traducción.
-            </p>
+            <p className="text-sm text-muted-foreground">{t('aiImport.progressNote')}</p>
           </div>
         )}
 
         {isFailed && (
           <div className="py-8 text-center space-y-2">
-            <p className="font-medium text-destructive">No se pudo importar el menú</p>
+            <p className="font-medium text-destructive">{t('common.error')}</p>
             <p className="text-sm text-muted-foreground">{job?.error}</p>
           </div>
         )}
 
         {editable && (
           <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Revisa y edita lo que ha extraído la IA antes de guardarlo. Nada se publica todavía.
-            </p>
+            <p className="text-sm text-muted-foreground">{t('aiImport.reviewNote')}</p>
             <div className="space-y-2">
-              <Label>Nombre del menú</Label>
+              <Label>{t('aiImport.menuName')}</Label>
               <Input
                 value={editable.menuName}
                 onChange={(e) => setEditable((p) => (p ? { ...p, menuName: e.target.value } : p))}
@@ -279,14 +277,14 @@ export function AiImportDialog({ open, restaurantId, onClose, onImported, jobTyp
                           value={item.description ?? ''}
                           onChange={(e) => updateItemField(categoryIndex, itemIndex, 'description', e.target.value)}
                           rows={2}
-                          placeholder="Descripción"
+                          placeholder={t('aiImport.description')}
                         />
                         <Input
                           type="number"
                           step="0.01"
                           value={item.price ?? ''}
                           onChange={(e) => updateItemField(categoryIndex, itemIndex, 'price', e.target.value)}
-                          placeholder="Precio"
+                          placeholder={t('aiImport.price')}
                           className="w-28"
                         />
                       </div>
@@ -303,18 +301,18 @@ export function AiImportDialog({ open, restaurantId, onClose, onImported, jobTyp
 
         <DialogFooter>
           <Button variant="outline" onClick={handleClose}>
-            Cancelar
+            {t('common.cancel')}
           </Button>
           {!editable && !isProcessing && (
             <Button onClick={handleStart} disabled={starting} className="gap-2">
               {starting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-              Analizar con IA
+              {t('aiImport.analyze')}
             </Button>
           )}
           {editable && (
             <Button onClick={handleCommit} disabled={committing} className="gap-2">
               {committing && <Loader2 className="h-4 w-4 animate-spin" />}
-              Guardar en mi menú
+              {t('aiImport.save')}
             </Button>
           )}
         </DialogFooter>

@@ -3,6 +3,7 @@ import { Bot, Send, X, Loader2, MessageCircle } from 'lucide-react';
 import * as aiApi from '@/lib/ai-api';
 import type { CustomerAssistantMessage } from '@ai/customerAssistant';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface WidgetMessage {
   id: string;
@@ -23,6 +24,7 @@ function getSessionToken(): string {
 }
 
 export function CustomerAssistantWidget({ slug }: { slug: string }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<WidgetMessage[]>([]);
   const [input, setInput] = useState('');
@@ -59,10 +61,10 @@ export function CustomerAssistantWidget({ slug }: { slug: string }) {
         },
       ]);
       if (res.rateLimited) {
-        setError(res.rateLimitMessage || 'Demasiados mensajes');
+        setError(res.rateLimitMessage || t('publicWidget.tooMany'));
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Error al conectar con el asistente');
+      setError(e instanceof Error ? e.message : t('publicWidget.connectError'));
     } finally {
       setSending(false);
     }
@@ -80,7 +82,7 @@ export function CustomerAssistantWidget({ slug }: { slug: string }) {
         <button
           onClick={() => setOpen(true)}
           className="fixed bottom-5 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg hover:opacity-90 transition-opacity"
-          aria-label="Preguntar al asistente"
+          aria-label={t('publicWidget.title')}
         >
           <MessageCircle className="h-6 w-6" />
         </button>
@@ -95,9 +97,9 @@ export function CustomerAssistantWidget({ slug }: { slug: string }) {
                 <Bot className="h-4 w-4" />
               </div>
               <div>
-                <p className="text-sm font-semibold">Asistente del menú</p>
+                <p className="text-sm font-semibold">{t('publicWidget.title')}</p>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                  Pregúntame qué pedir (alérgenos, vegano, presupuesto...)
+                  {t('publicWidget.hint')}
                 </p>
               </div>
             </div>
@@ -110,10 +112,8 @@ export function CustomerAssistantWidget({ slug }: { slug: string }) {
             {messages.length === 0 && (
               <div className="text-center text-sm text-slate-500 dark:text-slate-400 pt-6 space-y-2">
                 <Bot className="h-10 w-10 mx-auto opacity-40" />
-                <p>¡Hola! Soy el asistente de este menú.</p>
-                <p className="text-xs">
-                  Ejemplos: "¿Qué hay vegano por menos de 15€?", "Sin gluten", "Algo picante".
-                </p>
+                <p>{t('publicWidget.hello')}</p>
+                <p className="text-xs">{t('publicWidget.examples')}</p>
               </div>
             )}
             {messages.map((m) => (
@@ -141,7 +141,7 @@ export function CustomerAssistantWidget({ slug }: { slug: string }) {
             {sending && (
               <div className="flex justify-start">
                 <div className="flex items-center gap-2 rounded-2xl bg-slate-100 dark:bg-slate-900 px-3 py-2 text-sm text-slate-500">
-                  <Loader2 className="h-4 w-4 animate-spin" /> Pensando...
+                  <Loader2 className="h-4 w-4 animate-spin" /> {t('publicWidget.thinking')}
                 </div>
               </div>
             )}
@@ -154,14 +154,14 @@ export function CustomerAssistantWidget({ slug }: { slug: string }) {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                placeholder="Escribe tu pregunta..."
+                placeholder={t('publicWidget.placeholder')}
                 className="flex-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
               />
               <button
                 onClick={handleSend}
                 disabled={sending || !input.trim()}
                 className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground disabled:opacity-50"
-                aria-label="Enviar"
+                aria-label={t('publicWidget.send')}
               >
                 {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
               </button>

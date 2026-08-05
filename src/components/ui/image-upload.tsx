@@ -223,7 +223,7 @@ export function ImageUpload({
           {uploading ? (
             <>
               <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Uploading...</span>
+              <span className="text-sm text-muted-foreground">{t('imageUpload.uploading')}</span>
             </>
           ) : (
             <>
@@ -231,8 +231,8 @@ export function ImageUpload({
                 <ImageIcon className="h-6 w-6 text-muted-foreground" />
               </div>
               <div className="text-center">
-                <p className="text-sm font-medium">Drop image here or click to upload</p>
-                <p className="text-xs text-muted-foreground">Max {maxSizeMB}MB · se recorta a cuadrado</p>
+                <p className="text-sm font-medium">{t('imageUpload.dropHere')}</p>
+                <p className="text-xs text-muted-foreground">{t('imageUpload.cropToSquare', { max: maxSizeMB })}</p>
               </div>
             </>
           )}
@@ -244,7 +244,7 @@ export function ImageUpload({
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Crop className="h-5 w-5 text-primary" />
-              Recorta tu imagen
+              {t('imageUpload.cropTitle')}
             </DialogTitle>
           </DialogHeader>
           <div className="relative h-72 w-full overflow-hidden rounded-lg bg-muted">
@@ -268,7 +268,7 @@ export function ImageUpload({
             )}
           </div>
           <div className="flex items-center gap-3 pt-2">
-            <span className="text-sm text-muted-foreground">Zoom</span>
+            <span className="text-sm text-muted-foreground">{t('imageUpload.zoom')}</span>
             <Slider
               value={[zoom]}
               onValueChange={([v]) => setZoom(v)}
@@ -280,10 +280,10 @@ export function ImageUpload({
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={closeCropper}>
-              Cancelar
+              {t('common.cancel')}
             </Button>
             <Button onClick={confirmCrop} disabled={!cropPixels}>
-              Usar imagen
+              {t('imageUpload.useImage')}
             </Button>
           </DialogFooter>
         </DialogContent>

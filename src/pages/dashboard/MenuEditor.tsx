@@ -144,7 +144,7 @@ function CategoryCard({
           >
             {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
             <CardTitle className="text-base font-semibold">{category.name}</CardTitle>
-            <span className="text-sm text-muted-foreground">({items.length} items)</span>
+            <span className="text-sm text-muted-foreground">({items.length} {t('menuEditor.items')})</span>
           </button>
           <div className="flex items-center gap-1">
             <Button variant="ghost" size="icon" onClick={onEdit}>
@@ -210,7 +210,7 @@ function CategoryCard({
                   onClick={onAddItem}
                   disabled={!canAddItem}
                 >
-                  <Plus className="mr-2 h-4 w-4" /> Add Item
+                  <Plus className="mr-2 h-4 w-4" /> {t('menuEditor.addItem')}
                   {!canAddItem && <Crown className="ml-2 h-3 w-3 text-warning" />}
                 </Button>
               </div>
@@ -493,7 +493,7 @@ export default function MenuEditor() {
       {/* Plan Limits Overview */}
       {!isPremium && (
         <UpgradeBanner 
-          message="Desbloquea fotos ilimitadas, más idiomas, menús y funciones avanzadas."
+          message={t('menuEditor.unlockFeatures')}
           variant="compact"
         />
       )}
@@ -610,7 +610,7 @@ export default function MenuEditor() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="font-display text-2xl font-bold flex items-center gap-2">
-            {menus.find(m => m.id === selectedMenuId)?.name || 'Menu Editor'}
+            {menus.find(m => m.id === selectedMenuId)?.name || t('menuEditor.editorFallback')}
             {menus.find(m => m.id === selectedMenuId)?.is_active && (
               <Badge variant="default">{t('menuEditor.active')}</Badge>
             )}
@@ -619,7 +619,7 @@ export default function MenuEditor() {
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" onClick={() => setAiImportOpen(true)} className="gap-2">
-            <Sparkles className="h-4 w-4" /> Importar con IA
+            <Sparkles className="h-4 w-4" /> {t('menuEditor.importWithAI')}
           </Button>
           <Button
             onClick={() => {
@@ -651,7 +651,7 @@ export default function MenuEditor() {
               <Plus className="mr-2 h-4 w-4" /> {t('menuEditor.addCategory')}
             </Button>
             <Button variant="outline" onClick={() => setAiImportOpen(true)} className="gap-2">
-              <Sparkles className="h-4 w-4" /> Importar con IA
+              <Sparkles className="h-4 w-4" /> {t('menuEditor.importWithAI')}
             </Button>
           </div>
         </Card>
@@ -757,20 +757,20 @@ export default function MenuEditor() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-destructive" />
-              {deleteConfirm?.type === 'menu' ? '¿Eliminar menú?' : 
-               deleteConfirm?.type === 'category' ? '¿Eliminar categoría?' : 
-               '¿Eliminar item?'}
+              {deleteConfirm?.type === 'menu' ? t('menuEditor.deleteMenuTitle') : 
+               deleteConfirm?.type === 'category' ? t('menuEditor.deleteCategoryTitle') : 
+               t('menuEditor.deleteItemTitle')}
             </DialogTitle>
           </DialogHeader>
           <p className="text-muted-foreground">
             {deleteConfirm?.type === 'menu' 
-              ? 'Esto eliminará el menú y todas sus categorías e items. Esta acción no se puede deshacer.'
+              ? t('menuEditor.deleteMenuMessage')
               : deleteConfirm?.type === 'category' 
-              ? 'Esto eliminará la categoría y todos sus items.'
-              : 'Esta acción no se puede deshacer.'}
+              ? t('menuEditor.deleteCategoryMessage')
+              : t('menuEditor.deleteItemMessage')}
           </p>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteConfirm(null)}>Cancelar</Button>
+            <Button variant="outline" onClick={() => setDeleteConfirm(null)}>{t('common.cancel')}</Button>
             <Button 
               variant="destructive" 
               onClick={async () => {
@@ -801,7 +801,7 @@ export default function MenuEditor() {
                 }
               }}
             >
-              Eliminar
+              {t('common.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -1143,6 +1143,7 @@ function MenuEditDialog({
   onClose: () => void;
   onSave: (data: { name: string; description: string | null; is_active: boolean; schedule_rules: ScheduleRule[] | null }, menu?: Menu) => void;
 }) {
+  const { t } = useTranslation();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [isActive, setIsActive] = useState(false);
@@ -1207,13 +1208,13 @@ function MenuEditDialog({
   };
 
   const formatSchedule = (rules: ScheduleRule[] | null) => {
-    if (!rules || rules.length === 0) return "Siempre activo";
+    if (!rules || rules.length === 0) return t('schedule.alwaysActive');
     return rules.map(r => {
       const days = r.days.length === 0
-        ? 'Sin días'
+        ? t('schedule.noDays')
         : r.days.length === 7 
-          ? 'Todos los días' 
-          : r.days.map(d => ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'][d]).join(', ');
+          ? t('schedule.allDays') 
+          : r.days.map(d => t(`schedule.daysShort.${d}`)).join(', ');
       return `${days} (${r.start_time} - ${r.end_time})`;
     }).join('; ');
   };
@@ -1222,20 +1223,20 @@ function MenuEditDialog({
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{menu ? 'Editar menú' : 'Nuevo menú'}</DialogTitle>
+          <DialogTitle>{menu ? t('menuEditor.editMenu') : t('menuEditor.newMenu')}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="menu-name">Nombre</Label>
+            <Label htmlFor="menu-name">{t('menuEditor.menuName')}</Label>
             <Input
               id="menu-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="ej: Menú del día, Carta de vinos..."
+              placeholder={t('menuEditor.menuNamePlaceholder')}
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="menu-desc">Descripción (opcional)</Label>
+            <Label htmlFor="menu-desc">{t('menuEditor.descriptionOptional')}</Label>
             <Textarea
               id="menu-desc"
               value={description}
@@ -1247,9 +1248,9 @@ function MenuEditDialog({
           {/* Active toggle */}
           <div className="flex items-center justify-between p-3 rounded-lg border">
             <div className="space-y-0.5">
-              <Label>Menú activo</Label>
+              <Label>{t('menuEditor.menuActive')}</Label>
               <p className="text-xs text-muted-foreground">
-                Puedes tener varios menús activos con diferentes horarios
+                {t('menuEditor.menuActiveDesc')}
               </p>
             </div>
             <Switch
@@ -1262,10 +1263,10 @@ function MenuEditDialog({
             <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive space-y-1">
               <p className="text-xs font-medium flex items-center gap-1">
                 <AlertTriangle className="h-3 w-3" />
-                Conflicto de horario
+                {t('menuEditor.scheduleConflict')}
               </p>
               <p className="text-xs">
-                Este horario se solapa con el menú <strong>{overlappingMenu.name}</strong>:
+                {t('menuEditor.scheduleConflictDesc')} <strong>{overlappingMenu.name}</strong>:
               </p>
               <p className="text-[10px] opacity-80">
                 {formatSchedule(overlappingMenu.schedule_rules)}
@@ -1284,17 +1285,17 @@ function MenuEditDialog({
               <div className="p-3 rounded-lg bg-muted/50 text-center">
                 <Clock className="h-5 w-5 mx-auto mb-2 text-muted-foreground" />
                 <p className="text-sm text-muted-foreground">
-                  Los horarios programados están disponibles en el plan Pro
+                  {t('menuEditor.schedulePro')}
                 </p>
               </div>
             )}
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Cancelar</Button>
+          <Button variant="outline" onClick={onClose}>{t('common.cancel')}</Button>
           <Button onClick={handleSave} disabled={loading || !name.trim() || !!overlappingMenu}>
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {menu ? 'Guardar' : 'Crear'}
+            {menu ? t('menuEditor.save') : t('menuEditor.create')}
           </Button>
         </DialogFooter>
       </DialogContent>

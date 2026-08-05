@@ -235,7 +235,10 @@
         "missingTranslations": "{count} dishes need translation",
         "weekViews": "{count} views this week"
       }
-    }
+    },
+    "optimizer": "AI Optimizer",
+    "copilot": "AI Copilot",
+    "backoffice": "Backoffice"
   },
   "menu": {
     "featured": "Featured",
@@ -264,7 +267,14 @@
     "paymentDesc": "All payments are processed securely through Stripe. You can manage your subscription, update payment methods, or cancel anytime through the customer portal.",
     "error": "Error",
     "failedCheckout": "Failed to start checkout",
-    "failedPortal": "Failed to open customer portal"
+    "failedPortal": "Failed to open customer portal",
+    "activated": "Your subscription has been activated. You can now enjoy all Pro features.",
+    "includes": "What's included in your plan?",
+    "feat1": "Up to 10 menus",
+    "feat2": "Up to 10 languages",
+    "feat3": "Up to 50 photos",
+    "feat4": "Scheduled hours",
+    "feat5": "All templates"
   },
   "settings": {
     "title": "Settings",
@@ -293,7 +303,9 @@
     "light": "Light",
     "dark": "Dark",
     "logoUpdated": "Logo updated",
-    "logoRemoved": "Logo removed"
+    "logoRemoved": "Logo removed",
+    "hidePricesPublic": "Don't show prices on the public menu",
+    "makeMenuVisible": "Make your menu visible to customers"
   },
   "analytics": {
     "title": "Analytics",
@@ -314,7 +326,19 @@
     "byLanguage": "By Language",
     "byLanguageDesc": "Views distribution by language",
     "noLanguageData": "No language data yet",
-    "noItemViews": "No item views yet"
+    "noItemViews": "No item views yet",
+    "aiTitle": "AI Business Insights",
+    "aiSubtitle": "Consultant narrative about your data and actionable suggestions.",
+    "aiDesc": "Generate a consultant analysis of your data and concrete recommendations (3 AI credits).",
+    "generate": "Generate analysis",
+    "updateAnalysis": "Update analysis",
+    "analyzing": "Analyzing...",
+    "generatedPrefix": "Generated on {date}",
+    "aiEmptyDesc": "Press \"Generate analysis\" so AI reviews your views, your menu and the optimizer trend, and proposes concrete improvements.",
+    "recommendations": "Recommendations",
+    "done": "Done",
+    "dismiss": "Dismiss",
+    "generated": "Analysis generated"
   },
   "qrCode": {
     "title": "QR Code",
@@ -339,15 +363,27 @@
     "downloadedSVG": "QR Code downloaded as SVG",
     "downloadedPDF": "QR Code downloaded as PDF",
     "popupError": "Please allow popups to download PDF",
-    "scanToView": "Scan to view our menu"
+    "scanToView": "Scan to view our menu",
+    "centerLogo": "Logo in the center of the QR",
+    "normalQR": "Normal QR (no logo)",
+    "saCartaLogo": "SaCarta logo",
+    "myLogo": "My logo",
+    "uploadInSettings": "(upload in Settings)",
+    "planLogoNote": "On the Sargantana plan the QR carries the SaCarta logo. ",
+    "upgradePlan": "Upgrade your plan",
+    "planLogoNote2": " to use your own logo.",
+    "noLogoYet": "You haven't uploaded a logo yet. Upload one in ",
+    "settings": "Settings",
+    "noLogoYet2": ".",
+    "logoNote": "The logo is embedded in the center and the QR stays scannable (high error correction)."
   },
   "menuEditor": {
     "title": "Menu Editor",
     "items": "Items",
     "addCategory": "Add Category",
-    "editCategory": "Edit Category",
+    "editCategory": "Edit category",
     "deleteCategory": "Delete Category",
-    "categoryName": "Category Name",
+    "categoryName": "Name",
     "categoryDesc": "Category Description (optional)",
     "categoryNamePlaceholder": "e.g., Appetizers",
     "categoryDescPlaceholder": "A brief description of this category",
@@ -413,7 +449,30 @@
     "editMenu": "Edit menu",
     "deleteMenu": "Delete menu",
     "manageDescription": "Manage your categories and menu items",
-    "noCategories": "No categories yet. Start by adding one."
+    "noCategories": "No categories yet. Start by adding one.",
+    "importWithAI": "Import with AI",
+    "deleteMenuTitle": "Delete menu?",
+    "deleteMenuMessage": "This will delete the menu and all its categories and items. This cannot be undone.",
+    "deleteCategoryTitle": "Delete category?",
+    "deleteCategoryMessage": "This will delete the category and all its items. This cannot be undone.",
+    "deleteItemTitle": "Delete item?",
+    "deleteItemMessage": "This action cannot be undone.",
+    "scheduleConflict": "Schedule conflict",
+    "scheduleConflictDesc": "This schedule overlaps with the menu",
+    "schedulePro": "Scheduled hours are available on the Pro plan",
+    "menuNamePlaceholder": "e.g. Daily menu, Wine list...",
+    "descriptionOptional": "Description (optional)",
+    "menuActive": "Menu active",
+    "menuActiveDesc": "You can have several active menus with different hours",
+    "translateWithAI": "Translate with AI",
+    "generateWithAI": "Generate with AI",
+    "nameExample": "e.g. Pizza Margherita",
+    "describeDish": "Describe the dish...",
+    "translationIn": "Translation in {lang}",
+    "newCategory": "New category",
+    "categoryNameExample": "e.g. Starters, Main courses",
+    "unlockFeatures": "Unlock unlimited photos, more languages, menus and advanced features.",
+    "editorFallback": "Menu Editor"
   },
   "onboarding": {
     "step1Title": "Let's get started",
@@ -438,14 +497,25 @@
     "finishSetup": "Finish Setup",
     "welcomeMessage": "Welcome to SaCarta!",
     "welcomeDescription": "Your restaurant is ready.",
-    "pleaseEnterName": "Please enter your restaurant name"
+    "pleaseEnterName": "Please enter your restaurant name",
+    "manualTitle": "Create my menu by hand",
+    "manualDesc": "Add categories and dishes manually from the editor.",
+    "aiTitle": "Upload my menu. AI builds it.",
+    "aiDesc": "Paste text, upload a PDF or share your website URL and review the result before publishing.",
+    "menuChoiceTitle": "How do you want to create your menu?",
+    "menuChoiceDescription": "Create your menu by hand, or let AI build it for you from text, PDF or a website."
   },
   "imageUpload": {
     "uploading": "Uploading...",
     "uploaded": "Image uploaded",
     "failed": "Upload failed",
     "invalidFile": "Please upload an image file",
-    "sizeLimit": "Image must be less than {size}MB"
+    "sizeLimit": "Image must be less than {size}MB",
+    "dropHere": "Drop image here or click to upload",
+    "cropToSquare": "Max {max}MB · cropped to square",
+    "cropTitle": "Crop your image",
+    "zoom": "Zoom",
+    "useImage": "Use image"
   },
   "schedule": {
     "title": "Scheduled Hours",
@@ -463,7 +533,10 @@
       "4": "Thu",
       "5": "Fri",
       "6": "Sat"
-    }
+    },
+    "alwaysActive": "Always active",
+    "noDays": "No days",
+    "allDays": "Every day"
   },
   "common": {
     "error": "Error",
@@ -478,6 +551,145 @@
     "success": "Success!",
     "nameRequired": "Name is required",
     "unknownError": "Unknown error",
-    "status": "Status"
+    "status": "Status",
+    "menuNotFound": "Menu not found",
+    "menuEmpty": "No menu available yet",
+    "menuUnavailableNow": "Menu not available at this time",
+    "menuLoadFailed": "We couldn't load this menu. Please try again."
+  },
+  "copilot": {
+    "title": "AI Copilot",
+    "subtitle": "Make changes to your menu in natural language. Every change requires your confirmation before it is applied.",
+    "newConversation": "New conversation",
+    "conversations": "Conversations",
+    "emptyConversations": "No conversations yet.",
+    "defaultTitle": "Conversation",
+    "working": "The Copilot is working...",
+    "placeholder": "Describe the change you want to make to your menu...",
+    "previewNote": "Changes appear as a preview and are only applied when you confirm them.",
+    "creditsNote": "2 AI credits per message",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "applied": "Applied ({count} change/s)",
+    "canceled": "Canceled",
+    "suggested1": "Raise wine prices by 10%",
+    "suggested2": "Hide all spicy dishes",
+    "suggested3": "Add 3 vegan options to Starters",
+    "elementCount": "{count} element(s) affected",
+    "yes": "Yes",
+    "no": "No",
+    "field": {
+      "name": "Name",
+      "description": "Description",
+      "price": "Price",
+      "active": "Active",
+      "vegan": "Vegan",
+      "vegetarian": "Vegetarian",
+      "spicy": "Spicy",
+      "glutenFree": "Gluten free",
+      "allergens": "Allergens",
+      "create": "Create",
+      "translation": "Translation"
+    }
+  },
+  "optimizer": {
+    "title": "AI Menu Optimizer",
+    "subtitle": "Analyzes your menu and shows you how to improve it.",
+    "analyze": "Analyze menu",
+    "analyzing": "Analyzing...",
+    "emptyTitle": "You haven't analyzed your menu yet",
+    "emptyDesc": "Press \"Analyze menu\" to get a score from 0 to 100 and concrete recommendations.",
+    "globalScore": "Overall score",
+    "evolution": "Progress",
+    "scoreLabel": "Score",
+    "recommendations": "Top recommendations",
+    "dimensions": {
+      "balance": "Menu balance",
+      "priceDistribution": "Price distribution",
+      "descriptionQuality": "Description quality",
+      "imageCoverage": "Photo coverage",
+      "languageCoverage": "Language coverage",
+      "categoryQuality": "Category quality",
+      "menuLength": "Menu length",
+      "duplicates": "Duplicates"
+    }
+  },
+  "aiImport": {
+    "title": "Import menu with AI",
+    "pasteText": "Paste text",
+    "pdf": "PDF",
+    "pastePlaceholder": "Paste your menu text here (dish names, prices, descriptions...)",
+    "importing": "Importing your menu with AI...",
+    "progressTitle": "Real work progress",
+    "progressNote": "You can leave this window open. Progress updates as each block and translation finishes.",
+    "reviewNote": "Review and edit what the AI extracted before saving. Nothing is published yet.",
+    "menuName": "Menu name",
+    "description": "Description",
+    "price": "Price",
+    "analyze": "Analyze with AI",
+    "save": "Save to my menu",
+    "imported": "Menu imported successfully",
+    "saveError": "Error saving",
+    "creditsExhausted": "AI credits exhausted",
+    "preparing": "Preparing the import"
+  },
+  "plans": {
+    "sargantana": "Sargantana",
+    "ferreretMonthly": "Ferreret (monthly)",
+    "ferreretAnnual": "Ferreret (annual)",
+    "myotragus": "Myotragus (lifetime)"
+  },
+  "credits": {
+    "title": "AI credits",
+    "subtitle": "A single monthly deposit shared by all AI features.",
+    "planCredits": "Plan credits",
+    "usedThisPeriod": "Used this period",
+    "available": "Available",
+    "periodUsage": "Period usage",
+    "lowCredits": "You're running low on credits. If they run out, upgrade your plan (Ferreret) to get more.",
+    "loadFailed": "We couldn't load your credits balance.",
+    "costTitle": "How much each operation costs",
+    "perMonth": "/ month",
+    "costRows": {
+      "description": "AI description (1 dish)",
+      "translation": "AI translation (1 field)",
+      "optimizer": "Menu optimizer",
+      "import": "Import menu with AI",
+      "copilot": "AI Copilot message",
+      "insights": "AI Insights report"
+    }
+  },
+  "publicWidget": {
+    "tooMany": "Too many messages. Try again later.",
+    "connectError": "We had trouble connecting. Please try again.",
+    "title": "Menu assistant",
+    "hint": "Ask me what to order (allergens, vegan, budget...)",
+    "hello": "Hi! I'm the assistant for this menu.",
+    "examples": "Try: \"What's vegan under 15€?\", \"Gluten free\", \"Something spicy\".",
+    "thinking": "Thinking...",
+    "placeholder": "Type your question...",
+    "send": "Send"
+  },
+  "notFound": {
+    "oops": "Oops",
+    "back": "Back to home"
+  },
+  "upgrade": {
+    "title": "Upgrade your plan",
+    "upgrade": "Upgrade",
+    "viewPlans": "View plans"
+  },
+  "admin": {
+    "saved": "Saved",
+    "changesApplied": "Changes applied to the restaurant.",
+    "couponCreated": "Coupon created",
+    "code": "Code {code} ({pct}%)",
+    "couponDeactivated": "Coupon deactivated",
+    "couponDeactivated2": "Coupon deactivated.",
+    "configUpdated": "Restaurant configuration updated.",
+    "menuSaved": "Menu saved",
+    "menuDeleted": "Menu deleted",
+    "confirmDeleteMenu": "Delete this menu? Its categories and dishes will be removed.",
+    "price": "{price} {currency}"
   }
 }

@@ -168,14 +168,13 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
           </div>
           <CardTitle className="font-display text-2xl">
             {step === 1 && t('onboarding.step1Title')}
-            {step === 2 && '¿Cómo quieres crear tu menú?'}
+            {step === 2 && t('onboarding.menuChoiceTitle')}
             {step === 3 && t('onboarding.step2Title')}
             {step === 4 && t('onboarding.step3Title')}
-
           </CardTitle>
           <CardDescription>
             {step === 1 && t('onboarding.step1Description')}
-            {step === 2 && 'Crea tu carta a mano o deja que la IA la monte por ti a partir de un texto, PDF o página web.'}
+            {step === 2 && t('onboarding.menuChoiceDescription')}
             {step === 3 && t('onboarding.step2Description')}
             {step === 4 && t('onboarding.step3Description')}
           </CardDescription>
@@ -211,10 +210,8 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                   <Utensils className="h-5 w-5" />
                 </div>
                 <div className="flex-1">
-                  <p className="font-medium">Crear mi menú a mano</p>
-                  <p className="text-sm text-muted-foreground">
-                    Añade categorías y platos manualmente desde el editor.
-                  </p>
+                  <p className="font-medium">{t('onboarding.manualTitle')}</p>
+                  <p className="text-sm text-muted-foreground">{t('onboarding.manualDesc')}</p>
                 </div>
               </button>
               <button
@@ -226,10 +223,8 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                   <Sparkles className="h-5 w-5" />
                 </div>
                 <div className="flex-1">
-                  <p className="font-medium">Subir mi menú. La IA lo monta.</p>
-                  <p className="text-sm text-muted-foreground">
-                    Pega el texto, sube un PDF o comparte la URL de tu página web y revisa el resultado antes de publicar.
-                  </p>
+                  <p className="font-medium">{t('onboarding.aiTitle')}</p>
+                  <p className="text-sm text-muted-foreground">{t('onboarding.aiDesc')}</p>
                 </div>
               </button>
             </div>

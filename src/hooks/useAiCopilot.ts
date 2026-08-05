@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import * as aiApi from '@/lib/ai-api';
+import { useTranslation } from '@/hooks/useTranslation';
 import type { CopilotMessageTurn, MutationPreview } from '@ai/copilot';
 
 export interface CopilotChatMessage {
@@ -11,6 +12,7 @@ export interface CopilotChatMessage {
 }
 
 export function useAiCopilot(restaurantId: string | undefined) {
+  const { t } = useTranslation();
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [messages, setMessages] = useState<CopilotChatMessage[]>([]);
   const [sending, setSending] = useState(false);
@@ -109,7 +111,7 @@ export function useAiCopilot(restaurantId: string | undefined) {
       setMessages((prev) =>
         prev.map((m) =>
           m.id === messageId
-            ? { ...m, pendingPreview: undefined, content: `${m.content} · ✔ Aplicado (${res.appliedChanges} cambio/s)` }
+            ? { ...m, pendingPreview: undefined, content: `${m.content} · ${t('copilot.applied', { count: res.appliedChanges })}` }
             : m,
         ),
       );
@@ -129,7 +131,7 @@ export function useAiCopilot(restaurantId: string | undefined) {
     try {
       await aiApi.cancelCopilotPreview({ restaurantId, previewId });
       setMessages((prev) =>
-        prev.map((m) => (m.id === messageId ? { ...m, pendingPreview: undefined, content: `${m.content} · ✖ Cancelada` } : m)),
+        prev.map((m) => (m.id === messageId ? { ...m, pendingPreview: undefined, content: `${m.content} · ${t('copilot.canceled')}` } : m)),
       );
     } catch (e) {
       setError(e as Error);

@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Crown, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface UpgradeBannerProps {
   title?: string;
@@ -11,11 +12,13 @@ interface UpgradeBannerProps {
 }
 
 export function UpgradeBanner({ 
-  title = 'Actualiza tu plan',
+  title,
   message, 
   variant = 'default',
   className 
 }: UpgradeBannerProps) {
+  const { t } = useTranslation();
+  const resolvedTitle = title ?? t('upgrade.title');
   if (variant === 'inline') {
     return (
       <div className={cn(
@@ -26,7 +29,7 @@ export function UpgradeBanner({
         <span>{message}</span>
         <Link to="/dashboard/billing">
           <Button variant="link" size="sm" className="p-0 h-auto text-primary">
-            Upgrade <ArrowRight className="ml-1 h-3 w-3" />
+            {t('upgrade.upgrade')} <ArrowRight className="ml-1 h-3 w-3" />
           </Button>
         </Link>
       </div>
@@ -45,7 +48,7 @@ export function UpgradeBanner({
         </div>
         <Link to="/dashboard/billing">
           <Button variant="outline" size="sm" className="border-warning/30 hover:bg-warning/10">
-            Upgrade
+            {t('upgrade.upgrade')}
           </Button>
         </Link>
       </div>
@@ -62,12 +65,12 @@ export function UpgradeBanner({
           <Crown className="h-5 w-5 text-warning" />
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="font-semibold text-foreground">{title}</h4>
+          <h4 className="font-semibold text-foreground">{resolvedTitle}</h4>
           <p className="text-sm text-muted-foreground mt-1">{message}</p>
         </div>
         <Link to="/dashboard/billing">
           <Button className="bg-warning hover:bg-warning/90 text-warning-foreground">
-            Ver planes <ArrowRight className="ml-2 h-4 w-4" />
+            {t('upgrade.viewPlans')} <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </Link>
       </div>

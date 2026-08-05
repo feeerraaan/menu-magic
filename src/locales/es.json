@@ -232,7 +232,10 @@
         "missingTranslations": "{count} platos necesitan traducción",
         "weekViews": "{count} visitas esta semana"
       }
-    }
+    },
+    "optimizer": "Optimizador IA",
+    "copilot": "Copilot IA",
+    "backoffice": "Backoffice"
   },
   "menu": {
     "featured": "Destacados",
@@ -261,7 +264,14 @@
     "paymentDesc": "Todos los pagos se procesan de forma segura a través de Stripe. Puedes gestionar tu suscripción, actualizar métodos de pago o cancelar en cualquier momento a través del portal de cliente.",
     "error": "Error",
     "failedCheckout": "Error al iniciar checkout",
-    "failedPortal": "Error al abrir el portal de cliente"
+    "failedPortal": "Error al abrir el portal de cliente",
+    "activated": "Tu suscripción ha sido activada correctamente. Ya puedes disfrutar de todas las funciones Pro.",
+    "includes": "¿Qué incluye tu plan?",
+    "feat1": "Hasta 10 menús",
+    "feat2": "Hasta 10 idiomas",
+    "feat3": "Hasta 50 fotos",
+    "feat4": "Horarios programados",
+    "feat5": "Todas las plantillas"
   },
   "settings": {
     "title": "Configuración",
@@ -290,7 +300,9 @@
     "light": "Claro",
     "dark": "Oscuro",
     "logoUpdated": "Logo actualizado",
-    "logoRemoved": "Logo eliminado"
+    "logoRemoved": "Logo eliminado",
+    "hidePricesPublic": "No mostrar precios en el menú público",
+    "makeMenuVisible": "Haz que tu menú sea visible para los clientes"
   },
   "analytics": {
     "title": "Analíticas",
@@ -311,7 +323,19 @@
     "byLanguage": "Por Idioma",
     "byLanguageDesc": "Distribución de visualizaciones por idioma",
     "noLanguageData": "Sin datos de idioma aún",
-    "noItemViews": "Sin visualizaciones de artículos aún"
+    "noItemViews": "Sin visualizaciones de artículos aún",
+    "aiTitle": "Análisis IA del negocio",
+    "aiSubtitle": "Narrativa consultora sobre tus datos y sugerencias accionables.",
+    "aiDesc": "Genera un análisis consultor de tus datos y recomendaciones concretas (3 créditos IA).",
+    "generate": "Generar análisis",
+    "updateAnalysis": "Actualizar análisis",
+    "analyzing": "Analizando...",
+    "generatedPrefix": "Generado el {date}",
+    "aiEmptyDesc": "Pulsa \"Generar análisis\" para que la IA revise tus vistas, tu menú y la evolución del optimizador, y te proponga mejoras concretas.",
+    "recommendations": "Recomendaciones",
+    "done": "Hecho",
+    "dismiss": "Descartar",
+    "generated": "Análisis generado"
   },
   "qrCode": {
     "title": "Código QR",
@@ -336,15 +360,27 @@
     "downloadedSVG": "Código QR descargado como SVG",
     "downloadedPDF": "Código QR descargado como PDF",
     "popupError": "Por favor, permite las ventanas emergentes para descargar el PDF",
-    "scanToView": "Escanea para ver nuestro menú"
+    "scanToView": "Escanea para ver nuestro menú",
+    "centerLogo": "Logo en el centro del QR",
+    "normalQR": "QR normal (sin logo)",
+    "saCartaLogo": "Logo de SaCarta",
+    "myLogo": "Mi logo",
+    "uploadInSettings": "(sube uno en Ajustes)",
+    "planLogoNote": "En el plan Sargantana el QR lleva el logo de SaCarta. ",
+    "upgradePlan": "Mejora tu plan",
+    "planLogoNote2": " para usar tu propio logo.",
+    "noLogoYet": "Aún no has subido un logo. Sube uno en ",
+    "settings": "Ajustes",
+    "noLogoYet2": ".",
+    "logoNote": "El logo se incrusta en el centro y el QR sigue siendo escaneable (corrección de errores alta)."
   },
   "menuEditor": {
     "title": "Editor de Menú",
     "items": "Artículos",
     "addCategory": "Añadir Categoría",
-    "editCategory": "Editar Categoría",
+    "editCategory": "Editar categoría",
     "deleteCategory": "Eliminar Categoría",
-    "categoryName": "Nombre de Categoría",
+    "categoryName": "Nombre",
     "categoryDesc": "Descripción de Categoría (opcional)",
     "categoryNamePlaceholder": "p.ej., Entrantes",
     "categoryDescPlaceholder": "Una breve descripción de esta categoría",
@@ -410,7 +446,30 @@
     "editMenu": "Editar menú",
     "deleteMenu": "Eliminar menú",
     "manageDescription": "Gestiona tus categorías y platos",
-    "noCategories": "Sin categorías aún. Comienza añadiendo una."
+    "noCategories": "Sin categorías aún. Comienza añadiendo una.",
+    "importWithAI": "Importar con IA",
+    "deleteMenuTitle": "¿Eliminar menú?",
+    "deleteMenuMessage": "Esto eliminará el menú y todas sus categorías e items. Esta acción no se puede deshacer.",
+    "deleteCategoryTitle": "¿Eliminar categoría?",
+    "deleteCategoryMessage": "Esto eliminará la categoría y todos sus items. Esta acción no se puede deshacer.",
+    "deleteItemTitle": "¿Eliminar item?",
+    "deleteItemMessage": "Esta acción no se puede deshacer.",
+    "scheduleConflict": "Conflicto de horario",
+    "scheduleConflictDesc": "Este horario se solapa con el menú",
+    "schedulePro": "Los horarios programados están disponibles en el plan Pro",
+    "menuNamePlaceholder": "ej: Menú del día, Carta de vinos...",
+    "descriptionOptional": "Descripción (opcional)",
+    "menuActive": "Menú activo",
+    "menuActiveDesc": "Puedes tener varios menús activos con diferentes horarios",
+    "translateWithAI": "Traducir con IA",
+    "generateWithAI": "Generar con IA",
+    "nameExample": "ej: Pizza Margherita",
+    "describeDish": "Describe el plato...",
+    "translationIn": "Traducción en {lang}",
+    "newCategory": "Nueva categoría",
+    "categoryNameExample": "ej: Entrantes, Platos principales",
+    "unlockFeatures": "Desbloquea fotos ilimitadas, más idiomas, menús y funciones avanzadas.",
+    "editorFallback": "Editor de Menú"
   },
   "onboarding": {
     "step1Title": "Empecemos",
@@ -435,14 +494,25 @@
     "finishSetup": "Finalizar Configuración",
     "welcomeMessage": "¡Bienvenido a SaCarta!",
     "welcomeDescription": "Tu restaurante está listo.",
-    "pleaseEnterName": "Por favor, introduce el nombre de tu restaurante"
+    "pleaseEnterName": "Por favor, introduce el nombre de tu restaurante",
+    "manualTitle": "Crear mi menú a mano",
+    "manualDesc": "Añade categorías y platos manualmente desde el editor.",
+    "aiTitle": "Subir mi menú. La IA lo monta.",
+    "aiDesc": "Pega el texto, sube un PDF o comparte la URL de tu página web y revisa el resultado antes de publicar.",
+    "menuChoiceTitle": "¿Cómo quieres crear tu menú?",
+    "menuChoiceDescription": "Crea tu carta a mano o deja que la IA la monte por ti a partir de un texto, PDF o página web."
   },
   "imageUpload": {
     "uploading": "Subiendo...",
     "uploaded": "Imagen subida",
     "failed": "Error al subir",
     "invalidFile": "Por favor, sube un archivo de imagen",
-    "sizeLimit": "La imagen debe pesar menos de {size}MB"
+    "sizeLimit": "La imagen debe pesar menos de {size}MB",
+    "dropHere": "Suelta la imagen aquí o haz clic para subir",
+    "cropToSquare": "Máx {max}MB · se recorta a cuadrado",
+    "cropTitle": "Recorta tu imagen",
+    "zoom": "Zoom",
+    "useImage": "Usar imagen"
   },
   "schedule": {
     "title": "Horario programado",
@@ -460,7 +530,10 @@
       "4": "Jue",
       "5": "Vie",
       "6": "Sáb"
-    }
+    },
+    "alwaysActive": "Siempre activo",
+    "noDays": "Sin días",
+    "allDays": "Todos los días"
   },
   "common": {
     "error": "Error",
@@ -475,6 +548,145 @@
     "success": "¡Éxito!",
     "nameRequired": "El nombre es obligatorio",
     "unknownError": "Error desconocido",
-    "status": "Estado"
+    "status": "Estado",
+    "menuNotFound": "Menú no encontrado",
+    "menuEmpty": "Aún no hay menú disponible",
+    "menuUnavailableNow": "El menú no está disponible en este momento",
+    "menuLoadFailed": "No pudimos cargar este menú. Inténtalo de nuevo."
+  },
+  "copilot": {
+    "title": "Copilot IA",
+    "subtitle": "Pide cambios en tu menú en lenguaje natural. Todo cambio requiere tu confirmación antes de aplicarse.",
+    "newConversation": "Nueva conversación",
+    "conversations": "Conversaciones",
+    "emptyConversations": "Todavía no hay conversaciones.",
+    "defaultTitle": "Conversación",
+    "working": "El Copilot está trabajando...",
+    "placeholder": "Describe el cambio que quieres hacer en tu menú...",
+    "previewNote": "Los cambios se muestran como vista previa y solo se aplican cuando los confirmas.",
+    "creditsNote": "2 créditos IA por mensaje",
+    "confirm": "Confirmar",
+    "cancel": "Cancelar",
+    "applied": "Aplicado ({count} cambio/s)",
+    "canceled": "Cancelada",
+    "suggested1": "Sube un 10% el precio de los vinos",
+    "suggested2": "Oculta todos los platos picantes",
+    "suggested3": "Añade 3 opciones veganas a Entrantes",
+    "elementCount": "{count} elemento(s) afectado(s)",
+    "yes": "Sí",
+    "no": "No",
+    "field": {
+      "name": "Nombre",
+      "description": "Descripción",
+      "price": "Precio",
+      "active": "Activo",
+      "vegan": "Vegano",
+      "vegetarian": "Vegetariano",
+      "spicy": "Picante",
+      "glutenFree": "Sin gluten",
+      "allergens": "Alérgenos",
+      "create": "Crear",
+      "translation": "Traducción"
+    }
+  },
+  "optimizer": {
+    "title": "Optimizador de menú IA",
+    "subtitle": "Analiza tu menú y descubre cómo mejorarlo.",
+    "analyze": "Analizar menú",
+    "analyzing": "Analizando...",
+    "emptyTitle": "Todavía no has analizado tu menú",
+    "emptyDesc": "Pulsa \"Analizar menú\" para obtener una puntuación de 0 a 100 y recomendaciones concretas.",
+    "globalScore": "Puntuación global",
+    "evolution": "Evolución",
+    "scoreLabel": "Puntuación",
+    "recommendations": "Recomendaciones principales",
+    "dimensions": {
+      "balance": "Equilibrio del menú",
+      "priceDistribution": "Distribución de precios",
+      "descriptionQuality": "Calidad de descripciones",
+      "imageCoverage": "Cobertura de fotos",
+      "languageCoverage": "Cobertura de idiomas",
+      "categoryQuality": "Calidad de categorías",
+      "menuLength": "Longitud del menú",
+      "duplicates": "Duplicados"
+    }
+  },
+  "aiImport": {
+    "title": "Importar menú con IA",
+    "pasteText": "Pegar texto",
+    "pdf": "PDF",
+    "pastePlaceholder": "Pega aquí el texto de tu menú (nombres de platos, precios, descripciones...)",
+    "importing": "Importando tu menú con IA...",
+    "progressTitle": "Progreso real del trabajo",
+    "progressNote": "Puedes dejar esta ventana abierta. El progreso se actualiza al terminar cada bloque y cada traducción.",
+    "reviewNote": "Revisa y edita lo que ha extraído la IA antes de guardarlo. Nada se publica todavía.",
+    "menuName": "Nombre del menú",
+    "description": "Descripción",
+    "price": "Precio",
+    "analyze": "Analizar con IA",
+    "save": "Guardar en mi menú",
+    "imported": "Menú importado correctamente",
+    "saveError": "Error al guardar",
+    "creditsExhausted": "Créditos IA agotados",
+    "preparing": "Preparando la importación"
+  },
+  "plans": {
+    "sargantana": "Sargantana",
+    "ferreretMonthly": "Ferreret (mensual)",
+    "ferreretAnnual": "Ferreret (anual)",
+    "myotragus": "Myotragus (de por vida)"
+  },
+  "credits": {
+    "title": "Créditos IA",
+    "subtitle": "Un solo depósito mensual compartido por todas las funciones de IA.",
+    "planCredits": "Créditos del plan",
+    "usedThisPeriod": "Usados este periodo",
+    "available": "Disponibles",
+    "periodUsage": "Uso del periodo",
+    "lowCredits": "Te quedan pocos créditos. Si se agotan, mejora tu plan (Ferreret) para conseguir más.",
+    "loadFailed": "No se pudo cargar el saldo de créditos.",
+    "costTitle": "Cuánto cuesta cada operación",
+    "perMonth": "/ mes",
+    "costRows": {
+      "description": "Descripción con IA (1 plato)",
+      "translation": "Traducción con IA (1 campo)",
+      "optimizer": "Optimizador de menú",
+      "import": "Importar menú con IA",
+      "copilot": "Mensaje del Copilot IA",
+      "insights": "Informe de Insights IA"
+    }
+  },
+  "publicWidget": {
+    "tooMany": "Demasiados mensajes. Inténtalo más tarde.",
+    "connectError": "Hubo un problema de conexión. Inténtalo de nuevo.",
+    "title": "Asistente del menú",
+    "hint": "Pregúntame qué pedir (alérgenos, vegano, presupuesto...)",
+    "hello": "¡Hola! Soy el asistente de este menú.",
+    "examples": "Ejemplos: \"¿Qué hay vegano por menos de 15€?\", \"Sin gluten\", \"Algo picante\".",
+    "thinking": "Pensando...",
+    "placeholder": "Escribe tu pregunta...",
+    "send": "Enviar"
+  },
+  "notFound": {
+    "oops": "Vaya",
+    "back": "Volver al inicio"
+  },
+  "upgrade": {
+    "title": "Actualiza tu plan",
+    "upgrade": "Mejorar",
+    "viewPlans": "Ver planes"
+  },
+  "admin": {
+    "saved": "Guardado",
+    "changesApplied": "Cambios aplicados al restaurante.",
+    "couponCreated": "Cupón creado",
+    "code": "Código {code} ({pct}%)",
+    "couponDeactivated": "Cupón desactivado",
+    "couponDeactivated2": "Cupón desactivado.",
+    "configUpdated": "Configuración del restaurante actualizada.",
+    "menuSaved": "Menú guardado",
+    "menuDeleted": "Menú eliminado",
+    "confirmDeleteMenu": "¿Borrar este menú? Se eliminarán sus categorías y platos.",
+    "price": "{price} {currency}"
   }
 }

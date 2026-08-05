@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { Restaurant } from '@/types/database';
 import { useAiCopilot, CopilotChatMessage } from '@/hooks/useAiCopilot';
+import { useTranslation } from '@/hooks/useTranslation';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,29 +13,31 @@ import { cn } from '@/lib/utils';
 import { Bot, Send, Loader2, ShieldAlert, Check, X, Plus, MessageSquare, Trash2 } from 'lucide-react';
 import type { MutationChange } from '@ai/copilot';
 
+type Translate = ReturnType<typeof useTranslation>['t'];
+
 const FIELD_LABELS: Record<string, string> = {
-  name: 'Nombre',
-  description: 'Descripción',
-  price: 'Precio',
-  is_active: 'Activo',
-  is_vegan: 'Vegano',
-  is_vegetarian: 'Vegetariano',
-  is_spicy: 'Picante',
-  is_gluten_free: 'Sin gluten',
-  allergens: 'Alérgenos',
-  created: 'Crear',
-  'translation': 'Traducción',
+  name: 'copilot.field.name',
+  description: 'copilot.field.description',
+  price: 'copilot.field.price',
+  is_active: 'copilot.field.active',
+  is_vegan: 'copilot.field.vegan',
+  is_vegetarian: 'copilot.field.vegetarian',
+  is_spicy: 'copilot.field.spicy',
+  is_gluten_free: 'copilot.field.glutenFree',
+  allergens: 'copilot.field.allergens',
+  created: 'copilot.field.create',
+  'translation': 'copilot.field.translation',
 };
 
-function fieldLabel(field: string): string {
-  if (field.startsWith('translation[')) return 'Traducción';
-  return FIELD_LABELS[field] ?? field;
+function fieldLabel(field: string, t: Translate): string {
+  if (field.startsWith('translation[')) return t('copilot.field.translation');
+  return FIELD_LABELS[field] ? t(FIELD_LABELS[field]) : field;
 }
 
-function formatValue(value: unknown): string {
+function formatValue(value: unknown, t: Translate): string {
   if (value === null || value === undefined) return '';
   if (Array.isArray(value)) return value.join(', ');
-  if (typeof value === 'boolean') return value ? 'Sí' : 'No';
+  if (typeof value === 'boolean') return value ? t('copilot.yes') : t('copilot.no');
   if (typeof value === 'object') return JSON.stringify(value);
   return String(value);
 }
@@ -52,6 +55,7 @@ function PreviewCard({
   onCancel: (previewId: string, messageId: string) => Promise<unknown>;
   busy: boolean;
 }) {
+  const { t } = useTranslation();
   const [acting, setActing] = useState<'confirm' | 'cancel' | null>(null);
 
   const handle = async (kind: 'confirm' | 'cancel') => {
@@ -84,7 +88,9 @@ function PreviewCard({
       </div>
 
       {preview.affected_count > 0 && (
-        <div className="text-xs text-muted-foreground">{preview.affected_count} elemento(s) afectado(s)</div>
+        <div className="text-xs text-muted-foreground">
+          {t('copilot.elementCount', { count: preview.affected_count })}
+        </div>
       )}
 
       {Object.entries(grouped).slice(0, 12).map(([key, changes]) => (
@@ -92,10 +98,10 @@ function PreviewCard({
           <p className="text-xs font-semibold">{changes[0].entity_name}</p>
           {changes.map((c, i) => (
             <p key={i} className="text-xs text-muted-foreground flex items-center gap-1.5">
-              <span className="font-medium text-foreground">{fieldLabel(c.field)}</span>
-              <span className="text-muted-foreground line-through">{formatValue(c.before)}</span>
+              <span className="font-medium text-foreground">{fieldLabel(c.field, t)}</span>
+              <span className="text-muted-foreground line-through">{formatValue(c.before, t)}</span>
               <span>→</span>
-              <span className="font-medium text-foreground">{formatValue(c.after)}</span>
+              <span className="font-medium text-foreground">{formatValue(c.after, t)}</span>
             </p>
           ))}
         </div>
@@ -109,7 +115,7 @@ function PreviewCard({
           className="gap-1.5"
         >
           {acting === 'confirm' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />}
-          Confirmar
+          {t('copilot.confirm')}
         </Button>
         <Button
           size="sm"
@@ -118,7 +124,7 @@ function PreviewCard({
           disabled={busy || acting !== null}
           className="gap-1.5"
         >
-          <X className="h-3.5 w-3.5" /> Cancelar
+          <X className="h-3.5 w-3.5" /> {t('copilot.cancel')}
         </Button>
       </div>
     </div>
@@ -164,6 +170,7 @@ function MessageBubble({ message, onConfirm, onCancel, busy }: {
 
 export default function AiCopilot() {
   const { restaurant } = useOutletContext<{ restaurant: Restaurant }>();
+  const { t } = useTranslation();
   const { messages, sending, error, conversations, send, confirmPreview, cancelPreview, openConversation, newConversation } =
     useAiCopilot(restaurant?.id);
   const { toast } = useToast();
@@ -176,41 +183,43 @@ export default function AiCopilot() {
     try {
       await send(text);
     } catch (e) {
-      toast({ title: 'Error', description: e instanceof Error ? e.message : 'Error desconocido', variant: 'destructive' });
+      toast({
+        title: t('common.error'),
+        description: e instanceof Error ? e.message : t('common.unknownError'),
+        variant: 'destructive',
+      });
     }
   };
 
   const formatDate = (iso: string) =>
-    new Date(iso).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }) +
+    new Date(iso).toLocaleDateString(undefined, { day: '2-digit', month: 'short' }) +
     ' ' +
-    new Date(iso).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+    new Date(iso).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="font-display text-2xl font-bold flex items-center gap-2">
-            <MessageSquare className="h-6 w-6 text-primary" /> Copilot IA
+            <MessageSquare className="h-6 w-6 text-primary" /> {t('copilot.title')}
           </h2>
-          <p className="text-muted-foreground">
-            Pide cambios en tu menú en lenguaje natural. Todo cambio requiere tu confirmación antes de aplicarse.
-          </p>
+          <p className="text-muted-foreground">{t('copilot.subtitle')}</p>
         </div>
         <Button variant="outline" onClick={newConversation} className="gap-2">
-          <Plus className="h-4 w-4" /> Nueva conversación
+          <Plus className="h-4 w-4" /> {t('copilot.newConversation')}
         </Button>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[240px_1fr]">
         <Card className="h-[540px]">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Conversaciones</CardTitle>
+            <CardTitle className="text-sm">{t('copilot.conversations')}</CardTitle>
           </CardHeader>
           <CardContent className="p-2">
             <ScrollArea className="h-[480px]">
               <div className="space-y-1">
                 {conversations.length === 0 && (
-                  <p className="text-xs text-muted-foreground p-3">Todavía no hay conversaciones.</p>
+                  <p className="text-xs text-muted-foreground p-3">{t('copilot.emptyConversations')}</p>
                 )}
                 {conversations.map((c) => (
                   <button
@@ -218,7 +227,7 @@ export default function AiCopilot() {
                     onClick={() => openConversation(c.id)}
                     className="w-full text-left px-3 py-2 rounded-md text-sm hover:bg-muted transition-colors"
                   >
-                    <p className="truncate font-medium">{c.title || 'Conversación'}</p>
+                    <p className="truncate font-medium">{c.title || t('copilot.defaultTitle')}</p>
                     <p className="text-xs text-muted-foreground">{formatDate(c.updated_at)}</p>
                   </button>
                 ))}
@@ -234,16 +243,15 @@ export default function AiCopilot() {
                 {messages.length === 0 && (
                   <div className="text-center py-16 space-y-2">
                     <Bot className="h-12 w-12 mx-auto text-muted-foreground opacity-40" />
-                    <p className="font-medium">¿Qué quieres hacer con tu menú?</p>
+                    <p className="font-medium">{t('copilot.placeholder')}</p>
                     <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                      Prueba: "Sube un 10% el precio de los vinos", "Añade 3 opciones veganas a Entrantes",
-                      "Oculta todos los platos picantes" o "Traduce la carta de postres al inglés".
+                      {t('copilot.subtitle')}
                     </p>
                     <div className="flex flex-wrap justify-center gap-2 pt-2">
                       {[
-                        'Sube un 10% el precio de los vinos',
-                        'Oculta todos los platos picantes',
-                        'Añade 3 opciones veganas a Entrantes',
+                        t('copilot.suggested1'),
+                        t('copilot.suggested2'),
+                        t('copilot.suggested3'),
                       ].map((s) => (
                         <Badge
                           key={s}
@@ -270,7 +278,7 @@ export default function AiCopilot() {
                 ))}
                 {sending && (
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Loader2 className="h-4 w-4 animate-spin" /> El Copilot está trabajando...
+                    <Loader2 className="h-4 w-4 animate-spin" /> {t('copilot.working')}
                   </div>
                 )}
                 {error && (
@@ -292,7 +300,7 @@ export default function AiCopilot() {
                       handleSend();
                     }
                   }}
-                  placeholder="Describe el cambio que quieres hacer en tu menú..."
+                  placeholder={t('copilot.placeholder')}
                   rows={2}
                   className="resize-none"
                 />
@@ -301,8 +309,8 @@ export default function AiCopilot() {
                 </Button>
               </div>
               <p className="text-[11px] text-muted-foreground mt-2">
-                Los cambios se muestran como vista previa y solo se aplican cuando los confirmas.{" "}
-                <Badge variant="secondary" className="text-[10px]">2 créditos IA por mensaje</Badge>
+                {t('copilot.previewNote')}{' '}
+                <Badge variant="secondary" className="text-[10px]">{t('copilot.creditsNote')}</Badge>
               </p>
             </div>
           </CardContent>

@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Plus, Trash2, Pencil, ChevronDown, ChevronRight } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 import { useToast } from '@/hooks/use-toast';
 import * as adminApi from '@/lib/admin-api';
 
@@ -30,6 +31,7 @@ interface MenuForm {
 }
 
 export function RestaurantDetail({ restaurantId, restaurantName, onClose, onChanged }: RestaurantDetailProps) {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [snapshot, setSnapshot] = useState<adminApi.AdminRestaurantSnapshot | null>(null);
   const [menus, setMenus] = useState<adminApi.AdminMenuRow[]>([]);
@@ -74,7 +76,7 @@ export function RestaurantDetail({ restaurantId, restaurantName, onClose, onChan
       }
       setMenus(await adminApi.adminListMenus(restaurantId));
     } catch (e) {
-      toast({ title: 'Error', description: e instanceof Error ? e.message : 'Error desconocido', variant: 'destructive' });
+      toast({ title: t('common.error'), description: e instanceof Error ? e.message : t('common.unknownError'), variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -102,11 +104,11 @@ export function RestaurantDetail({ restaurantId, restaurantName, onClose, onChan
         logo_url: String(config.logo_url ?? '').trim() || null,
       });
       await adminApi.adminUpdateSubscription(restaurantId, subPlan, subPhotos, subLanguages);
-      toast({ title: 'Guardado', description: 'Configuración del restaurante actualizada.' });
+      toast({ title: t('admin.saved'), description: t('admin.configUpdated') });
       onChanged();
       await load();
     } catch (e) {
-      toast({ title: 'Error', description: e instanceof Error ? e.message : 'Error desconocido', variant: 'destructive' });
+      toast({ title: t('common.error'), description: e instanceof Error ? e.message : t('common.unknownError'), variant: 'destructive' });
     } finally {
       setSaving(false);
     }
@@ -131,25 +133,25 @@ export function RestaurantDetail({ restaurantId, restaurantName, onClose, onChan
       } else {
         await adminApi.adminCreateMenu(restaurantId, menuForm.name, menuForm.is_active);
       }
-      toast({ title: 'Menú guardado' });
+      toast({ title: t('admin.menuSaved') });
       setMenuFormOpen(false);
       setMenuForm(null);
       await load();
     } catch (e) {
-      toast({ title: 'Error', description: e instanceof Error ? e.message : 'Error desconocido', variant: 'destructive' });
+      toast({ title: t('common.error'), description: e instanceof Error ? e.message : t('common.unknownError'), variant: 'destructive' });
     } finally {
       setSavingMenu(false);
     }
   };
 
   const deleteMenu = async (menuId: string) => {
-    if (!window.confirm('¿Borrar este menú? Se eliminarán sus categorías y platos.')) return;
+    if (!window.confirm(t('admin.confirmDeleteMenu'))) return;
     try {
       await adminApi.adminDeleteMenu(menuId);
-      toast({ title: 'Menú eliminado' });
+      toast({ title: t('admin.menuDeleted') });
       await load();
     } catch (e) {
-      toast({ title: 'Error', description: e instanceof Error ? e.message : 'Error desconocido', variant: 'destructive' });
+      toast({ title: t('common.error'), description: e instanceof Error ? e.message : t('common.unknownError'), variant: 'destructive' });
     }
   };
 
@@ -391,7 +393,7 @@ function MenuTree({ menuId, details }: { menuId: string; details?: adminApi.Admi
             {items.map((item) => (
               <li key={item.id} className="text-sm text-muted-foreground flex justify-between gap-3">
                 <span className="truncate">{item.name}</span>
-                <span className="shrink-0">{item.price != null ? `${item.price} €` : ''}</span>
+                <span className="shrink-0">{item.price != null ? `${item.price} ${config.currency}` : ''}</span>
               </li>
             ))}
           </ul>

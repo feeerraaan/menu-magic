@@ -65,16 +65,16 @@ export function DashboardSidebar() {
     { title: t('dashboard.menuEditor'), url: '/dashboard/editor', icon: FileText },
     { title: t('dashboard.qrCode'), url: '/dashboard/qr', icon: QrCode },
     { title: t('dashboard.analytics'), url: '/dashboard/analytics', icon: BarChart3 },
-    { title: 'Optimizador IA', url: '/dashboard/ai-optimizer', icon: Wand2 },
-    { title: 'Copilot IA', url: '/dashboard/ai-copilot', icon: MessageSquare },
+    { title: t('dashboard.optimizer'), url: '/dashboard/ai-optimizer', icon: Wand2 },
+    { title: t('dashboard.copilot'), url: '/dashboard/ai-copilot', icon: MessageSquare },
     { title: t('dashboard.settings'), url: '/dashboard/settings', icon: Settings },
     { title: t('dashboard.billing'), url: '/dashboard/billing', icon: CreditCard },
-    ...(isAdmin ? [{ title: 'Backoffice', url: '/dashboard/admin', icon: ShieldCheck }] : []),
+    ...(isAdmin ? [{ title: t('dashboard.backoffice'), url: '/dashboard/admin', icon: ShieldCheck }] : []),
   ];
 
-  const planLabel = plan === 'lifetime' ? 'Myotragus' : 
-                    plan === 'pro_annual' ? 'Ferreret anual' : 
-                    plan === 'pro_monthly' ? 'Ferreret mensual' : 'Sargantana';
+  const planLabel = plan === 'lifetime' ? t('plans.myotragus') : 
+                    plan === 'pro_annual' ? t('plans.ferreretAnnual') : 
+                    plan === 'pro_monthly' ? t('plans.ferreretMonthly') : t('plans.sargantana');
 
   return (
     <Sidebar collapsible="none" className="border-r border-sidebar-border">

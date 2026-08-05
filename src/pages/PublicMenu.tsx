@@ -578,7 +578,7 @@ export default function PublicMenu() {
   useEffect(() => {
     async function fetchMenu() {
       if (!slug) {
-        setError('Menu not found');
+        setError(t('common.menuNotFound'));
         setLoading(false);
         return;
       }
@@ -594,7 +594,7 @@ export default function PublicMenu() {
 
         if (restError) throw restError;
         if (!restaurant) {
-          setError('Menu not found');
+          setError(t('common.menuNotFound'));
           setLoading(false);
           return;
         }
@@ -633,7 +633,7 @@ export default function PublicMenu() {
 
         if (menuError) throw menuError;
         if (!menus || menus.length === 0) {
-          setError('No menu available');
+          setError(t('common.menuEmpty'));
           setLoading(false);
           return;
         }
@@ -645,7 +645,7 @@ export default function PublicMenu() {
         });
 
         if (!availableMenu) {
-          setError('Menu not available at this time');
+          setError(t('common.menuUnavailableNow'));
           setLoading(false);
           return;
         }
@@ -695,7 +695,7 @@ export default function PublicMenu() {
         if (import.meta.env.DEV) {
           console.error('Error fetching menu:', e);
         }
-        setError('Failed to load menu');
+        setError(t('common.menuLoadFailed'));
       } finally {
         setLoading(false);
       }

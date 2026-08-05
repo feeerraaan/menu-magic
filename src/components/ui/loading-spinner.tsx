@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface LoadingSpinnerProps {
   size?: "sm" | "md" | "lg";
@@ -24,11 +25,12 @@ export function LoadingSpinner({ size = "md", className }: LoadingSpinnerProps) 
 }
 
 export function LoadingPage() {
+  const { t } = useTranslation();
   return (
     <div className="flex min-h-screen items-center justify-center bg-background">
       <div className="text-center">
         <LoadingSpinner size="lg" />
-        <p className="mt-4 text-muted-foreground">Loading...</p>
+        <p className="mt-4 text-muted-foreground">{t('common.loading')}</p>
       </div>
     </div>
   );

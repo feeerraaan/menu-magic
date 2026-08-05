@@ -204,7 +204,7 @@ export default function QRCodePage() {
 
             {/* Logo in the center */}
             <div className="w-full space-y-2">
-              <Label>Logo en el centro del QR</Label>
+              <Label>{t('qrCode.centerLogo')}</Label>
               <RadioGroup
                 value={effectiveMode}
                 onValueChange={(v) => handleLogoModeChange(v as LogoMode)}
@@ -213,41 +213,38 @@ export default function QRCodePage() {
               >
                 <label className="flex items-center gap-2 text-sm rounded-md px-2 py-1.5 hover:bg-muted/60 cursor-pointer disabled:cursor-not-allowed">
                   <RadioGroupItem value="normal" />
-                  QR normal (sin logo)
+                  {t('qrCode.normalQR')}
                 </label>
                 <label className="flex items-center gap-2 text-sm rounded-md px-2 py-1.5 hover:bg-muted/60 cursor-pointer disabled:cursor-not-allowed">
                   <RadioGroupItem value="sacarta" />
-                  Logo de SaCarta
+                  {t('qrCode.saCartaLogo')}
                 </label>
                 <label className="flex items-center gap-2 text-sm rounded-md px-2 py-1.5 hover:bg-muted/60 cursor-pointer disabled:cursor-not-allowed">
                   <RadioGroupItem value="restaurant" disabled={!restaurant.logo_url} />
-                  Mi logo
+                  {t('qrCode.myLogo')}
                   {!restaurant.logo_url && (
-                    <span className="text-xs text-muted-foreground">(sube uno en Ajustes)</span>
+                    <span className="text-xs text-muted-foreground">{t('qrCode.uploadInSettings')}</span>
                   )}
                 </label>
               </RadioGroup>
               {!canCustomize ? (
                 <p className="text-xs text-muted-foreground">
-                  En el plan Sargantana el QR lleva el logo de SaCarta.{' '}
+                  {t('qrCode.planLogoNote')}
                   <Link to="/dashboard/billing" className="underline hover:text-foreground">
-                    Mejora tu plan
-                  </Link>{' '}
-                  para usar tu propio logo.
+                    {t('qrCode.upgradePlan')}
+                  </Link>
+                  {t('qrCode.planLogoNote2')}
                 </p>
               ) : effectiveMode === 'restaurant' && !restaurant.logo_url ? (
                 <p className="text-xs text-muted-foreground">
-                  Aún no has subido un logo. Sube uno en{' '}
+                  {t('qrCode.noLogoYet')}
                   <Link to="/dashboard/settings" className="underline hover:text-foreground">
-                    Ajustes
+                    {t('qrCode.settings')}
                   </Link>
-                  .
+                  {t('qrCode.noLogoYet2')}
                 </p>
               ) : (
-                <p className="text-xs text-muted-foreground">
-                  El logo se incrusta en el centro y el QR sigue siendo escaneable (corrección de
-                  errores alta).
-                </p>
+                <p className="text-xs text-muted-foreground">{t('qrCode.logoNote')}</p>
               )}
             </div>
 

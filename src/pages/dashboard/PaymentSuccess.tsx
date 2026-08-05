@@ -70,7 +70,7 @@ export default function PaymentSuccess() {
           <CardDescription>
             {syncing 
               ? t('dashboard.syncingNotice')
-              : 'Tu suscripción ha sido activada correctamente. Ya puedes disfrutar de todas las funciones Pro.'
+              : t('payment.activated')
             }
           </CardDescription>
         </CardHeader>
@@ -78,13 +78,13 @@ export default function PaymentSuccess() {
           {syncComplete && (
             <>
               <div className="p-4 bg-muted rounded-lg text-sm">
-                <p className="font-medium">¿Qué incluye tu plan?</p>
+                <p className="font-medium">{t('payment.includes')}</p>
                 <ul className="mt-2 text-muted-foreground text-left space-y-1">
-                  <li>✓ Hasta 10 menús</li>
-                  <li>✓ Hasta 10 idiomas</li>
-                  <li>✓ Hasta 50 fotos</li>
-                  <li>✓ Horarios programados</li>
-                  <li>✓ Todas las plantillas</li>
+                  <li>✓ {t('payment.feat1')}</li>
+                  <li>✓ {t('payment.feat2')}</li>
+                  <li>✓ {t('payment.feat3')}</li>
+                  <li>✓ {t('payment.feat4')}</li>
+                  <li>✓ {t('payment.feat5')}</li>
                 </ul>
               </div>
               <Button 

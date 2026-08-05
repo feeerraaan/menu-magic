@@ -24,11 +24,11 @@ export default function Analytics() {
   const handleRunInsights = async () => {
     try {
       await insights.run();
-      toast({ title: 'Análisis generado' });
+      toast({ title: t('analytics.generated') });
     } catch (e: unknown) {
       toast({
-        title: 'Error',
-        description: e instanceof Error ? e.message : 'Error desconocido',
+        title: t('common.error'),
+        description: e instanceof Error ? e.message : t('common.unknownError'),
         variant: 'destructive',
       });
     }
@@ -234,17 +234,19 @@ export default function Analytics() {
           <div>
             <CardTitle className="text-lg flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-primary" />
-              Análisis IA del negocio
+              {t('analytics.aiTitle')}
             </CardTitle>
             <CardDescription>
-              {insights.narrative
-                ? 'Narrativa consultora sobre tus datos y sugerencias accionables.'
-                : 'Genera un análisis consultor de tus datos y recomendaciones concretas (3 créditos IA).'}
+              {insights.narrative ? t('analytics.aiSubtitle') : t('analytics.aiDesc')}
             </CardDescription>
           </div>
           <Button onClick={handleRunInsights} disabled={insights.running} className="gap-2 shrink-0">
             {insights.running ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-            {insights.running ? 'Analizando...' : insights.narrative ? 'Actualizar análisis' : 'Generar análisis'}
+            {insights.running
+              ? t('analytics.analyzing')
+              : insights.narrative
+                ? t('analytics.updateAnalysis')
+                : t('analytics.generate')}
           </Button>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -259,7 +261,9 @@ export default function Analytics() {
               <p className="text-sm leading-relaxed whitespace-pre-line">{insights.narrative}</p>
               {insights.lastRunAt && (
                 <p className="text-xs text-muted-foreground mt-2">
-                  Generado el {new Date(insights.lastRunAt).toLocaleString('es-ES')}
+                  {t('analytics.generatedPrefix', {
+                    date: new Date(insights.lastRunAt).toLocaleString(),
+                  })}
                 </p>
               )}
             </div>
@@ -268,15 +272,14 @@ export default function Analytics() {
           {!insights.narrative && !insights.running && (
             <div className="flex items-center gap-3 rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
               <Lightbulb className="h-5 w-5 shrink-0 opacity-60" />
-              Pulsa "Generar análisis" para que la IA revise tus vistas, tu menú y la evolución del
-              optimizador, y te proponga mejoras concretas.
+              {t('analytics.aiEmptyDesc')}
             </div>
           )}
 
           {insights.recommendations.length > 0 && (
             <div className="space-y-3">
               <p className="text-sm font-medium flex items-center gap-2">
-                <Lightbulb className="h-4 w-4 text-warning" /> Recomendaciones
+                <Lightbulb className="h-4 w-4 text-warning" /> {t('analytics.recommendations')}
               </p>
               {insights.recommendations.map((rec) => (
                 <div key={rec.id} className="flex items-start justify-between gap-3 rounded-lg border p-3">
@@ -288,10 +291,10 @@ export default function Analytics() {
                     )}
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
-                    <Button size="icon" variant="ghost" onClick={() => insights.action(rec.id)} title="Hecho">
+                    <Button size="icon" variant="ghost" onClick={() => insights.action(rec.id)} title={t('analytics.done')}>
                       <Check className="h-4 w-4 text-emerald-600" />
                     </Button>
-                    <Button size="icon" variant="ghost" onClick={() => insights.dismiss(rec.id)} title="Descartar">
+                    <Button size="icon" variant="ghost" onClick={() => insights.dismiss(rec.id)} title={t('analytics.dismiss')}>
                       <X className="h-4 w-4 text-muted-foreground" />
                     </Button>
                   </div>

@@ -11,6 +11,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, ShieldCheck, Users, Ticket } from 'lucide-react';
 import { useIsAdmin } from '@/hooks/useIsAdmin';
+import { useTranslation } from '@/hooks/useTranslation';
 import { useToast } from '@/hooks/use-toast';
 import * as adminApi from '@/lib/admin-api';
 import { PLAN_LIMITS } from '@/lib/subscription-limits';
@@ -82,6 +83,7 @@ export default function Admin() {
 
 function UsersTab() {
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [rows, setRows] = useState<adminApi.AdminUserRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<EditTarget | null>(null);
@@ -93,11 +95,11 @@ function UsersTab() {
     try {
       setRows(await adminApi.adminListUsers());
     } catch (e) {
-      toast({ title: 'Error', description: e instanceof Error ? e.message : 'Error desconocido', variant: 'destructive' });
+      toast({ title: t('common.error'), description: e instanceof Error ? e.message : t('common.unknownError'), variant: 'destructive' });
     } finally {
       setLoading(false);
     }
-  }, [toast]);
+  }, [toast, t]);
 
   useEffect(() => {
     void load();
@@ -120,11 +122,11 @@ function UsersTab() {
     try {
       await adminApi.adminUpdateRestaurant(editing.restaurant_id, editing.name, editing.is_published);
       await adminApi.adminUpdateSubscription(editing.restaurant_id, editing.plan, editing.photos_limit, editing.languages_limit);
-      toast({ title: 'Guardado', description: 'Cambios aplicados al restaurante.' });
+      toast({ title: t('admin.saved'), description: t('admin.changesApplied') });
       setEditing(null);
       await load();
     } catch (e) {
-      toast({ title: 'Error', description: e instanceof Error ? e.message : 'Error desconocido', variant: 'destructive' });
+      toast({ title: t('common.error'), description: e instanceof Error ? e.message : t('common.unknownError'), variant: 'destructive' });
     } finally {
       setSaving(false);
     }
@@ -273,6 +275,7 @@ function UsersTab() {
 
 function CouponsTab() {
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [code, setCode] = useState('');
   const [percentOff, setPercentOff] = useState('');
   const [maxRedemptions, setMaxRedemptions] = useState('');
@@ -286,11 +289,11 @@ function CouponsTab() {
     try {
       setCoupons(await adminApi.adminListCoupons());
     } catch (e) {
-      toast({ title: 'Error', description: e instanceof Error ? e.message : 'Error desconocido', variant: 'destructive' });
+      toast({ title: t('common.error'), description: e instanceof Error ? e.message : t('common.unknownError'), variant: 'destructive' });
     } finally {
       setLoading(false);
     }
-  }, [toast]);
+  }, [toast, t]);
 
   useEffect(() => {
     void load();
@@ -305,14 +308,14 @@ function CouponsTab() {
         max_redemptions: maxRedemptions ? Number(maxRedemptions) : undefined,
         expires_days: expiresDays ? Number(expiresDays) : undefined,
       });
-      toast({ title: 'Cupón creado', description: `Código ${result.code} (${result.percent_off}%)` });
+      toast({ title: t('admin.couponCreated'), description: t('admin.code', { code: result.code, pct: result.percent_off }) });
       setCode('');
       setPercentOff('');
       setMaxRedemptions('');
       setExpiresDays('');
       await load();
     } catch (e) {
-      toast({ title: 'Error', description: e instanceof Error ? e.message : 'Error desconocido', variant: 'destructive' });
+      toast({ title: t('common.error'), description: e instanceof Error ? e.message : t('common.unknownError'), variant: 'destructive' });
     } finally {
       setCreating(false);
     }
@@ -321,10 +324,10 @@ function CouponsTab() {
   const deactivate = async (id: string) => {
     try {
       await adminApi.adminDeactivateCoupon(id);
-      toast({ title: 'Cupón desactivado' });
+      toast({ title: t('admin.couponDeactivated') });
       await load();
     } catch (e) {
-      toast({ title: 'Error', description: e instanceof Error ? e.message : 'Error desconocido', variant: 'destructive' });
+      toast({ title: t('common.error'), description: e instanceof Error ? e.message : t('common.unknownError'), variant: 'destructive' });
     }
   };
 
