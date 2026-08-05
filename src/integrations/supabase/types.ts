@@ -928,6 +928,37 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_list_users: {
+        Args: never
+        Returns: {
+          email: string
+          is_published: boolean
+          languages_limit: number
+          manual_override: boolean
+          photos_limit: number
+          plan: string
+          restaurant_id: string
+          restaurant_name: string
+          slug: string
+          stripe_subscription_id: string
+          subscription_status: string
+          user_created_at: string
+          user_id: string
+        }[]
+      }
+      admin_update_restaurant: {
+        Args: { _is_published: boolean; _name: string; _restaurant_id: string }
+        Returns: boolean
+      }
+      admin_update_subscription: {
+        Args: {
+          _languages_limit: number
+          _photos_limit: number
+          _plan: string
+          _restaurant_id: string
+        }
+        Returns: boolean
+      }
       generate_unique_slug: { Args: { base_name: string }; Returns: string }
       get_ai_credits_used_this_period: {
         Args: { _restaurant_id: string }

@@ -31,9 +31,11 @@ import {
   Sparkles,
   Wand2,
   MessageSquare,
-  Zap
+  Zap,
+  ShieldCheck
 } from 'lucide-react';
 import { useAiCredits } from '@/hooks/useAiCredits';
+import { useIsAdmin } from '@/hooks/useIsAdmin';
 
 export function DashboardSidebar() {
   const { signOut } = useAuth();
@@ -41,6 +43,7 @@ export function DashboardSidebar() {
   const navigate = useNavigate();
   const { plan, isPremium, loading, subscription } = useSubscriptionContext();
   const aiCredits = useAiCredits(subscription?.restaurant_id ?? undefined);
+  const { isAdmin } = useIsAdmin();
   const { t } = useTranslation();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -66,6 +69,7 @@ export function DashboardSidebar() {
     { title: 'Copilot IA', url: '/dashboard/ai-copilot', icon: MessageSquare },
     { title: t('dashboard.settings'), url: '/dashboard/settings', icon: Settings },
     { title: t('dashboard.billing'), url: '/dashboard/billing', icon: CreditCard },
+    ...(isAdmin ? [{ title: 'Backoffice', url: '/dashboard/admin', icon: ShieldCheck }] : []),
   ];
 
   const planLabel = plan === 'lifetime' ? 'Myotragus' : 
