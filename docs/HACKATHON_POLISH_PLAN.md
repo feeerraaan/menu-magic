@@ -44,7 +44,7 @@ Update this same file (`docs/HACKATHON_POLISH_PLAN.md`):
 | 2 | Create the Hackathon Video Script | 🕐 | Medium | — |
 | 3 | Redesign Dashboard Overview | ✅ | High | — |
 | 4 | Improve the "Today" section | ✅ | Medium | 3 |
-| 5 | Review product copy | ⬜ | Medium | — |
+| 5 | Review product copy | ✅ | Medium | — |
 | 6 | AI Welcome Experience | ⬜ | Medium | — |
 | 7 | Better empty states | ⬜ | Low-Med | 5 |
 | 8 | Sticky sidebar | ⬜ | Low | — |
@@ -773,7 +773,8 @@ Task 16 (accurate generated types).
 
 | Date | Task | Files changed | Notes | Remaining |
 |---|---|---|---|---|
-| 2026-08-05 | Task 3 + 4 — Dashboard Overview redesign + Today | `Overview.tsx`, `lib/restaurant-health.ts`, `hooks/useRestaurantHealth.ts`, `hooks/useTodayAiActions.ts`, `components/dashboard/overview/*` (GreetingHeader, HealthScoreCard, TodaySection, RecommendationsPreview, InsightsStrip), `locales/{en,es,ca}.json` | Pushed to prod (commit `858ad9f`). Deterministic 8-factor health engine (no LLM, no migrations), localStorage trend, Today card with 4 stats + sparkline, top-3 recs preview, deterministic insights strip, staggered entrance. tsc/build/lint green. | Empty states & copy polish come in Tasks 5/7; AI-actions tile uses local tz start-of-day. |
+| 2026-08-05 | Task 5 — Review product copy | 28 files: `locales/{en,es,ca}.json` (+236 keys each, 562 total in sync), `AiOptimizer`, `AiCopilot`, `useAiCopilot`, `AiImportDialog`, `Analytics`, `OnboardingWizard`, `Settings`, `QRCode`, `PaymentSuccess`, `DashboardSidebar`, `AiCreditsCard`, `ItemDialogWithTranslations`, `CategoryDialogWithTranslations`, `CustomerAssistantWidget`, `image-upload`, `loading-spinner`, `NotFound`, `MenuEditor`, `PublicMenu`, `Billing`, `UpgradeBanner`, `Admin`, `RestaurantDetail`, `index.html` | Pushed to prod (commit `b250f20`). Removed Lovable/TODO meta; localized all hardcoded dashboard/public strings (en/es/ca); production tone for loadings/errors/buttons; all 3 locales verified in sync (562 identical keys). tsc/build green, no new lint issues. | MenuEditor has 8 pre-existing `any` (Task 17). `subscription-limits` labels left as-is (already production Spanish). Public widget prices show fixed EUR (default currency). |
+| 2026-08-05 | Task 3 + 4 — Dashboard Overview redesign + Today | `Overview.tsx`, `lib/restaurant-health.ts`, `hooks/useRestaurantHealth.ts`, `hooks/useTodayAiActions.ts`, `components/dashboard/overview/*` (GreetingHeader, HealthScoreCard, TodaySection, RecommendationsPreview, InsightsStrip), `locales/{en,es,ca}.json` | Pushed to prod (commit `858ad9f`). Deterministic 8-factor health engine (no LLM, no migrations), localStorage trend, Today card with 4 stats + sparkline, top-3 recs preview, deterministic insights strip, staggered entrance. tsc/build/lint green. **Note:** later hotfix `2dc41aa` dropped Popularity/SEO factors and removed em-dash placeholders. | Empty states & copy polish come in Tasks 5/7; AI-actions tile uses local tz start-of-day. |
 | 2026-08-05 | Task 1 — Rewrite the README | `README.md` | Pushed to prod (commit `9ae6e2b`). 13 sections, env table audited from code, architecture SVG linked (Task 12). Zero Lovable/media. | — |
 
 ---
