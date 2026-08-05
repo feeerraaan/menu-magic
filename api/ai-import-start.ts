@@ -19,10 +19,13 @@ export const MAX_RAW_TEXT_LENGTH = 20_000;
 export const CHUNK_SIZE = 6_000;
 export const CHUNK_OVERLAP = 600;
 export const MODEL_MAX_TOKENS = 4_500;
-const PRIMARY_MODEL = process.env.AI_MODEL_MENU_IMPORT ?? 'ling-3.0-flash-free';
-const MODELS = [PRIMARY_MODEL, 'deepseek-v4-flash-free'].filter((model, index, all) => all.indexOf(model) === index);
+const PRIMARY_MODEL = process.env.AI_MODEL_MENU_IMPORT ?? 'deepseek-v4-flash-free';
+const MODELS = [PRIMARY_MODEL, 'mimo-v2.5-free'].filter((model, index, all) => all.indexOf(model) === index);
 const KEYS = (process.env.OPENCODE_ZEN_API_KEYS ?? '').split(',').map((key) => key.trim()).filter(Boolean);
-const ATTEMPTS_PER_MODEL = 2;
+// Each model is tried once; a single call retries internally via schema-repair (same-model
+// corrective turns), mirroring mindmap's withSchemaRepair.
+const ATTEMPTS_PER_MODEL = 1;
+const REPAIR_MAX_RETRIES = 2;
 
 const itemSchema = z.object({
   name: z.string().min(1).max(200),
@@ -284,89 +287,114 @@ export async function callStructured<T>(
   const deadlineRemaining = (): number => (deadline ? Math.max(0, deadline - Date.now()) : Number.POSITIVE_INFINITY);
   let lastError: Error | null = null;
   for (const key of KEYS) {
-    const controller = new AbortController();
-    let inactivityTimer: ReturnType<typeof setTimeout> | undefined;
-    const hardTimer: ReturnType<typeof setTimeout> = setTimeout(() => {
-      timeoutReason = 'hard';
-      controller.abort();
-    }, Math.min(hardMs, deadlineRemaining()));
-    let timeoutReason: 'inactivity' | 'hard' | null = null;
-    const resetInactivity = () => {
-      if (inactivityTimer) clearTimeout(inactivityTimer);
-      inactivityTimer = setTimeout(() => {
-        timeoutReason = 'inactivity';
+    let previousRaw: string | null = null;
+    let previousError: string | null = null;
+    for (let repair = 0; repair <= REPAIR_MAX_RETRIES; repair++) {
+      const controller = new AbortController();
+      let inactivityTimer: ReturnType<typeof setTimeout> | undefined;
+      const hardTimer: ReturnType<typeof setTimeout> = setTimeout(() => {
+        timeoutReason = 'hard';
         controller.abort();
-      }, Math.min(inactivityMs, deadlineRemaining()));
-    };
-    try {
-      const upstream = await fetch(OPENCODE_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
-        body: JSON.stringify({
-          model,
-          messages: [{ role: 'system', content: system }, { role: 'user', content: userContent }],
-          temperature: 0.2,
-          max_tokens: MODEL_MAX_TOKENS,
-          stream: true,
-          thinking: { type: 'disabled' },
-        }),
-        signal: controller.signal,
-      });
-      if (upstream.status === 402 || upstream.status === 429) {
-        lastError = new Error(`OpenCode ${model} rechazó la clave (status ${upstream.status})`);
-        continue;
-      }
-      if (!upstream.ok) throw new Error(`OpenCode ${model} respondió ${upstream.status}: ${await upstream.text()}`);
-      if (!upstream.body) throw new Error(`OpenCode ${model} devolvió una respuesta vacía`);
+      }, Math.min(hardMs, deadlineRemaining()));
+      let timeoutReason: 'inactivity' | 'hard' | null = null;
+      const resetInactivity = () => {
+        if (inactivityTimer) clearTimeout(inactivityTimer);
+        inactivityTimer = setTimeout(() => {
+          timeoutReason = 'inactivity';
+          controller.abort();
+        }, Math.min(inactivityMs, deadlineRemaining()));
+      };
+      try {
+        const messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
+          { role: 'system', content: system },
+          { role: 'user', content: userContent },
+        ];
+        if (previousRaw && previousError) {
+          messages.push({ role: 'assistant', content: previousRaw });
+          messages.push({
+            role: 'user',
+            content: `Tu respuesta anterior no era JSON válido o no cumplía el esquema requerido. Error: ${previousError}. Devuelve EXCLUSIVAMENTE el JSON corregido con la forma exacta indicada en el prompt del sistema. Sin texto adicional, sin markdown.`,
+          });
+        }
+        const upstream = await fetch(OPENCODE_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+          body: JSON.stringify({
+            model,
+            messages,
+            temperature: 0.2,
+            max_tokens: MODEL_MAX_TOKENS,
+            stream: true,
+            thinking: { type: 'disabled' },
+          }),
+          signal: controller.signal,
+        });
+        if (upstream.status === 402 || upstream.status === 429) {
+          lastError = new Error(`OpenCode ${model} rechazó la clave (status ${upstream.status})`);
+          break;
+        }
+        if (!upstream.ok) throw new Error(`OpenCode ${model} respondió ${upstream.status}: ${await upstream.text()}`);
+        if (!upstream.body) throw new Error(`OpenCode ${model} devolvió una respuesta vacía`);
 
-      resetInactivity();
-      const reader = upstream.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = '';
-      let content = '';
-      let sawSse = false;
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
         resetInactivity();
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split(/\r?\n/);
-        buffer = lines.pop() ?? '';
-        for (const line of lines) {
-          const trimmed = line.trim();
-          if (!trimmed.startsWith('data:')) continue;
-          const data = trimmed.slice(5).trim();
-          if (!data || data === '[DONE]') continue;
-          sawSse = true;
-          const event = JSON.parse(data) as { choices?: Array<{ delta?: { content?: string }; message?: { content?: string } }> };
-          const choice = event.choices?.[0];
-          content += choice?.delta?.content ?? choice?.message?.content ?? '';
+        const reader = upstream.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        let content = '';
+        let sawSse = false;
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          resetInactivity();
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split(/\r?\n/);
+          buffer = lines.pop() ?? '';
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed.startsWith('data:')) continue;
+            const data = trimmed.slice(5).trim();
+            if (!data || data === '[DONE]') continue;
+            sawSse = true;
+            const event = JSON.parse(data) as { choices?: Array<{ delta?: { content?: string }; message?: { content?: string } }> };
+            const choice = event.choices?.[0];
+            content += choice?.delta?.content ?? choice?.message?.content ?? '';
+          }
         }
-      }
-      buffer += decoder.decode();
-      if (buffer.trim().startsWith('data:')) {
-        const data = buffer.trim().slice(5).trim();
-        if (data && data !== '[DONE]') {
-          const event = JSON.parse(data) as { choices?: Array<{ delta?: { content?: string }; message?: { content?: string } }> };
-          content += event.choices?.[0]?.delta?.content ?? event.choices?.[0]?.message?.content ?? '';
-          sawSse = true;
+        buffer += decoder.decode();
+        if (buffer.trim().startsWith('data:')) {
+          const data = buffer.trim().slice(5).trim();
+          if (data && data !== '[DONE]') {
+            const event = JSON.parse(data) as { choices?: Array<{ delta?: { content?: string }; message?: { content?: string } }> };
+            content += event.choices?.[0]?.delta?.content ?? event.choices?.[0]?.message?.content ?? '';
+            sawSse = true;
+          }
+        } else if (!sawSse && buffer.trim()) {
+          const parsed = JSON.parse(buffer) as { choices?: Array<{ message?: { content?: string } }> };
+          content = parsed.choices?.[0]?.message?.content ?? '';
         }
-      } else if (!sawSse && buffer.trim()) {
-        const parsed = JSON.parse(buffer) as { choices?: Array<{ message?: { content?: string } }> };
-        content = parsed.choices?.[0]?.message?.content ?? '';
+        try {
+          return schema.parse(jsonFromText(content));
+        } catch (parseError) {
+          // Schema-repair retry (same pattern as mindmap's withSchemaRepair): feed the raw
+          // output plus the validation error back so the model can fix the JSON before we
+          // give up on this model/key.
+          previousRaw = content;
+          previousError = parseError instanceof Error ? parseError.message : String(parseError);
+          lastError = parseError instanceof Error ? parseError : new Error(String(parseError));
+        }
+      } catch (error) {
+        if (error instanceof Error && error.name === 'AbortError') {
+          lastError = deadline && Date.now() >= deadline
+            ? new Error('Se agotó el tiempo máximo de ejecución de la importación (el plan Hobby de Vercel limita cada función a 300 segundos). Intenta con un menú más corto o reparte la importación.')
+            : new Error(`OpenCode ${model} sin respuesta (${timeoutReason === 'hard' ? Math.min(hardMs, deadlineRemaining()) : inactivityMs}ms)`);
+        } else {
+          lastError = error instanceof Error ? error : new Error(String(error));
+        }
+        break;
+      } finally {
+        if (inactivityTimer) clearTimeout(inactivityTimer);
+        if (hardTimer) clearTimeout(hardTimer);
       }
-      return schema.parse(jsonFromText(content));
-    } catch (error) {
-      if (error instanceof Error && error.name === 'AbortError') {
-        lastError = deadline && Date.now() >= deadline
-          ? new Error('Se agotó el tiempo máximo de ejecución de la importación (el plan Hobby de Vercel limita cada función a 300 segundos). Intenta con un menú más corto o reparte la importación.')
-          : new Error(`OpenCode ${model} sin respuesta (${timeoutReason === 'hard' ? Math.min(hardMs, deadlineRemaining()) : inactivityMs}ms)`);
-      } else {
-        lastError = error instanceof Error ? error : new Error(String(error));
-      }
-    } finally {
-      if (inactivityTimer) clearTimeout(inactivityTimer);
-      if (hardTimer) clearTimeout(hardTimer);
     }
   }
   throw lastError ?? new Error(`OpenCode ${model} no pudo procesar la petición`);
