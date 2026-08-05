@@ -928,6 +928,26 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_create_menu: {
+        Args: { _is_active: boolean; _name: string; _restaurant_id: string }
+        Returns: string
+      }
+      admin_delete_menu: { Args: { _menu_id: string }; Returns: boolean }
+      admin_get_menu_details: { Args: { _menu_id: string }; Returns: Json }
+      admin_get_restaurant: { Args: { _restaurant_id: string }; Returns: Json }
+      admin_list_menus: {
+        Args: { _restaurant_id: string }
+        Returns: {
+          category_count: number
+          description: string
+          display_order: number
+          is_active: boolean
+          item_count: number
+          menu_id: string
+          name: string
+          schedule_rules: Json
+        }[]
+      }
       admin_list_users: {
         Args: never
         Returns: {
@@ -946,8 +966,33 @@ export type Database = {
           user_id: string
         }[]
       }
+      admin_update_menu: {
+        Args: {
+          _description: string
+          _is_active: boolean
+          _menu_id: string
+          _name: string
+        }
+        Returns: boolean
+      }
       admin_update_restaurant: {
         Args: { _is_published: boolean; _name: string; _restaurant_id: string }
+        Returns: boolean
+      }
+      admin_update_restaurant_config: {
+        Args: {
+          _address: string
+          _currency: string
+          _default_language: string
+          _hide_prices: boolean
+          _is_published: boolean
+          _logo_url: string
+          _name: string
+          _phone: string
+          _restaurant_id: string
+          _supported_languages: string[]
+          _theme: string
+        }
         Returns: boolean
       }
       admin_update_subscription: {

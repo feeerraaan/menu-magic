@@ -56,6 +56,135 @@ export async function adminUpdateSubscription(
   return !!data;
 }
 
+// --- Restaurant deep control (see migration 20260805140000_*) ---
+
+export interface AdminRestaurantSnapshot {
+  restaurant: Record<string, unknown> & {
+    id: string;
+    name: string;
+    address: string | null;
+    phone: string | null;
+    currency: string;
+    default_language: string;
+    supported_languages: string[];
+    hide_prices: boolean;
+    theme: string;
+    is_published: boolean;
+    logo_url: string | null;
+  };
+  subscription: Record<string, unknown> & {
+    plan: string;
+    status: string;
+    photos_limit: number;
+    languages_limit: number;
+  } | null;
+}
+
+export async function adminGetRestaurant(restaurantId: string): Promise<AdminRestaurantSnapshot | null> {
+  const { data, error } = await supabase.rpc('admin_get_restaurant', { _restaurant_id: restaurantId });
+  if (error) throw error;
+  return data as unknown as AdminRestaurantSnapshot | null;
+}
+
+export async function adminUpdateRestaurantConfig(
+  restaurantId: string,
+  input: {
+    name: string;
+    address: string | null;
+    phone: string | null;
+    currency: string;
+    default_language: string;
+    supported_languages: string[];
+    hide_prices: boolean;
+    theme: string;
+    is_published: boolean;
+    logo_url: string | null;
+  },
+): Promise<boolean> {
+  const { data, error } = await supabase.rpc('admin_update_restaurant_config', {
+    _restaurant_id: restaurantId,
+    _name: input.name,
+    _address: input.address,
+    _phone: input.phone,
+    _currency: input.currency,
+    _default_language: input.default_language,
+    _supported_languages: input.supported_languages,
+    _hide_prices: input.hide_prices,
+    _theme: input.theme,
+    _is_published: input.is_published,
+    _logo_url: input.logo_url,
+  });
+  if (error) throw error;
+  return !!data;
+}
+
+export interface AdminMenuRow {
+  menu_id: string;
+  name: string;
+  description: string | null;
+  is_active: boolean;
+  schedule_rules: unknown;
+  display_order: number;
+  category_count: number;
+  item_count: number;
+}
+
+export async function adminListMenus(restaurantId: string): Promise<AdminMenuRow[]> {
+  const { data, error } = await supabase.rpc('admin_list_menus', { _restaurant_id: restaurantId });
+  if (error) throw error;
+  return (data ?? []) as AdminMenuRow[];
+}
+
+export async function adminCreateMenu(
+  restaurantId: string,
+  name: string,
+  isActive: boolean,
+): Promise<string | null> {
+  const { data, error } = await supabase.rpc('admin_create_menu', {
+    _restaurant_id: restaurantId,
+    _name: name,
+    _is_active: isActive,
+  });
+  if (error) throw error;
+  return (data as string | null) ?? null;
+}
+
+export async function adminUpdateMenu(
+  menuId: string,
+  name: string,
+  description: string | null,
+  isActive: boolean,
+): Promise<boolean> {
+  const { data, error } = await supabase.rpc('admin_update_menu', {
+    _menu_id: menuId,
+    _name: name,
+    _description: description,
+    _is_active: isActive,
+  });
+  if (error) throw error;
+  return !!data;
+}
+
+export async function adminDeleteMenu(menuId: string): Promise<boolean> {
+  const { data, error } = await supabase.rpc('admin_delete_menu', { _menu_id: menuId });
+  if (error) throw error;
+  return !!data;
+}
+
+export interface AdminMenuDetails {
+  menu: Record<string, unknown> & { id: string; name: string; description: string | null; is_active: boolean };
+  categories: Array<{
+    category: Record<string, unknown> & { id: string; name: string; description: string | null };
+    items: Array<Record<string, unknown> & { id: string; name: string; price: number | null }>;
+  }>;
+}
+
+export async function adminGetMenuDetails(menuId: string): Promise<AdminMenuDetails | null> {
+  const { data, error } = await supabase.rpc('admin_get_menu_details', { _menu_id: menuId });
+  if (error) throw error;
+  return data as unknown as AdminMenuDetails | null;
+}
+
 export interface AdminCoupon {
   id: string;
   code: string;

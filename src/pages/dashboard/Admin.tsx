@@ -14,6 +14,7 @@ import { useIsAdmin } from '@/hooks/useIsAdmin';
 import { useToast } from '@/hooks/use-toast';
 import * as adminApi from '@/lib/admin-api';
 import { PLAN_LIMITS } from '@/lib/subscription-limits';
+import { RestaurantDetail } from '@/components/dashboard/admin/RestaurantDetail';
 
 const PLAN_NAMES: Record<string, string> = {
   free: 'Sargantana',
@@ -84,6 +85,7 @@ function UsersTab() {
   const [rows, setRows] = useState<adminApi.AdminUserRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<EditTarget | null>(null);
+  const [detail, setDetail] = useState<adminApi.AdminUserRow | null>(null);
   const [saving, setSaving] = useState(false);
 
   const load = useCallback(async () => {
@@ -175,9 +177,14 @@ function UsersTab() {
                   <TableCell>{row.is_published ? 'Sí' : 'No'}</TableCell>
                   <TableCell className="text-right">
                     {row.restaurant_id && (
-                      <Button variant="outline" size="sm" onClick={() => openEdit(row)}>
-                        Editar
-                      </Button>
+                      <div className="flex justify-end gap-2">
+                        <Button variant="ghost" size="sm" onClick={() => setDetail(row)}>
+                          Ver
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => openEdit(row)}>
+                          Editar
+                        </Button>
+                      </div>
                     )}
                   </TableCell>
                 </TableRow>
@@ -250,6 +257,15 @@ function UsersTab() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {detail?.restaurant_id && (
+          <RestaurantDetail
+            restaurantId={detail.restaurant_id}
+            restaurantName={detail.restaurant_name ?? ''}
+            onClose={() => setDetail(null)}
+            onChanged={load}
+          />
+        )}
       </CardContent>
     </Card>
   );
