@@ -46,7 +46,7 @@ Update this same file (`docs/HACKATHON_POLISH_PLAN.md`):
 | 4 | Improve the "Today" section | ✅ | Medium | 3 |
 | 5 | Review product copy | ✅ | Medium | — |
 | 6 | AI Welcome Experience | ✅ | Medium | — |
-| 7 | Better empty states | ⬜ | Low-Med | 5 |
+| 7 | Better empty states | ✅ | Low-Med | 5 |
 | 8 | Sticky sidebar | ⬜ | Low | — |
 | 9 | Landing improvements | ⬜ | Medium | 5 |
 | 10 | Before vs After comparison | ⬜ | Low-Med | 9 |
@@ -773,6 +773,7 @@ Task 16 (accurate generated types).
 
 | Date | Task | Files changed | Notes | Remaining |
 |---|---|---|---|---|
+| 2026-08-05 | Task 7 — Better empty states | `components/ui/empty-state.tsx` (new), `MenuEditor`, `Analytics`, `AiCopilot`, `AiOptimizer`, `RecommendationsPreview`, `TodaySection`, `Admin`, `RestaurantDetail`, `locales/{en,es,ca}.json` | Pushed to prod (commit `4fcdf45`). Shared `EmptyState` (icon + title + desc + strong CTA) used in 6 surfaces; every empty state now invites the next AI action (import menu, run insights, analyze, share QR). Today card shows empty-views hint linking to QR. i18n in sync. tsc/build green. | Admin remains Spanish-only for some detail strings (minor). |
 | 2026-08-05 | Task 6 — AI Welcome Experience | `components/dashboard/AiWelcomeSequence.tsx` (new), `OnboardingWizard.tsx`, `MenuEditor.tsx`, `locales/{en,es,ca}.json` (`dashboard.welcome.*`) | Pushed to prod (commit `8a3e8c9`). Full-screen sequence after onboarding finish AND after AI import in the editor. Steps with spinner→check, skip always, ~6s, `prefers-reduced-motion` shortens to 2 steps. i18n en/es/ca. tsc/build green; no new lint. | Sequence is cosmetic (no live job hooks); real import progress remains inside AiImportDialog. |
 | 2026-08-05 | Task 5 — Review product copy | 28 files | Pushed to prod (commit `b250f20`). See log entry above. | — |
 | 2026-08-05 | Task 3 + 4 — Dashboard Overview redesign + Today | `Overview.tsx`, `lib/restaurant-health.ts`, `hooks/useRestaurantHealth.ts`, `hooks/useTodayAiActions.ts`, `components/dashboard/overview/*` (GreetingHeader, HealthScoreCard, TodaySection, RecommendationsPreview, InsightsStrip), `locales/{en,es,ca}.json` | Pushed to prod (commit `858ad9f`). Deterministic 8-factor health engine (no LLM, no migrations), localStorage trend, Today card with 4 stats + sparkline, top-3 recs preview, deterministic insights strip, staggered entrance. tsc/build/lint green. **Note:** later hotfix `2dc41aa` dropped Popularity/SEO factors and removed em-dash placeholders. | Empty states & copy polish come in Tasks 5/7; AI-actions tile uses local tz start-of-day. |
