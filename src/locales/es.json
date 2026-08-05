@@ -235,7 +235,18 @@
     },
     "optimizer": "Optimizador IA",
     "copilot": "Copilot IA",
-    "backoffice": "Backoffice"
+    "backoffice": "Backoffice",
+    "welcome": {
+      "title": "Bienvenido a SaCarta",
+      "preparing": "Preparando tu restaurante...",
+      "understanding": "Entendiendo tu menú...",
+      "categories": "Creando categorías...",
+      "descriptions": "Generando descripciones...",
+      "translating": "Traduciendo...",
+      "almostReady": "Casi listo...",
+      "finished": "¡Listo!",
+      "skip": "Saltar"
+    }
   },
   "menu": {
     "featured": "Destacados",

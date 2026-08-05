@@ -13,6 +13,7 @@ import { Utensils, MapPin, Phone, Globe, ArrowRight, ArrowLeft, Check, Loader2, 
 import { languages } from '@/lib/i18n';
 import { supabase } from '@/integrations/supabase/client';
 import { AiImportDialog } from '@/components/dashboard/AiImportDialog';
+import { AiWelcomeSequence } from '@/components/dashboard/AiWelcomeSequence';
 
 const CURRENCIES = [
   { code: 'EUR', symbol: '€', name: 'Euro' },
@@ -29,6 +30,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
   const [loading, setLoading] = useState(false);
   const [aiSetupOpen, setAiSetupOpen] = useState(false);
   const [aiSetupLoading, setAiSetupLoading] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(false);
   const { create, update, restaurant } = useRestaurant();
   const { user } = useAuth();
   const { toast } = useToast();
@@ -127,7 +129,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
       }
 
       toast({ title: t('onboarding.welcomeMessage'), description: t('onboarding.welcomeDescription') });
-      onComplete();
+      setShowWelcome(true);
     } catch (e) {
       const error = e as Error;
       toast({ title: t('common.error'), description: error.message, variant: 'destructive' });
@@ -331,6 +333,14 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
         jobType="ai_setup"
         onClose={() => setAiSetupOpen(false)}
         onImported={handleAiSetupImported}
+      />
+
+      <AiWelcomeSequence
+        open={showWelcome}
+        onDone={() => {
+          setShowWelcome(false);
+          onComplete();
+        }}
       />
     </div>
   );

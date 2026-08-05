@@ -19,6 +19,7 @@ import { UpgradeBanner, LimitIndicator } from '@/components/subscription';
 import { CategoryDialogWithTranslations } from '@/components/dashboard/CategoryDialogWithTranslations';
 import { ItemDialogWithTranslations } from '@/components/dashboard/ItemDialogWithTranslations';
 import { AiImportDialog } from '@/components/dashboard/AiImportDialog';
+import { AiWelcomeSequence } from '@/components/dashboard/AiWelcomeSequence';
 import { 
   DndContext, 
   closestCenter, 
@@ -238,6 +239,7 @@ export default function MenuEditor() {
   const [deleteConfirm, setDeleteConfirm] = useState<{ open: boolean; type: 'category' | 'item' | 'menu'; id: string } | null>(null);
   const [menuDialog, setMenuDialog] = useState<{ open: boolean; menu?: Menu }>({ open: false });
   const [aiImportOpen, setAiImportOpen] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(false);
   
   const { toast } = useToast();
   
@@ -689,6 +691,15 @@ export default function MenuEditor() {
         restaurantId={restaurant.id}
         onClose={() => setAiImportOpen(false)}
         onImported={() => {
+          setAiImportOpen(false);
+          setShowWelcome(true);
+        }}
+      />
+
+      <AiWelcomeSequence
+        open={showWelcome}
+        onDone={() => {
+          setShowWelcome(false);
           refetchMenus();
         }}
       />
