@@ -4,26 +4,27 @@
     "startFree": "Empezar gratis"
   },
   "hero": {
-    "title": "Menús digitales que",
-    "highlight": "enamoran a tus clientes",
-    "description": "Crea menús atractivos, rápidos y adaptados a móvil. Sin descargas, sin esperas y sin complicaciones.",
+    "title": "Una carta de restaurante que",
+    "highlight": "trabaja por ti",
+    "description": "Crea, traduce y optimiza tu menú con IA en minutos. Tus clientes escanean y tienen todo lo que necesitan al instante — en su idioma.",
     "startButton": "Empezar gratis",
-    "demoButton": "Ver demo en vivo"
+    "demoButton": "Ver demo en vivo",
+    "badge": "Plataforma de cartas con IA"
   },
   "features": {
     "title": "Todo lo que necesitas para crecer",
     "subtitle": "Herramientas potentes diseñadas para simplificar la gestión de tu restaurante.",
     "qr": {
-      "title": "Códigos QR Inteligentes",
-      "desc": "Genera QRs únicos para mesas o marketing. Personalizables y siempre conectados."
+      "title": "Un QR que tus clientes escanean",
+      "desc": "Sin apps ni descargas. La carta se abre al instante en su móvil, siempre actualizada."
     },
     "translation": {
-      "title": "Traducción Automática",
-      "desc": "Rompe barreras lingüísticas. Tu menú en múltiples idiomas al instante."
+      "title": "Cada plato, en su idioma",
+      "desc": "Tu carta traducida automáticamente para los clientes que entran por la puerta."
     },
     "analytics": {
-      "title": "Analíticas en Tiempo Real",
-      "desc": "Descubre qué platos triunfan y optimiza tu oferta basándote en datos reales."
+      "title": "Sabes qué vende de verdad",
+      "desc": "Ve lo que miran tus clientes y recibe recomendaciones IA para mejorarlo."
     }
   },
   "pricing": {
@@ -716,5 +717,45 @@
     "emptyCouponsDesc": "Crea un código de descuento para compartir con los clientes.",
     "emptyMenus": "Aún no hay menús.",
     "emptyCategories": "Aún no hay categorías."
+  },
+  "problem": {
+    "title": "Una carta que te come el tiempo",
+    "subtitle": "Actualizar una carta a mano es lento, estático e invisible para tus clientes.",
+    "cards": [
+      {
+        "title": "Más de 6 horas a la semana",
+        "desc": "Perdidas reescribiendo platos, precios y descripciones cada vez que algo cambia."
+      },
+      {
+        "title": "Nunca traducida",
+        "desc": "Los clientes internacionales no pueden leer tu carta, así que piden menos — o se van."
+      },
+      {
+        "title": "Cero visibilidad",
+        "desc": "Sin datos sobre lo que miran tus clientes, no puedes mejorar lo que vende."
+      }
+    ]
+  },
+  "solution": {
+    "title": "Deja que la IA gestione tu carta",
+    "subtitle": "Una subida, y SaCarta hace el trabajo que antes llevaba horas.",
+    "steps": [
+      {
+        "title": "Sube",
+        "desc": "Envía un PDF, una foto o pega tu carta actual."
+      },
+      {
+        "title": "La IA la construye",
+        "desc": "Categorías, descripciones y precios estructurados en segundos."
+      },
+      {
+        "title": "Traduce",
+        "desc": "Cada plato en todos los idiomas que hablan tus clientes."
+      },
+      {
+        "title": "Optimiza",
+        "desc": "Un índice de salud y recomendaciones diarias la hacen crecer."
+      }
+    ]
   }
 }

@@ -44,5 +44,19 @@ export function useTranslation() {
     return t(key, replacements);
   };
 
-  return { t, tReplace, language };
+  /** Returns the raw JSON value for a key (arrays/objects), or undefined. */
+  const tRaw = (key: string): unknown => {
+    const keys = key.split('.');
+    let value: unknown = translations[language];
+    for (const k of keys) {
+      if (value && typeof value === 'object' && k in value) {
+        value = (value as Record<string, unknown>)[k];
+      } else {
+        return undefined;
+      }
+    }
+    return value;
+  };
+
+  return { t, tReplace, tRaw, language };
 }

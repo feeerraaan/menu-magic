@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { QrCode, BarChart3, Globe, ArrowRight, Mail, Send } from 'lucide-react';
+import { QrCode, BarChart3, Globe, ArrowRight, Mail, Send, Sparkles } from 'lucide-react';
 import { PRICING_PLANS } from '@/lib/constants';
 import { PricingCard } from '@/components/PricingCard';
 import { LanguageSelector } from '@/components/LanguageSelector';
+import { ProblemSection } from '@/components/landing/ProblemSection';
+import { SolutionSection } from '@/components/landing/SolutionSection';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
@@ -89,6 +91,10 @@ export default function Index() {
         
         <div className="container mx-auto px-4 text-center">
           <div className="space-y-6 max-w-4xl mx-auto">
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
+              <Sparkles className="h-4 w-4" />
+              {t('hero.badge')}
+            </div>
             <h1 className="font-display text-5xl md:text-7xl font-bold tracking-tight leading-[1.1]">
               {t('hero.title')} <br />
               <span className="relative inline-block mt-1 sm:mt-2">
@@ -118,6 +124,12 @@ export default function Index() {
           </div>
         </div>
       </section>
+
+      {/* Problem: the time restaurants lose */}
+      <ProblemSection />
+
+      {/* How AI solves it */}
+      <SolutionSection />
 
       {/* Features */}
       <section className="py-24 bg-secondary/30">

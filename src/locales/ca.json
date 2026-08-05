@@ -4,26 +4,27 @@
     "startFree": "Començar gratis"
   },
   "hero": {
-    "title": "Menús digitals que",
-    "highlight": "enamoren als teus clients",
-    "description": "Crea menús atractius, ràpids i adaptats a mòbil. Sense descàrregues, sense esperes i sense complicacions.",
+    "title": "Una carta de restaurant que",
+    "highlight": "treballa per tu",
+    "description": "Crea, tradueix i optimitza el teu menú amb IA en minuts. Els teus clients escanegen i tenen tot el que necessiten a l'instant — en el seu idioma.",
     "startButton": "Començar gratis",
-    "demoButton": "Veure demostració en directe"
+    "demoButton": "Veure demostració en directe",
+    "badge": "Plataforma de cartes amb IA"
   },
   "features": {
     "title": "Tot el que necessites per créixer",
     "subtitle": "Eines potents dissenyades per simplificar la gestió del teu restaurant.",
     "qr": {
-      "title": "Codis QR Intel·ligents",
-      "desc": "Genera QR únics per a taules o màrqueting. Personalitzables i sempre connectats."
+      "title": "Un QR que els teus clients escanegen",
+      "desc": "Sense apps ni descàrregues. La carta s'obre a l'instant al seu mòbil, sempre actualitzada."
     },
     "translation": {
-      "title": "Traducció Automàtica",
-      "desc": "Trenca barreres lingüístiques. El teu menú en diversos idiomes al instant."
+      "title": "Cada plat, en el seu idioma",
+      "desc": "La teva carta traduïda automàticament per als clients que entren per la porta."
     },
     "analytics": {
-      "title": "Analítiques en Temps Real",
-      "desc": "Descobreix quins plats triomfen i optimitza la teva oferta basant-te en dades reals."
+      "title": "Saps què ven de veritat",
+      "desc": "Veus què miren els teus clients i reps recomanacions IA per millorar-ho."
     }
   },
   "pricing": {
@@ -716,5 +717,45 @@
     "emptyCouponsDesc": "Crea un codi de descompte per compartir amb els clients.",
     "emptyMenus": "Encara no hi ha menús.",
     "emptyCategories": "Encara no hi ha categories."
+  },
+  "problem": {
+    "title": "Una carta que et menja el temps",
+    "subtitle": "Actualitzar una carta a mà és lent, estàtic i invisible per als teus clients.",
+    "cards": [
+      {
+        "title": "Més de 6 hores a la setmana",
+        "desc": "Perdudes reescrivint plats, preus i descripcions cada cop que alguna cosa canvia."
+      },
+      {
+        "title": "Mai traduïda",
+        "desc": "Els clients internacionals no poden llegir la teva carta, així que demanen menys — o se'n van."
+      },
+      {
+        "title": "Zero visibilitat",
+        "desc": "Sense dades sobre què miren els teus clients, no pots millorar el que ven."
+      }
+    ]
+  },
+  "solution": {
+    "title": "Deixa que la IA gestioni la teva carta",
+    "subtitle": "Una pujada, i SaCarta fa la feina que abans portava hores.",
+    "steps": [
+      {
+        "title": "Puja",
+        "desc": "Envia un PDF, una foto o enganxa la teva carta actual."
+      },
+      {
+        "title": "La IA la construeix",
+        "desc": "Categories, descripcions i preus estructurats en segons."
+      },
+      {
+        "title": "Tradueix",
+        "desc": "Cada plat en tots els idiomes que parlen els teus clients."
+      },
+      {
+        "title": "Optimitza",
+        "desc": "Un índex de salut i recomanacions diàries la fan créixer."
+      }
+    ]
   }
 }

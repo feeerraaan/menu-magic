@@ -4,26 +4,27 @@
     "startFree": "Start Free"
   },
   "hero": {
-    "title": "Digital menus that",
-    "highlight": "captivate your customers",
-    "description": "Create beautiful, fast, and mobile-friendly menus. No downloads, no waiting, and no complications.",
+    "title": "A restaurant menu that",
+    "highlight": "works for you",
+    "description": "Create, translate and optimize your menu with AI in minutes. Your customers scan, and everything they need is right there — in their language.",
     "startButton": "Start Free",
-    "demoButton": "View Live Demo"
+    "demoButton": "View Live Demo",
+    "badge": "AI-powered menu platform"
   },
   "features": {
     "title": "Everything you need to grow",
     "subtitle": "Powerful tools designed to simplify your restaurant management.",
     "qr": {
-      "title": "Smart QR Codes",
-      "desc": "Generate unique QRs for tables or marketing. Customizable and always connected."
+      "title": "A QR your customers scan",
+      "desc": "No apps, no downloads. The menu opens instantly on their phone, always up to date."
     },
     "translation": {
-      "title": "Automatic Translation",
-      "desc": "Break language barriers. Your menu in multiple languages instantly."
+      "title": "Every dish, in their language",
+      "desc": "Your menu translated automatically for the guests walking through your door."
     },
     "analytics": {
-      "title": "Real-time Analytics",
-      "desc": "Discover which dishes are winning and optimize your offer based on real data."
+      "title": "Know what actually sells",
+      "desc": "See what customers look at and get AI recommendations to improve it."
     }
   },
   "pricing": {
@@ -719,5 +720,45 @@
     "emptyCouponsDesc": "Create a discount code to share with customers.",
     "emptyMenus": "No menus yet.",
     "emptyCategories": "No categories yet."
+  },
+  "problem": {
+    "title": "A menu that eats your time",
+    "subtitle": "Updating a menu by hand is slow, static, and invisible to your customers.",
+    "cards": [
+      {
+        "title": "6+ hours a week",
+        "desc": "Lost rewriting dishes, prices and descriptions every time something changes."
+      },
+      {
+        "title": "Never translated",
+        "desc": "International guests can't read your menu, so they order less — or leave."
+      },
+      {
+        "title": "Zero visibility",
+        "desc": "No data on what customers look at, so you can't improve what sells."
+      }
+    ]
+  },
+  "solution": {
+    "title": "Let AI run your menu",
+    "subtitle": "One upload, and SaCarta does the work that used to take hours.",
+    "steps": [
+      {
+        "title": "Upload",
+        "desc": "Send a PDF, a photo or paste your current menu."
+      },
+      {
+        "title": "AI builds it",
+        "desc": "Categories, descriptions and prices, structured in seconds."
+      },
+      {
+        "title": "Translate",
+        "desc": "Every dish in all the languages your guests speak."
+      },
+      {
+        "title": "Optimize",
+        "desc": "A health score and daily recommendations keep it growing."
+      }
+    ]
   }
 }
