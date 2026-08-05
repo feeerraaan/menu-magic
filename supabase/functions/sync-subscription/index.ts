@@ -74,6 +74,28 @@ serve(async (req) => {
 
     logStep("Found restaurant", { restaurantId: restaurant.id });
 
+    // Manual override (e.g. a granted test/lifetime plan) must survive a sync — the
+    // subscription is explicitly managed outside Stripe, so never touch it. Mirrors the
+    // check in check-subscription.
+    const { data: existingSub } = await supabaseClient
+      .from('subscriptions')
+      .select('plan, photos_limit, languages_limit, is_lifetime, manual_override, current_period_end')
+      .eq('restaurant_id', restaurant.id)
+      .maybeSingle();
+
+    if (existingSub?.manual_override) {
+      logStep("Manual override detected, skipping Stripe sync", { plan: existingSub.plan });
+      return new Response(JSON.stringify({
+        success: true,
+        plan: existingSub.plan,
+        is_lifetime: existingSub.is_lifetime,
+        subscription_end: existingSub.current_period_end,
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      });
+    }
+
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
 

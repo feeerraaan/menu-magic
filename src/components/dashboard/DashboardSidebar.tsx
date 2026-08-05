@@ -19,7 +19,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscriptionContext } from '@/contexts/SubscriptionContext';
-import { 
+import {
   Utensils, 
   LayoutDashboard, 
   FileText, 
@@ -31,8 +31,10 @@ import {
   Crown,
   Sparkles,
   Wand2,
-  MessageSquare
+  MessageSquare,
+  Zap
 } from 'lucide-react';
+import { useAiCredits } from '@/hooks/useAiCredits';
 
 export function DashboardSidebar() {
   const { state } = useSidebar();
@@ -40,7 +42,8 @@ export function DashboardSidebar() {
   const { signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const { plan, isPremium, loading } = useSubscriptionContext();
+  const { plan, isPremium, loading, subscription } = useSubscriptionContext();
+  const aiCredits = useAiCredits(subscription?.restaurant_id ?? undefined);
   const { t } = useTranslation();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -139,6 +142,31 @@ export function DashboardSidebar() {
                       {t('dashboard.unlockAllFeatures')}
                     </p>
                   )}
+                </div>
+              )}
+            </div>
+          </Link>
+        )}
+
+        {/* AI Credits */}
+        {!loading && !aiCredits.loading && (
+          <Link to="/dashboard/billing" className="block">
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border/60 bg-muted/40 hover:bg-muted transition-colors">
+              <Zap className="h-4 w-4 text-primary shrink-0" />
+              {!collapsed && (
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-sm text-muted-foreground">Créditos IA</span>
+                    <span className={`text-sm font-medium ${aiCredits.remaining < aiCredits.limit * 0.2 ? 'text-destructive' : 'text-foreground'}`}>
+                      {aiCredits.remaining}/{aiCredits.limit}
+                    </span>
+                  </div>
+                  <div className="mt-1 h-1.5 rounded-full bg-border overflow-hidden">
+                    <div
+                      className={`h-full rounded-full ${aiCredits.percentage >= 80 ? 'bg-destructive' : 'bg-primary'}`}
+                      style={{ width: `${aiCredits.percentage}%` }}
+                    />
+                  </div>
                 </div>
               )}
             </div>

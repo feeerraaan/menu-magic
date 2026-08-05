@@ -92,6 +92,19 @@ export async function fetchMenuScoreHistory(restaurantId: string): Promise<MenuS
   return (data ?? []) as unknown as MenuScoreHistoryEntry[];
 }
 
+/**
+ * Credits spent this billing period (or this month when the subscription has no
+ * current_period_start), via the get_ai_credits_used_this_period SECURITY DEFINER function —
+ * safe to call from the client; the owner can only ever read their own restaurant's usage.
+ */
+export async function fetchAiCreditsUsed(restaurantId: string): Promise<number> {
+  const { data, error } = await supabase.rpc('get_ai_credits_used_this_period', {
+    _restaurant_id: restaurantId,
+  });
+  if (error) throw error;
+  return Number(data ?? 0);
+}
+
 export async function startMenuImport(input: MenuImportStartInput): Promise<MenuImportStartResponse> {
   return invokeMenuImportBackend(input);
 }

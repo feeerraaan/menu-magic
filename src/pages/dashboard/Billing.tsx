@@ -11,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { PRICING_PLANS, STRIPE_PRICES } from '@/lib/constants';
 import { PricingCard } from '@/components/PricingCard';
+import { AiCreditsCard } from '@/components/dashboard/AiCreditsCard';
 
 interface StripeSubscriptionStatus {
   subscribed: boolean;
@@ -195,6 +196,9 @@ export default function Billing() {
           )}
         </CardContent>
       </Card>
+
+      {/* AI Credits */}
+      <AiCreditsCard restaurantId={restaurant.id} />
 
       {/* Available Plans */}
       <div>
