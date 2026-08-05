@@ -16,8 +16,8 @@ export const config = { maxDuration: 300 };
 
 export const OPENCODE_URL = 'https://opencode.ai/zen/v1/chat/completions';
 export const MAX_RAW_TEXT_LENGTH = 20_000;
-export const CHUNK_SIZE = 6_000;
-export const CHUNK_OVERLAP = 600;
+export const CHUNK_SIZE = 2_500;
+export const CHUNK_OVERLAP = 350;
 export const MODEL_MAX_TOKENS = 4_500;
 const PRIMARY_MODEL = process.env.AI_MODEL_MENU_IMPORT ?? 'deepseek-v4-flash-free';
 const MODELS = [PRIMARY_MODEL, 'mimo-v2.5-free'].filter((model, index, all) => all.indexOf(model) === index);
