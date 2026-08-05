@@ -26,14 +26,10 @@ export async function createRestaurant(data: Partial<Restaurant> & { owner_id: s
   
   if (error) throw error;
 
-  // Create default subscription
-  await supabase.from('subscriptions').insert({
-    restaurant_id: restaurant.id,
-    plan: 'free',
-    status: 'active',
-    photos_limit: 0,
-    languages_limit: 1,
-  });
+  // The default 'free' subscription row is created server-side by the
+  // handle_new_restaurant_subscription trigger (migration 20260805120000_*) — the client
+  // cannot insert into subscriptions (RLS blocks it), which is why this used to silently
+  // no-op and leave restaurants without a subscription row.
 
   // Create default menu
   await supabase.from('menus').insert({

@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { PRICING_PLANS, STRIPE_PRICES } from '@/lib/constants';
 import { PricingCard } from '@/components/PricingCard';
 import { AiCreditsCard } from '@/components/dashboard/AiCreditsCard';
+import { getPlanInfo, PlanType } from '@/lib/subscription-limits';
 
 interface StripeSubscriptionStatus {
   subscribed: boolean;
@@ -138,7 +139,7 @@ export default function Billing() {
             </CardTitle>
             <div className="flex items-center gap-2">
               <Badge variant={currentPlan === 'free' ? 'secondary' : 'default'} className="capitalize">
-                {currentPlan.replace('_', ' ')}
+                {getPlanInfo((currentPlan || 'free') as PlanType).name}
               </Badge>
               <Button 
                 variant="ghost" 
