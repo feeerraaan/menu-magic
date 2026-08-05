@@ -238,7 +238,9 @@
     "publishMenu": "Publicar menú",
     "settingsSaved": "Configuració guardada",
     "light": "Clar",
-    "dark": "Fosc"
+    "dark": "Fosc",
+    "logoUpdated": "Logo actualitzat",
+    "logoRemoved": "Logo eliminat"
   },
   "analytics": {
     "title": "Analítiques",
@@ -289,7 +291,7 @@
   "menuEditor": {
     "title": "Editor de Menú",
     "items": "Articles",
-    "addCategory": "Afegir Categoría",
+    "addCategory": "Afegir Categoria",
     "editCategory": "Editar Categoría",
     "deleteCategory": "Eliminar Categoría",
     "categoryName": "Nom de Categoría",
@@ -358,7 +360,6 @@
     "editMenu": "Editar menú",
     "deleteMenu": "Eliminar menú",
     "manageDescription": "Gestiona les teves categories i plats",
-    "addCategory": "Afegir Categoria",
     "noCategories": "Sense categories encara. Comença afegint-ne una."
   },
   "onboarding": {

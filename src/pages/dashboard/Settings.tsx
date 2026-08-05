@@ -111,6 +111,21 @@ export default function Settings() {
     }
   };
 
+  // The logo persists immediately on upload/remove — uploading already gave the user visual
+  // feedback, so it should not depend on the separate "Guardar cambios" button.
+  const handleLogoChange = async (url: string | null) => {
+    setLogoUrl(url);
+    try {
+      await update({ logo_url: url });
+      toast({
+        title: url ? t('settings.logoUpdated') : t('settings.logoRemoved'),
+      });
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : t('common.unknownError');
+      toast({ title: t('common.error'), description: errorMessage, variant: 'destructive' });
+    }
+  };
+
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
       <div className="flex items-center justify-between">
@@ -136,10 +151,10 @@ export default function Settings() {
         <CardContent>
           <ImageUpload
             value={logoUrl}
-            onChange={setLogoUrl}
+            onChange={handleLogoChange}
             restaurantId={restaurant.id}
             folder="logos"
-            aspectRatio="video"
+            aspectRatio="square"
             maxWidth={800}
             quality={0.9}
           />

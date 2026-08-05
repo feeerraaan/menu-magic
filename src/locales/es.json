@@ -149,7 +149,6 @@
     "accountCreated": "Tu cuenta ha sido creada.",
     "errorTitle": "Error",
     "checkYourEmail": "Revisa tu correo electrónico",
-    "forgotPassword": "¿Olvidaste tu contraseña?",
     "forgotPasswordDesc": "Introduce tu email y te enviaremos un enlace para restablecer tu contraseña",
     "resetPassword": "Recuperar contraseña",
     "sendResetLink": "Enviar enlace de recuperación",
@@ -239,7 +238,9 @@
     "publishMenu": "Publicar menú",
     "settingsSaved": "Configuración guardada",
     "light": "Claro",
-    "dark": "Oscuro"
+    "dark": "Oscuro",
+    "logoUpdated": "Logo actualizado",
+    "logoRemoved": "Logo eliminado"
   },
   "analytics": {
     "title": "Analíticas",
@@ -359,7 +360,6 @@
     "editMenu": "Editar menú",
     "deleteMenu": "Eliminar menú",
     "manageDescription": "Gestiona tus categorías y platos",
-    "addCategory": "Añadir Categoría",
     "noCategories": "Sin categorías aún. Comienza añadiendo una."
   },
   "onboarding": {

@@ -241,7 +241,9 @@
     "publishMenu": "Publish menu",
     "settingsSaved": "Settings saved",
     "light": "Light",
-    "dark": "Dark"
+    "dark": "Dark",
+    "logoUpdated": "Logo updated",
+    "logoRemoved": "Logo removed"
   },
   "analytics": {
     "title": "Analytics",
@@ -361,7 +363,6 @@
     "editMenu": "Edit menu",
     "deleteMenu": "Delete menu",
     "manageDescription": "Manage your categories and menu items",
-    "addCategory": "Add Category",
     "noCategories": "No categories yet. Start by adding one."
   },
   "onboarding": {

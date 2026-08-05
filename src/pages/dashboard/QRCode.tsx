@@ -20,7 +20,7 @@ import { Download, FileImage, FileText, Printer, Copy, Check } from 'lucide-reac
 type LogoMode = 'normal' | 'sacarta' | 'restaurant';
 
 const LOGO_STORAGE_KEY = (slug: string) => `sacarta-qr-logo-${slug}`;
-const LOGO_SIZE_RATIO = 0.22;
+const LOGO_SIZE_RATIO = 0.28;
 
 export default function QRCodePage() {
   const { restaurant } = useOutletContext<{ restaurant: Restaurant }>();
