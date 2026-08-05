@@ -453,26 +453,38 @@ export async function withFallback<T>(
   throw new Error(`OpenCode falló en todos los modelos: ${failures.join(' | ')}`);
 }
 
-function stripHtml(html: string): string {
-  return html.replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<style[\s\S]*?<\/style>/gi, ' ')
-    .replace(/<[^>]+>/g, ' ').replace(/&nbsp;/gi, ' ').replace(/&amp;/gi, '&').replace(/\s+/g, ' ').trim();
+// Extracts text/markdown from a PDF. Primary extractor is @firecrawl/pdf-inspector — a native
+// (napi-rs) Rust parser with prebuilt binaries for the Vercel Linux x64/arm64 glibc runtime,
+// giving layout-aware markdown (reading order, headings by font size, tables) that beats the
+// pdf.js-based unpdf for restaurant menus. If the native module can't load on a given platform,
+// it falls back to unpdf (pure JS). Scanned/image PDFs have no text layer and are rejected with
+// a clear message rather than feeding garbage to the LLM.
+async function extractPdfText(bytes: Uint8Array): Promise<string> {
+  let looksScanned = false;
+  try {
+    const pdfInspector = await import('@firecrawl/pdf-inspector');
+    const result = pdfInspector.processPdf(bytes as unknown as Buffer);
+    const markdown = (result.markdown ?? '').trim();
+    if (markdown) return markdown;
+    looksScanned = result.pdfType === 'Scanned' || result.pdfType === 'ImageBased';
+  } catch {
+    // Native module unavailable (e.g. dev machine without a prebuilt binding): fall through.
+  }
+  const pdf = await getDocumentProxy(bytes);
+  const { text } = await extractText(pdf, { mergePages: true });
+  if (!text.trim() && looksScanned) {
+    throw new Error('El PDF parece estar escaneado (imágenes sin texto digital). Aún no se pueden importar PDF escaneados.');
+  }
+  return text;
 }
 
 export async function sourceText(body: Record<string, unknown>): Promise<string> {
   if (body.sourceType === 'text') return String(body.text ?? '').trim().slice(0, MAX_RAW_TEXT_LENGTH);
-  if (body.sourceType === 'url') {
-    const url = String(body.url ?? '');
-    if (!url) throw new Error('Falta la URL');
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`No se pudo descargar la URL (status ${res.status})`);
-    return stripHtml(await res.text()).slice(0, MAX_RAW_TEXT_LENGTH);
-  }
   if (body.sourceType === 'pdf') {
     const encoded = String(body.fileBase64 ?? '');
     if (!encoded) throw new Error('Falta el archivo PDF');
     const bytes = Uint8Array.from(Buffer.from(encoded, 'base64'));
-    const pdf = await getDocumentProxy(bytes);
-    const { text } = await extractText(pdf, { mergePages: true });
+    const text = await extractPdfText(bytes);
     return text.slice(0, MAX_RAW_TEXT_LENGTH);
   }
   throw new Error('Tipo de importación no soportado');
@@ -508,7 +520,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (userError || !userData.user) return res.status(401).json({ error: 'Invalid session' });
     const body = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body) as Record<string, unknown>;
     const restaurantId = String(body.restaurantId ?? '');
-    if (!restaurantId || !['text', 'url', 'pdf'].includes(String(body.sourceType))) {
+    if (!restaurantId || !['text', 'pdf'].includes(String(body.sourceType))) {
       return res.status(400).json({ error: 'restaurantId y un sourceType válido son obligatorios' });
     }
     const { data: restaurant } = await supabase.from('restaurants').select('id')
@@ -529,7 +541,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       source: {
         sourceType: body.sourceType,
         text: body.text,
-        url: body.url,
         fileBase64: body.fileBase64,
       },
     };

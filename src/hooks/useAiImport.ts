@@ -11,7 +11,6 @@ export function useAiImport(restaurantId: string | undefined, jobType: AiJobType
   const start = async (input: {
     sourceType: MenuImportSourceType;
     text?: string;
-    url?: string;
     fileBase64?: string;
     fileName?: string;
   }) => {

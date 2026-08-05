@@ -2,16 +2,15 @@
 
 import type { AiJobType } from './common';
 
-// Word (.docx) and Excel (.xlsx) parsing, and photo/image OCR, are not implemented in this
-// pass — see docs/IMPLEMENTATION_PLAN.md's Phase 4 notes. Only these three source types are
-// wired end-to-end today.
-export type MenuImportSourceType = 'text' | 'url' | 'pdf';
+// Word (.docx) and Excel (.xlsx) parsing, photo/image OCR, and website-URL scraping are not
+// implemented — see docs/IMPLEMENTATION_PLAN.md's Phase 4 notes. Only these two source types
+// are wired end-to-end today.
+export type MenuImportSourceType = 'text' | 'pdf';
 
 export interface MenuImportStartInput {
   restaurantId: string;
   sourceType: MenuImportSourceType;
   text?: string; // sourceType 'text'
-  url?: string; // sourceType 'url'
   fileBase64?: string; // sourceType 'pdf'
   fileName?: string;
   // Phase 5 (AI Setup) — tags the ai_jobs row with 'ai_setup' instead of the default

@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Loader2, Sparkles, Trash2, Upload, Link as LinkIcon, FileText } from 'lucide-react';
+import { Loader2, Sparkles, Trash2, Upload, FileText } from 'lucide-react';
 import { useAiImport } from '@/hooks/useAiImport';
 import { useToast } from '@/hooks/use-toast';
 import * as aiApi from '@/lib/ai-api';
@@ -40,7 +40,6 @@ export function AiImportDialog({ open, restaurantId, onClose, onImported, jobTyp
   const { toast } = useToast();
   const [sourceMode, setSourceMode] = useState<MenuImportSourceType>('text');
   const [textValue, setTextValue] = useState('');
-  const [urlValue, setUrlValue] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [editable, setEditable] = useState<MenuImportResult | null>(null);
   const [committing, setCommitting] = useState(false);
@@ -53,7 +52,6 @@ export function AiImportDialog({ open, restaurantId, onClose, onImported, jobTyp
     reset();
     setEditable(null);
     setTextValue('');
-    setUrlValue('');
     setFile(null);
     onClose();
   };
@@ -63,9 +61,6 @@ export function AiImportDialog({ open, restaurantId, onClose, onImported, jobTyp
       if (sourceMode === 'text') {
         if (!textValue.trim()) return;
         await start({ sourceType: 'text', text: textValue });
-      } else if (sourceMode === 'url') {
-        if (!urlValue.trim()) return;
-        await start({ sourceType: 'url', url: urlValue });
       } else if (sourceMode === 'pdf') {
         if (!file) return;
         const fileBase64 = await fileToBase64(file);
@@ -198,10 +193,6 @@ export function AiImportDialog({ open, restaurantId, onClose, onImported, jobTyp
                   <Upload className="h-4 w-4" />
                   PDF
                 </TabsTrigger>
-                <TabsTrigger value="url" className="flex-1 gap-1.5">
-                  <LinkIcon className="h-4 w-4" />
-                  URL
-                </TabsTrigger>
               </TabsList>
               <TabsContent value="text" className="mt-4">
                 <Textarea
@@ -219,14 +210,6 @@ export function AiImportDialog({ open, restaurantId, onClose, onImported, jobTyp
                   className="block w-full text-sm text-muted-foreground file:mr-4 file:rounded-md file:border-0 file:bg-primary file:px-4 file:py-2 file:text-sm file:text-primary-foreground"
                 />
                 {file && <p className="text-sm text-muted-foreground mt-2">{file.name}</p>}
-              </TabsContent>
-              <TabsContent value="url" className="mt-4">
-                <Input
-                  type="url"
-                  placeholder="https://mi-restaurante.com/menu"
-                  value={urlValue}
-                  onChange={(e) => setUrlValue(e.target.value)}
-                />
               </TabsContent>
             </Tabs>
             {error && <p className="text-sm text-destructive">{error.message}</p>}

@@ -10,7 +10,6 @@ interface RequestBody {
   restaurantId: string;
   sourceType: MenuImportSourceType;
   text?: string;
-  url?: string;
   fileBase64?: string;
   fileName?: string;
   // Phase 5: allows the onboarding flow to tag its import runs distinctly ('ai_setup') for
@@ -18,7 +17,7 @@ interface RequestBody {
   jobType?: "menu_import" | "ai_setup";
 }
 
-const VALID_SOURCE_TYPES: MenuImportSourceType[] = ["text", "url", "pdf"];
+const VALID_SOURCE_TYPES: MenuImportSourceType[] = ["text", "pdf"];
 const VALID_JOB_TYPES = ["menu_import", "ai_setup"];
 
 serve(async (req) => {
@@ -39,8 +38,8 @@ serve(async (req) => {
       return jsonResponse(
         {
           error:
-            `sourceType "${body.sourceType}" is not supported yet. Only text, pdf and url are ` +
-            "implemented in this phase (Word/Excel/photo import are not yet built).",
+            `sourceType "${body.sourceType}" is not supported yet. Only text and pdf are ` +
+            "implemented in this phase (Word/Excel/photo/URL import are not yet built).",
         },
         400,
       );
@@ -89,7 +88,6 @@ serve(async (req) => {
     const source: ImportSource = {
       sourceType: body.sourceType,
       text: body.text,
-      url: body.url,
       fileBase64: body.fileBase64,
     };
 

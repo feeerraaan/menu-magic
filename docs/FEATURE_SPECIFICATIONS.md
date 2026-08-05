@@ -40,7 +40,7 @@ Per-feature spec for all 9 planned AI features. **Phases 1-8 are now built** (Ph
 
 ## Phase 4 — AI Import
 
-**Input:** an uploaded PDF, Word document, Excel file, image/photo of a printed menu, or a restaurant website URL.
+**Input:** pasted text or an uploaded PDF (the two implemented source types). Website URLs, Word, Excel, and photo/image imports are explicitly not built — see `IMPLEMENTATION_PLAN.md` §Phase 4's scope note.
 **Output:** a full proposed menu tree — categories, dishes, descriptions, prices, allergens, dietary flags, hierarchy — plus (if the restaurant supports more than one language) auto-translated content for every `supported_languages` entry.
 **UI entry point:** "Importar con IA" entry point in `src/pages/dashboard/MenuEditor.tsx`'s empty-categories state and the menu-selection bar. Leads to a **review screen** showing the extracted tree, fully editable, before anything is committed — nothing is silently auto-published.
 **Edge Function:** `ai-import-start` — async via `ai_jobs` (`job_type='menu_import'`), using `EdgeRuntime.waitUntil()` for anything that risks the execution time budget.

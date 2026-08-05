@@ -1,11 +1,12 @@
-// Deterministic multi-step workflow: extract raw text from the source (text/url/pdf) ->
+// Deterministic multi-step workflow: extract raw text from the source (text/pdf) ->
 // menuImportAgent structures it -> translationAgent's translateMenuBatch translates the
 // whole tree into every other supported language, one call per language. No DB writes here
 // — the review screen (owner-confirmed) is what actually commits categories/items, via the
 // same createCategory/createItem calls the rest of the app already uses.
 //
-// Word (.docx) and Excel (.xlsx) parsing, and photo/image OCR, are NOT implemented — see
-// docs/IMPLEMENTATION_PLAN.md's Phase 4 notes. Attempting those source types throws clearly.
+// Word (.docx) and Excel (.xlsx) parsing, photo/image OCR, and website-URL scraping are NOT
+// implemented — see docs/IMPLEMENTATION_PLAN.md's Phase 4 notes. Attempting those source
+// types throws clearly.
 
 import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import type { LLMProvider } from "../providers/types.ts";
@@ -20,22 +21,10 @@ import type {
 export interface ImportSource {
   sourceType: MenuImportSourceType;
   text?: string;
-  url?: string;
   fileBase64?: string;
 }
 
 const MAX_RAW_TEXT_LENGTH = 20_000;
-
-function stripHtml(html: string): string {
-  return html
-    .replace(/<script[\s\S]*?<\/script>/gi, " ")
-    .replace(/<style[\s\S]*?<\/style>/gi, " ")
-    .replace(/<[^>]+>/g, " ")
-    .replace(/&nbsp;/gi, " ")
-    .replace(/&amp;/gi, "&")
-    .replace(/\s+/g, " ")
-    .trim();
-}
 
 function base64ToUint8Array(base64: string): Uint8Array {
   const binary = atob(base64);
@@ -46,7 +35,9 @@ function base64ToUint8Array(base64: string): Uint8Array {
 
 async function extractPdfText(fileBase64: string): Promise<string> {
   // unpdf is purpose-built for edge/serverless runtimes (Cloudflare Workers, Deno, Vercel
-  // Edge) — no native bindings, unlike most Node PDF libraries.
+  // Edge) — no native bindings, unlike most Node PDF libraries. The Deno Edge path can't use
+  // @firecrawl/pdf-inspector (native napi binary); the production Vercel path uses it in
+  // api/ai-import-start.ts.
   const { extractText, getDocumentProxy } = await import("https://esm.sh/unpdf@0.11.0");
   const bytes = base64ToUint8Array(fileBase64);
   const pdf = await getDocumentProxy(bytes);
@@ -58,13 +49,6 @@ async function extractRawText(source: ImportSource): Promise<string> {
   switch (source.sourceType) {
     case "text":
       return (source.text ?? "").trim();
-    case "url": {
-      if (!source.url) throw new Error("Falta la URL");
-      const res = await fetch(source.url);
-      if (!res.ok) throw new Error(`No se pudo descargar la URL (status ${res.status})`);
-      const html = await res.text();
-      return stripHtml(html).slice(0, MAX_RAW_TEXT_LENGTH);
-    }
     case "pdf": {
       if (!source.fileBase64) throw new Error("Falta el archivo PDF");
       const text = await extractPdfText(source.fileBase64);
@@ -72,7 +56,7 @@ async function extractRawText(source: ImportSource): Promise<string> {
     }
     default:
       throw new Error(
-        `Tipo de importación no soportado todavía: "${source.sourceType}". Por ahora solo se admite texto, PDF y URL de página web.`,
+        `Tipo de importación no soportado todavía: "${source.sourceType}". Por ahora solo se admite texto y PDF.`,
       );
   }
 }
