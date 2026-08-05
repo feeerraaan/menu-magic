@@ -527,7 +527,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .eq('id', restaurantId).eq('owner_id', userData.user.id).maybeSingle();
     if (!restaurant) return res.status(404).json({ error: 'Restaurant not found' });
     const { data: subscription } = await supabase.from('subscriptions').select('plan').eq('restaurant_id', restaurantId).maybeSingle();
-    const limits: Record<string, number> = { free: 100, pro_monthly: 300, pro_annual: 500, lifetime: 1000 };
+    const limits: Record<string, number> = { free: 50, pro_monthly: 150, pro_annual: 250, lifetime: 500 };
     const { data: used, error: usedError } = await supabase.rpc('get_ai_credits_used_this_period', { _restaurant_id: restaurantId });
     if (usedError) throw usedError;
     const limit = limits[String(subscription?.plan ?? 'free')] ?? 100;

@@ -159,4 +159,4 @@ On any limit hit: return a friendly "busy right now" response without ever calli
 | Copilot message (1 turn) | 2 | 6 |
 | Business Insights refresh | 3 | 7 |
 
-Per-tier monthly pool: `free: 100`, `pro_monthly: 300`, `pro_annual: 500`, `lifetime: 1000`. (Free was raised from 20 → 100 on 2026-08-01 so a free owner can complete one full import (15 cr) plus testing; see the credit-costs table.)
+Per-tier monthly pool: `free: 50`, `pro_monthly: 150`, `pro_annual: 250`, `lifetime: 500`. (Halved from `100/300/500/1000` on 2026-08-05 to make upgrades more meaningful; a free owner can still complete two imports (15 cr each) plus testing, and an import + optimizer + a handful of generations fits comfortably. See the credit-costs table.)

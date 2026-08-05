@@ -12,10 +12,10 @@ export type PlanType = "free" | "pro_monthly" | "pro_annual" | "lifetime";
 export type AiUsageKind = "description" | "translation" | "optimizer_run" | "import" | "copilot" | "insights";
 
 export const PLAN_AI_CREDITS: Record<PlanType, number> = {
-  free: 100,
-  pro_monthly: 300,
-  pro_annual: 500,
-  lifetime: 1000,
+  free: 50,
+  pro_monthly: 150,
+  pro_annual: 250,
+  lifetime: 500,
 };
 
 // Must be kept in sync with AI_CREDIT_COSTS in src/lib/subscription-limits.ts.

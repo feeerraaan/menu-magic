@@ -50,7 +50,7 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
     analytics: false,
     qrCustomization: false,
     manualSetup: false,
-    aiCreditsPerMonth: 100,
+    aiCreditsPerMonth: 50,
     aiCustomerAssistantEnabled: false,
   },
   pro_monthly: {
@@ -63,7 +63,7 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
     analytics: true,
     qrCustomization: true,
     manualSetup: false,
-    aiCreditsPerMonth: 300,
+    aiCreditsPerMonth: 150,
     aiCustomerAssistantEnabled: true,
   },
   pro_annual: {
@@ -76,7 +76,7 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
     analytics: true,
     qrCustomization: true,
     manualSetup: false,
-    aiCreditsPerMonth: 500,
+    aiCreditsPerMonth: 250,
     aiCustomerAssistantEnabled: true,
   },
   lifetime: {
@@ -89,7 +89,7 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
     analytics: true,
     qrCustomization: true,
     manualSetup: true,
-    aiCreditsPerMonth: 1000,
+    aiCreditsPerMonth: 500,
     aiCustomerAssistantEnabled: true,
   },
 };
