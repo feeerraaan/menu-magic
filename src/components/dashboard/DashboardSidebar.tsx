@@ -13,7 +13,6 @@ import {
   SidebarMenuItem,
   SidebarHeader,
   SidebarFooter,
-  useSidebar,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -37,8 +36,6 @@ import {
 import { useAiCredits } from '@/hooks/useAiCredits';
 
 export function DashboardSidebar() {
-  const { state } = useSidebar();
-  const collapsed = state === 'collapsed';
   const { signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -76,13 +73,13 @@ export function DashboardSidebar() {
                     plan === 'pro_monthly' ? 'Ferreret mensual' : 'Sargantana';
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="none">
       <SidebarHeader className="p-4">
-        <div className="flex items-center gap-2">
-          <div className="flex h-20 w-20 items-center justify-center rounded-lg ">
-            <img src="/logo.png" alt="SaCarta Logo"/>
+        <Link to="/dashboard" className="block">
+          <div className="flex h-20 w-20 items-center justify-center rounded-lg transition-opacity hover:opacity-80">
+            <img src="/logo.png" alt="SaCarta Logo" />
           </div>
-        </div>
+        </Link>
       </SidebarHeader>
 
       <SidebarContent>
@@ -99,7 +96,7 @@ export function DashboardSidebar() {
                       activeClassName="bg-primary text-white font-medium"
                     >
                       <item.icon className="h-4 w-4 shrink-0" />
-                      {!collapsed && <span>{item.title}</span>}
+                      <span>{item.title}</span>
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -111,7 +108,7 @@ export function DashboardSidebar() {
 
       <SidebarFooter className="p-4 space-y-3">
         {/* Language Selector */}
-        <div className={!collapsed ? "block" : "hidden"}>
+        <div>
           <LanguageSelector className="w-full" />
         </div>
 
@@ -130,20 +127,18 @@ export function DashboardSidebar() {
               ) : (
                 <Sparkles className="h-4 w-4 text-muted-foreground shrink-0" />
               )}
-              {!collapsed && (
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className={`text-sm font-medium ${isPremium ? 'text-amber-600 dark:text-amber-400' : 'text-foreground'}`}>
-                      {planLabel}
-                    </span>
-                  </div>
-                  {!isPremium && (
-                    <p className="text-[10px] text-muted-foreground truncate">
-                      {t('dashboard.unlockAllFeatures')}
-                    </p>
-                  )}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-2">
+                  <span className={`text-sm font-medium ${isPremium ? 'text-amber-600 dark:text-amber-400' : 'text-foreground'}`}>
+                    {planLabel}
+                  </span>
                 </div>
-              )}
+                {!isPremium && (
+                  <p className="text-[10px] text-muted-foreground truncate">
+                    {t('dashboard.unlockAllFeatures')}
+                  </p>
+                )}
+              </div>
             </div>
           </Link>
         )}
@@ -153,22 +148,20 @@ export function DashboardSidebar() {
           <Link to="/dashboard/billing" className="block">
             <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border/60 bg-muted/40 hover:bg-muted transition-colors">
               <Zap className="h-4 w-4 text-primary shrink-0" />
-              {!collapsed && (
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-sm text-muted-foreground">Créditos IA</span>
-                    <span className={`text-sm font-medium ${aiCredits.remaining < aiCredits.limit * 0.2 ? 'text-destructive' : 'text-foreground'}`}>
-                      {aiCredits.remaining}/{aiCredits.limit}
-                    </span>
-                  </div>
-                  <div className="mt-1 h-1.5 rounded-full bg-border overflow-hidden">
-                    <div
-                      className={`h-full rounded-full ${aiCredits.percentage >= 80 ? 'bg-destructive' : 'bg-primary'}`}
-                      style={{ width: `${aiCredits.percentage}%` }}
-                    />
-                  </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-sm text-muted-foreground">Créditos IA</span>
+                  <span className={`text-sm font-medium ${aiCredits.remaining < aiCredits.limit * 0.2 ? 'text-destructive' : 'text-foreground'}`}>
+                    {aiCredits.remaining}/{aiCredits.limit}
+                  </span>
                 </div>
-              )}
+                <div className="mt-1 h-1.5 rounded-full bg-border overflow-hidden">
+                  <div
+                    className={`h-full rounded-full ${aiCredits.percentage >= 80 ? 'bg-destructive' : 'bg-primary'}`}
+                    style={{ width: `${aiCredits.percentage}%` }}
+                  />
+                </div>
+              </div>
             </div>
           </Link>
         )}
@@ -180,7 +173,7 @@ export function DashboardSidebar() {
           disabled={isLoggingOut}
         >
           <LogOut className="h-4 w-4" />
-          {!collapsed && <span>{isLoggingOut ? t('dashboard.closingSession') : t('auth.signOut')}</span>}
+          <span>{isLoggingOut ? t('dashboard.closingSession') : t('auth.signOut')}</span>
         </Button>
       </SidebarFooter>
     </Sidebar>

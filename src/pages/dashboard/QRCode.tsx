@@ -52,7 +52,7 @@ export default function QRCodePage() {
 
   const logoSrc = useMemo(() => {
     if (effectiveMode === 'restaurant' && restaurant.logo_url) return restaurant.logo_url;
-    if (effectiveMode === 'sacarta') return `${window.location.origin}/logo.svg`;
+    if (effectiveMode === 'sacarta') return `${window.location.origin}/logo.png`;
     return null;
   }, [effectiveMode, restaurant.logo_url]);
 
