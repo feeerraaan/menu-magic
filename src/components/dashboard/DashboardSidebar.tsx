@@ -73,7 +73,7 @@ export function DashboardSidebar() {
                     plan === 'pro_monthly' ? 'Ferreret mensual' : 'Sargantana';
 
   return (
-    <Sidebar collapsible="none">
+    <Sidebar collapsible="none" className="border-r border-sidebar-border">
       <SidebarHeader className="p-4">
         <Link to="/dashboard" className="block">
           <div className="flex h-20 w-20 items-center justify-center rounded-lg transition-opacity hover:opacity-80">
