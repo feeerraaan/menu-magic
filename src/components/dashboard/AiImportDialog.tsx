@@ -246,7 +246,7 @@ export function AiImportDialog({ open, restaurantId, onClose, onImported, jobTyp
         {editable && (
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Revisa y edita lo que ha extraído la IA antes de guardarlo — nada se publica todavía.
+              Revisa y edita lo que ha extraído la IA antes de guardarlo. Nada se publica todavía.
             </p>
             <div className="space-y-2">
               <Label>Nombre del menú</Label>

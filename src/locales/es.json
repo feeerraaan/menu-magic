@@ -197,24 +197,19 @@
         "title": "Salud del Restaurante",
         "subtitle": "Según tu carta, idiomas y actividad",
         "vsLastCheck": "vs última revisión",
-        "noChange": "Igual que la última revisión",
         "factors": {
           "images": "Imágenes",
           "descriptions": "Descripciones",
           "languages": "Idiomas",
           "accessibility": "Accesibilidad",
           "categories": "Categorías",
-          "pricing": "Precios",
-          "popularity": "Popularidad",
-          "seo": "SEO"
+          "pricing": "Precios"
         },
         "notes": {
           "single-language": "Añade otro idioma para llegar a más clientes",
           "coverage-pct": "{done}% traducido",
           "category-count": "{done} categorías (ideal 3-8)",
-          "prices-hidden": "Precios ocultos a propósito",
-          "views-30d": "{done} visitas en 30 días",
-          "seo-essentials": "{done}/{total} esenciales completos"
+          "prices-hidden": "Precios ocultos a propósito"
         }
       },
       "today": {

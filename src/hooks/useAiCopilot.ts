@@ -109,7 +109,7 @@ export function useAiCopilot(restaurantId: string | undefined) {
       setMessages((prev) =>
         prev.map((m) =>
           m.id === messageId
-            ? { ...m, pendingPreview: undefined, content: `${m.content} — ✔ Aplicado (${res.appliedChanges} cambio/s)` }
+            ? { ...m, pendingPreview: undefined, content: `${m.content} · ✔ Aplicado (${res.appliedChanges} cambio/s)` }
             : m,
         ),
       );
@@ -129,7 +129,7 @@ export function useAiCopilot(restaurantId: string | undefined) {
     try {
       await aiApi.cancelCopilotPreview({ restaurantId, previewId });
       setMessages((prev) =>
-        prev.map((m) => (m.id === messageId ? { ...m, pendingPreview: undefined, content: `${m.content} — ✖ Cancelada` } : m)),
+        prev.map((m) => (m.id === messageId ? { ...m, pendingPreview: undefined, content: `${m.content} · ✖ Cancelada` } : m)),
       );
     } catch (e) {
       setError(e as Error);

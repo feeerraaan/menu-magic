@@ -164,13 +164,13 @@ function UsersTab() {
               {rows.map((row) => (
                 <TableRow key={row.user_id}>
                   <TableCell className="font-medium">{row.email}</TableCell>
-                  <TableCell>{row.restaurant_name ?? '—'}</TableCell>
+                  <TableCell>{row.restaurant_name ?? ''}</TableCell>
                   <TableCell>
                     <Badge variant={row.plan === 'free' ? 'secondary' : 'default'}>
                       {PLAN_NAMES[row.plan ?? 'free'] ?? row.plan}
                     </Badge>
                   </TableCell>
-                  <TableCell>{row.subscription_status ?? '—'}</TableCell>
+                  <TableCell>{row.subscription_status ?? ''}</TableCell>
                   <TableCell className="text-muted-foreground text-sm">
                     {row.photos_limit ?? 0} fotos · {row.languages_limit ?? 1} idiomas
                   </TableCell>
@@ -391,9 +391,9 @@ function CouponsTab() {
                   {activeCoupons.map((c) => (
                     <TableRow key={c.id}>
                       <TableCell className="font-mono font-medium">{c.code}</TableCell>
-                      <TableCell>{c.percent_off != null ? `${c.percent_off}%` : '—'}</TableCell>
+                      <TableCell>{c.percent_off != null ? `${c.percent_off}%` : ''}</TableCell>
                       <TableCell>{c.times_redeemed}{c.max_redemptions ? `/${c.max_redemptions}` : ''}</TableCell>
-                      <TableCell>{c.expires_at ? new Date(c.expires_at * 1000).toLocaleDateString() : '—'}</TableCell>
+                      <TableCell>{c.expires_at ? new Date(c.expires_at * 1000).toLocaleDateString() : ''}</TableCell>
                       <TableCell className="text-right">
                         <Button variant="outline" size="sm" onClick={() => deactivate(c.id)}>
                           Desactivar

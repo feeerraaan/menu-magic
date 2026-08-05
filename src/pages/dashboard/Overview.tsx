@@ -45,10 +45,7 @@ export default function DashboardOverview() {
 
   const { stats, loading: analyticsLoading } = useAnalytics(restaurant.id);
   const { recommendations } = useAiInsights(restaurant.id);
-  const { health, delta, loading: healthLoading } = useRestaurantHealth(
-    restaurant,
-    stats?.totalViews,
-  );
+  const { health, delta, loading: healthLoading } = useRestaurantHealth(restaurant);
   const { count: aiActionsToday } = useTodayAiActions(restaurant.id);
 
   const fullName = (user?.user_metadata as { full_name?: string } | undefined)?.full_name;

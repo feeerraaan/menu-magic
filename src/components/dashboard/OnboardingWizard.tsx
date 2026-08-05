@@ -226,7 +226,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                   <Sparkles className="h-5 w-5" />
                 </div>
                 <div className="flex-1">
-                  <p className="font-medium">Subir mi menú — la IA lo monta</p>
+                  <p className="font-medium">Subir mi menú. La IA lo monta.</p>
                   <p className="text-sm text-muted-foreground">
                     Pega el texto, sube un PDF o comparte la URL de tu página web y revisa el resultado antes de publicar.
                   </p>

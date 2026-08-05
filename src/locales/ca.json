@@ -197,24 +197,19 @@
         "title": "Salut del Restaurant",
         "subtitle": "Segons la teva carta, idiomes i activitat",
         "vsLastCheck": "vs darrera revisió",
-        "noChange": "Igual que la darrera revisió",
         "factors": {
           "images": "Imatges",
           "descriptions": "Descripcions",
           "languages": "Idiomes",
           "accessibility": "Accessibilitat",
           "categories": "Categories",
-          "pricing": "Preus",
-          "popularity": "Popularitat",
-          "seo": "SEO"
+          "pricing": "Preus"
         },
         "notes": {
           "single-language": "Afegeix un altre idioma per arribar a més clients",
           "coverage-pct": "{done}% traduït",
           "category-count": "{done} categories (ideal 3-8)",
-          "prices-hidden": "Preus amagats expressament",
-          "views-30d": "{done} visites en 30 dies",
-          "seo-essentials": "{done}/{total} essencials complets"
+          "prices-hidden": "Preus amagats expressament"
         }
       },
       "today": {

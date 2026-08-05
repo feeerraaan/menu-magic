@@ -57,7 +57,6 @@ export interface UseRestaurantHealthResult {
  */
 export function useRestaurantHealth(
   restaurant: Restaurant | undefined,
-  views30d: number | undefined,
 ): UseRestaurantHealthResult {
   const restaurantId = restaurant?.id;
   const [raw, setRaw] = useState<Awaited<ReturnType<typeof fetchMenuData>> | null>(null);
@@ -96,9 +95,8 @@ export function useRestaurantHealth(
       items: raw.items,
       itemTranslations: raw.itemTranslations,
       categoryTranslations: raw.categoryTranslations,
-      views30d: views30d ?? 0,
     });
-  }, [restaurant, raw, views30d]);
+  }, [restaurant, raw]);
 
   // Persist the daily snapshot once the score is stable.
   useEffect(() => {

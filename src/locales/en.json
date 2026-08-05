@@ -200,24 +200,19 @@
         "title": "Restaurant Health",
         "subtitle": "Based on your menu, languages and activity",
         "vsLastCheck": "vs last check",
-        "noChange": "Same as last check",
         "factors": {
           "images": "Images",
           "descriptions": "Descriptions",
           "languages": "Languages",
           "accessibility": "Accessibility",
           "categories": "Categories",
-          "pricing": "Pricing",
-          "popularity": "Popularity",
-          "seo": "SEO"
+          "pricing": "Pricing"
         },
         "notes": {
           "single-language": "Add another language to reach more customers",
           "coverage-pct": "{done}% translated",
           "category-count": "{done} categories (ideal 3-8)",
-          "prices-hidden": "Prices hidden by choice",
-          "views-30d": "{done} views in 30 days",
-          "seo-essentials": "{done}/{total} essentials complete"
+          "prices-hidden": "Prices hidden by choice"
         }
       },
       "today": {

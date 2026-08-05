@@ -32,8 +32,8 @@ function fieldLabel(field: string): string {
 }
 
 function formatValue(value: unknown): string {
-  if (value === null || value === undefined) return '—';
-  if (Array.isArray(value)) return value.join(', ') || '—';
+  if (value === null || value === undefined) return '';
+  if (Array.isArray(value)) return value.join(', ');
   if (typeof value === 'boolean') return value ? 'Sí' : 'No';
   if (typeof value === 'object') return JSON.stringify(value);
   return String(value);

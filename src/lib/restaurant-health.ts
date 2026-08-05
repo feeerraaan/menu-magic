@@ -10,9 +10,7 @@ export type HealthFactorId =
   | 'languages'
   | 'accessibility'
   | 'categories'
-  | 'pricing'
-  | 'popularity'
-  | 'seo';
+  | 'pricing';
 
 export type HealthFactorStatus = 'good' | 'warn' | 'bad';
 
@@ -44,12 +42,6 @@ export interface RestaurantHealth {
 export interface HealthInput {
   restaurant: Pick<
     Restaurant,
-    | 'is_published'
-    | 'logo_url'
-    | 'address'
-    | 'phone'
-    | 'instagram_url'
-    | 'website_url'
     | 'hide_prices'
     | 'default_language'
     | 'supported_languages'
@@ -69,19 +61,15 @@ export interface HealthInput {
   >[];
   itemTranslations: Pick<ItemTranslation, 'item_id' | 'language' | 'name'>[];
   categoryTranslations: Pick<CategoryTranslation, 'category_id' | 'language' | 'name'>[];
-  /** Menu views in the last 30 days. */
-  views30d: number;
 }
 
 const WEIGHTS: Record<HealthFactorId, number> = {
-  images: 15,
-  descriptions: 15,
-  languages: 15,
-  accessibility: 10,
-  categories: 10,
+  images: 20,
+  descriptions: 20,
+  languages: 20,
+  accessibility: 15,
+  categories: 15,
   pricing: 10,
-  popularity: 10,
-  seo: 15,
 };
 
 const MIN_DESCRIPTION_LENGTH = 40;
@@ -100,7 +88,7 @@ function factor(partial: Omit<HealthFactor, 'status'>): HealthFactor {
 const round1 = (n: number) => Math.round(n * 10) / 10;
 
 export function computeRestaurantHealth(input: HealthInput): RestaurantHealth {
-  const { restaurant, items, itemTranslations, categoryTranslations, views30d } = input;
+  const { restaurant, items, itemTranslations, categoryTranslations } = input;
   const categories = input.categories.filter((c) => c.is_active !== false);
 
   const itemsTotal = items.length;
@@ -228,33 +216,10 @@ export function computeRestaurantHealth(input: HealthInput): RestaurantHealth {
     });
   }
 
-  // --- Popularity (10) ---------------------------------------------------------
-  const popScore =
-    views30d === 0 ? 2 : views30d < 20 ? 5 : views30d < 50 ? 7 : views30d < 150 ? 9 : 10;
-  const popularity = factor({
-    id: 'popularity',
-    score: popScore,
-    maxScore: WEIGHTS.popularity,
-    done: views30d,
-    noteKey: 'views-30d',
-  });
-
-  // --- SEO / presence (15) -----------------------------------------------------
-  const seoParts: [boolean, number][] = [
-    [restaurant.is_published, 6],
-    [!!restaurant.logo_url, 3],
-    [!!(restaurant.address || restaurant.phone), 3],
-    [!!(restaurant.instagram_url || restaurant.website_url), 3],
-  ];
-  const seoDone = seoParts.filter(([ok]) => ok).length;
-  const seo = factor({
-    id: 'seo',
-    score: seoParts.reduce((sum, [ok, pts]) => sum + (ok ? pts : 0), 0),
-    maxScore: WEIGHTS.seo,
-    done: seoDone,
-    total: seoParts.length,
-    noteKey: 'seo-essentials',
-  });
+  // --- Popularity / SEO removed intentionally (2026-08-05) ---------------------
+  // Ferran: these two factors measured things the restaurant doesn't control
+  // (traffic, online presence), so they were dropped from the score. The score
+  // now measures ONLY what the owner can actively improve on their menu.
 
   const factors: HealthFactor[] = [
     images,
@@ -263,8 +228,6 @@ export function computeRestaurantHealth(input: HealthInput): RestaurantHealth {
     accessibility,
     categoriesFactor,
     pricing,
-    popularity,
-    seo,
   ];
   const score = Math.max(
     0,

@@ -6,11 +6,9 @@ import {
   ChevronRight,
   Coins,
   FileText,
-  Globe,
   Image,
   Languages,
   LayoutGrid,
-  Minus,
   TrendingDown,
   TrendingUp,
   XCircle,
@@ -29,8 +27,6 @@ const FACTOR_ICONS: Record<HealthFactorId, LucideIcon> = {
   accessibility: Accessibility,
   categories: LayoutGrid,
   pricing: Coins,
-  popularity: TrendingUp,
-  seo: Globe,
 };
 
 const FACTOR_ACTIONS: Record<HealthFactorId, string> = {
@@ -40,8 +36,6 @@ const FACTOR_ACTIONS: Record<HealthFactorId, string> = {
   accessibility: '/dashboard/editor',
   categories: '/dashboard/editor',
   pricing: '/dashboard/editor',
-  popularity: '/dashboard/qr',
-  seo: '/dashboard/settings',
 };
 
 function scoreColor(score: number) {
@@ -79,7 +73,7 @@ export function HealthScoreCard({ health, delta, loading }: HealthScoreCardProps
   }
 
   const DeltaIcon =
-    delta === null ? Minus : delta > 0 ? TrendingUp : delta < 0 ? TrendingDown : Minus;
+    delta === null || delta === 0 ? TrendingUp : delta > 0 ? TrendingUp : TrendingDown;
   const deltaColor =
     delta === null || delta === 0
       ? 'text-muted-foreground'
@@ -102,18 +96,15 @@ export function HealthScoreCard({ health, delta, loading }: HealthScoreCardProps
           >
             {health.score}
           </span>
-          <div className={`flex items-center gap-1 pb-1 text-sm font-medium ${deltaColor}`}>
-            <DeltaIcon className="h-4 w-4" />
-            {delta !== null && delta !== 0 && (
+          {delta !== null && delta !== 0 && (
+            <div className={`flex items-center gap-1 pb-1 text-sm font-medium ${deltaColor}`}>
+              <DeltaIcon className="h-4 w-4" />
               <span>
                 {delta > 0 ? '+' : ''}
                 {delta} {t('dashboard.ov.health.vsLastCheck')}
               </span>
-            )}
-            {(delta === null || delta === 0) && (
-              <span>{t('dashboard.ov.health.noChange')}</span>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
         <Progress value={health.score} className="h-2" />
