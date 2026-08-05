@@ -152,8 +152,8 @@ async function runStep(supabase: StepSupabase, job: StepJob, deadline: number): 
       );
       const prompt = buildExtractionPrompt(chunks[index], locale, { fragment: chunks.length > 1 });
       const extraction = await withFallback(
-        (model, inactivity, hard, callDeadline) => callStructured(
-          model, prompt.system, chunks[index], extractionSchema, inactivity, hard, callDeadline,
+        (endpoint, inactivity, hard, callDeadline) => callStructured(
+          endpoint, prompt.system, chunks[index], extractionSchema, inactivity, hard, callDeadline,
         ),
         deadline,
       );
@@ -207,8 +207,8 @@ async function runStep(supabase: StepSupabase, job: StepJob, deadline: number): 
     );
     const prompt = buildMenuBatchTranslationPrompt(translationInput, defaultLanguage, language);
     const translated = await withFallback(
-      (model, inactivity, hard, callDeadline) => callStructured(
-        model, prompt.system, JSON.stringify(translationInput), translationSchema, inactivity, hard, callDeadline,
+      (endpoint, inactivity, hard, callDeadline) => callStructured(
+        endpoint, prompt.system, JSON.stringify(translationInput), translationSchema, inactivity, hard, callDeadline,
       ),
       deadline,
     );

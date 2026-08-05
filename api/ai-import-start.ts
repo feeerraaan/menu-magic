@@ -19,13 +19,46 @@ export const MAX_RAW_TEXT_LENGTH = 20_000;
 export const CHUNK_SIZE = 2_500;
 export const CHUNK_OVERLAP = 350;
 export const MODEL_MAX_TOKENS = 4_500;
-const PRIMARY_MODEL = process.env.AI_MODEL_MENU_IMPORT ?? 'deepseek-v4-flash-free';
-const MODELS = [PRIMARY_MODEL, 'mimo-v2.5-free'].filter((model, index, all) => all.indexOf(model) === index);
-const KEYS = (process.env.OPENCODE_ZEN_API_KEYS ?? '').split(',').map((key) => key.trim()).filter(Boolean);
-// Each model is tried once; a single call retries internally via schema-repair (same-model
-// corrective turns), mirroring mindmap's withSchemaRepair.
-const ATTEMPTS_PER_MODEL = 1;
+
+// Candidate endpoints, tried in order. The paid gateway (AI_IMPORT_GO_*) mirrors mindmap's
+// "go" provider: fast deepseek-v4-flash when it's available on the account (it needs an
+// explicit region opt-in on the OpenCode workspace). If it errors (e.g. 403 RegionError /
+// 401 balance), the call falls through to the free Zen models.
+const GO_BASE_URL = (process.env.AI_IMPORT_GO_BASE_URL ?? '').replace(/\/+$/, '');
+const GO_KEY = process.env.AI_IMPORT_GO_KEY ?? '';
+const GO_MODEL = process.env.AI_IMPORT_GO_MODEL ?? 'deepseek-v4-flash';
+const GO_FALLBACK_MODEL = process.env.AI_IMPORT_GO_FALLBACK_MODEL ?? 'deepseek-v4-pro';
+const ZEN_MODEL = process.env.AI_MODEL_MENU_IMPORT ?? 'deepseek-v4-flash-free';
+const ZEN_FALLBACK_MODEL = 'mimo-v2.5-free';
+const ZEN_KEYS = (process.env.OPENCODE_ZEN_API_KEYS ?? '').split(',').map((key) => key.trim()).filter(Boolean);
+// A single call retries internally via schema-repair (same-model corrective turns),
+// mirroring mindmap's withSchemaRepair.
 const REPAIR_MAX_RETRIES = 2;
+
+export interface Endpoint {
+  url: string;
+  key: string;
+  model: string;
+}
+
+export function buildEndpoints(): Endpoint[] {
+  const endpoints: Endpoint[] = [];
+  if (GO_BASE_URL && GO_KEY) {
+    endpoints.push({ url: `${GO_BASE_URL}/chat/completions`, key: GO_KEY, model: GO_MODEL });
+    if (GO_FALLBACK_MODEL !== GO_MODEL) {
+      endpoints.push({ url: `${GO_BASE_URL}/chat/completions`, key: GO_KEY, model: GO_FALLBACK_MODEL });
+    }
+  }
+  for (const key of ZEN_KEYS) endpoints.push({ url: OPENCODE_URL, key, model: ZEN_MODEL });
+  for (const key of ZEN_KEYS) endpoints.push({ url: OPENCODE_URL, key, model: ZEN_FALLBACK_MODEL });
+  const seen = new Set<string>();
+  return endpoints.filter((endpoint) => {
+    const key = `${endpoint.url}|${endpoint.key}|${endpoint.model}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
 
 const itemSchema = z.object({
   name: z.string().min(1).max(200),
@@ -275,7 +308,7 @@ function repairTruncatedJson(raw: string): string {
 }
 
 export async function callStructured<T>(
-  model: string,
+  endpoint: Endpoint,
   system: string,
   userContent: string,
   schema: z.ZodType<T>,
@@ -283,140 +316,141 @@ export async function callStructured<T>(
   hardMs: number,
   deadline?: number,
 ): Promise<T> {
-  if (!KEYS.length) throw new Error('Falta configurar OPENCODE_ZEN_API_KEYS en Vercel');
+  if (!endpoint?.url || !endpoint?.key) throw new Error('Falta configurar la clave de IA del importador');
+  const { url, key, model } = endpoint;
   const deadlineRemaining = (): number => (deadline ? Math.max(0, deadline - Date.now()) : Number.POSITIVE_INFINITY);
   let lastError: Error | null = null;
-  for (const key of KEYS) {
-    let previousRaw: string | null = null;
-    let previousError: string | null = null;
-    for (let repair = 0; repair <= REPAIR_MAX_RETRIES; repair++) {
-      const controller = new AbortController();
-      let inactivityTimer: ReturnType<typeof setTimeout> | undefined;
-      const hardTimer: ReturnType<typeof setTimeout> = setTimeout(() => {
-        timeoutReason = 'hard';
+  let previousRaw: string | null = null;
+  let previousError: string | null = null;
+  for (let repair = 0; repair <= REPAIR_MAX_RETRIES; repair++) {
+    const controller = new AbortController();
+    let inactivityTimer: ReturnType<typeof setTimeout> | undefined;
+    const hardTimer: ReturnType<typeof setTimeout> = setTimeout(() => {
+      timeoutReason = 'hard';
+      controller.abort();
+    }, Math.min(hardMs, deadlineRemaining()));
+    let timeoutReason: 'inactivity' | 'hard' | null = null;
+    const resetInactivity = () => {
+      if (inactivityTimer) clearTimeout(inactivityTimer);
+      inactivityTimer = setTimeout(() => {
+        timeoutReason = 'inactivity';
         controller.abort();
-      }, Math.min(hardMs, deadlineRemaining()));
-      let timeoutReason: 'inactivity' | 'hard' | null = null;
-      const resetInactivity = () => {
-        if (inactivityTimer) clearTimeout(inactivityTimer);
-        inactivityTimer = setTimeout(() => {
-          timeoutReason = 'inactivity';
-          controller.abort();
-        }, Math.min(inactivityMs, deadlineRemaining()));
-      };
-      try {
-        const messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
-          { role: 'system', content: system },
-          { role: 'user', content: userContent },
-        ];
-        if (previousRaw && previousError) {
-          messages.push({ role: 'assistant', content: previousRaw });
-          messages.push({
-            role: 'user',
-            content: `Tu respuesta anterior no era JSON válido o no cumplía el esquema requerido. Error: ${previousError}. Devuelve EXCLUSIVAMENTE el JSON corregido con la forma exacta indicada en el prompt del sistema. Sin texto adicional, sin markdown.`,
-          });
-        }
-        const upstream = await fetch(OPENCODE_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
-          body: JSON.stringify({
-            model,
-            messages,
-            temperature: 0.2,
-            max_tokens: MODEL_MAX_TOKENS,
-            stream: true,
-            thinking: { type: 'disabled' },
-          }),
-          signal: controller.signal,
+      }, Math.min(inactivityMs, deadlineRemaining()));
+    };
+    try {
+      const messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
+        { role: 'system', content: system },
+        { role: 'user', content: userContent },
+      ];
+      if (previousRaw && previousError) {
+        messages.push({ role: 'assistant', content: previousRaw });
+        messages.push({
+          role: 'user',
+          content: `Tu respuesta anterior no era JSON válido o no cumplía el esquema requerido. Error: ${previousError}. Devuelve EXCLUSIVAMENTE el JSON corregido con la forma exacta indicada en el prompt del sistema. Sin texto adicional, sin markdown.`,
         });
-        if (upstream.status === 402 || upstream.status === 429) {
-          lastError = new Error(`OpenCode ${model} rechazó la clave (status ${upstream.status})`);
-          break;
-        }
-        if (!upstream.ok) throw new Error(`OpenCode ${model} respondió ${upstream.status}: ${await upstream.text()}`);
-        if (!upstream.body) throw new Error(`OpenCode ${model} devolvió una respuesta vacía`);
-
-        resetInactivity();
-        const reader = upstream.body.getReader();
-        const decoder = new TextDecoder();
-        let buffer = '';
-        let content = '';
-        let sawSse = false;
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          resetInactivity();
-          buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split(/\r?\n/);
-          buffer = lines.pop() ?? '';
-          for (const line of lines) {
-            const trimmed = line.trim();
-            if (!trimmed.startsWith('data:')) continue;
-            const data = trimmed.slice(5).trim();
-            if (!data || data === '[DONE]') continue;
-            sawSse = true;
-            const event = JSON.parse(data) as { choices?: Array<{ delta?: { content?: string }; message?: { content?: string } }> };
-            const choice = event.choices?.[0];
-            content += choice?.delta?.content ?? choice?.message?.content ?? '';
-          }
-        }
-        buffer += decoder.decode();
-        if (buffer.trim().startsWith('data:')) {
-          const data = buffer.trim().slice(5).trim();
-          if (data && data !== '[DONE]') {
-            const event = JSON.parse(data) as { choices?: Array<{ delta?: { content?: string }; message?: { content?: string } }> };
-            content += event.choices?.[0]?.delta?.content ?? event.choices?.[0]?.message?.content ?? '';
-            sawSse = true;
-          }
-        } else if (!sawSse && buffer.trim()) {
-          const parsed = JSON.parse(buffer) as { choices?: Array<{ message?: { content?: string } }> };
-          content = parsed.choices?.[0]?.message?.content ?? '';
-        }
-        try {
-          return schema.parse(jsonFromText(content));
-        } catch (parseError) {
-          // Schema-repair retry (same pattern as mindmap's withSchemaRepair): feed the raw
-          // output plus the validation error back so the model can fix the JSON before we
-          // give up on this model/key.
-          previousRaw = content;
-          previousError = parseError instanceof Error ? parseError.message : String(parseError);
-          lastError = parseError instanceof Error ? parseError : new Error(String(parseError));
-        }
-      } catch (error) {
-        if (error instanceof Error && error.name === 'AbortError') {
-          lastError = deadline && Date.now() >= deadline
-            ? new Error('Se agotó el tiempo máximo de ejecución de la importación (el plan Hobby de Vercel limita cada función a 300 segundos). Intenta con un menú más corto o reparte la importación.')
-            : new Error(`OpenCode ${model} sin respuesta (${timeoutReason === 'hard' ? Math.min(hardMs, deadlineRemaining()) : inactivityMs}ms)`);
-        } else {
-          lastError = error instanceof Error ? error : new Error(String(error));
-        }
-        break;
-      } finally {
-        if (inactivityTimer) clearTimeout(inactivityTimer);
-        if (hardTimer) clearTimeout(hardTimer);
       }
+      const upstream = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+        body: JSON.stringify({
+          model,
+          messages,
+          temperature: 0.2,
+          max_tokens: MODEL_MAX_TOKENS,
+          stream: true,
+          thinking: { type: 'disabled' },
+        }),
+        signal: controller.signal,
+      });
+      // Auth / billing / region / rate-limit errors are endpoint-level: a repair turn will
+      // not fix them, so fail this endpoint and let withFallback try the next one.
+      if (upstream.status === 401 || upstream.status === 402 || upstream.status === 403 || upstream.status === 429) {
+        lastError = new Error(`OpenCode ${model} rechazó la petición (status ${upstream.status})`);
+        break;
+      }
+      if (!upstream.ok) throw new Error(`OpenCode ${model} respondió ${upstream.status}: ${await upstream.text()}`);
+      if (!upstream.body) throw new Error(`OpenCode ${model} devolvió una respuesta vacía`);
+
+      resetInactivity();
+      const reader = upstream.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let content = '';
+      let sawSse = false;
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        resetInactivity();
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split(/\r?\n/);
+        buffer = lines.pop() ?? '';
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed.startsWith('data:')) continue;
+          const data = trimmed.slice(5).trim();
+          if (!data || data === '[DONE]') continue;
+          sawSse = true;
+          const event = JSON.parse(data) as { choices?: Array<{ delta?: { content?: string }; message?: { content?: string } }> };
+          const choice = event.choices?.[0];
+          content += choice?.delta?.content ?? choice?.message?.content ?? '';
+        }
+      }
+      buffer += decoder.decode();
+      if (buffer.trim().startsWith('data:')) {
+        const data = buffer.trim().slice(5).trim();
+        if (data && data !== '[DONE]') {
+          const event = JSON.parse(data) as { choices?: Array<{ delta?: { content?: string }; message?: { content?: string } }> };
+          content += event.choices?.[0]?.delta?.content ?? event.choices?.[0]?.message?.content ?? '';
+          sawSse = true;
+        }
+      } else if (!sawSse && buffer.trim()) {
+        const parsed = JSON.parse(buffer) as { choices?: Array<{ message?: { content?: string } }> };
+        content = parsed.choices?.[0]?.message?.content ?? '';
+      }
+      try {
+        return schema.parse(jsonFromText(content));
+      } catch (parseError) {
+        // Schema-repair retry (same pattern as mindmap's withSchemaRepair): feed the raw
+        // output plus the validation error back so the model can fix the JSON before we
+        // give up on this endpoint.
+        previousRaw = content;
+        previousError = parseError instanceof Error ? parseError.message : String(parseError);
+        lastError = parseError instanceof Error ? parseError : new Error(String(parseError));
+      }
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        lastError = deadline && Date.now() >= deadline
+          ? new Error('Se agotó el tiempo máximo de ejecución de la importación (el plan Hobby de Vercel limita cada función a 300 segundos). Intenta con un menú más corto o reparte la importación.')
+          : new Error(`OpenCode ${model} sin respuesta (${timeoutReason === 'hard' ? Math.min(hardMs, deadlineRemaining()) : inactivityMs}ms)`);
+      } else {
+        lastError = error instanceof Error ? error : new Error(String(error));
+      }
+      break;
+    } finally {
+      if (inactivityTimer) clearTimeout(inactivityTimer);
+      if (hardTimer) clearTimeout(hardTimer);
     }
   }
   throw lastError ?? new Error(`OpenCode ${model} no pudo procesar la petición`);
 }
 
 export async function withFallback<T>(
-  operation: (model: string, inactivity: number, hard: number, deadline?: number) => Promise<T>,
+  operation: (endpoint: Endpoint, inactivity: number, hard: number, deadline?: number) => Promise<T>,
   deadline?: number,
 ): Promise<T> {
+  const endpoints = buildEndpoints();
+  if (endpoints.length === 0) {
+    throw new Error('Falta configurar las claves de IA del importador (OPENCODE_ZEN_API_KEYS o AI_IMPORT_GO_KEY)');
+  }
   const failures: string[] = [];
-  const limits = [[90_000, 240_000], [75_000, 200_000]] as const;
-  for (let attempt = 0; attempt < ATTEMPTS_PER_MODEL; attempt++) {
-    for (let index = 0; index < MODELS.length; index++) {
-      try {
-        const [inactivity, hard] = limits[Math.min(index, limits.length - 1)];
-        return await operation(MODELS[index], inactivity, hard, deadline);
-      } catch (error) {
-        failures.push(`${MODELS[index]}: ${error instanceof Error ? error.message : String(error)}`);
-      }
+  for (const endpoint of endpoints) {
+    try {
+      return await operation(endpoint, 90_000, 240_000, deadline);
+    } catch (error) {
+      failures.push(`${endpoint.model}: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
-  throw new Error(`OpenCode Zen falló en todos los modelos: ${failures.join(' | ')}`);
+  throw new Error(`OpenCode falló en todos los modelos: ${failures.join(' | ')}`);
 }
 
 function stripHtml(html: string): string {
