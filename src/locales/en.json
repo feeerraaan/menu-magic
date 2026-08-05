@@ -187,18 +187,6 @@
     "backToPlans": "Back to plans",
     "backToDashboard": "Go to dashboard"
   },
-  "common": {
-    "save": "Save",
-    "cancel": "Cancel",
-    "delete": "Delete",
-    "edit": "Edit",
-    "add": "Add",
-    "loading": "Loading...",
-    "error": "Something went wrong",
-    "success": "Success!",
-    "nameRequired": "Name is required",
-    "unknownError": "Unknown error"
-  },
   "menu": {
     "featured": "Featured",
     "viewAll": "View All",
@@ -434,6 +422,11 @@
     "save": "Save",
     "delete": "Delete",
     "edit": "Edit",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "add": "Add",
+    "success": "Success!",
+    "nameRequired": "Name is required",
+    "unknownError": "Unknown error",
+    "status": "Status"
   }
 }

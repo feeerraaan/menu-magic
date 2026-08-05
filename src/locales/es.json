@@ -185,18 +185,6 @@
     "backToPlans": "Volver a planes",
     "backToDashboard": "Ir al dashboard"
   },
-  "common": {
-    "save": "Guardar",
-    "cancel": "Cancelar",
-    "delete": "Eliminar",
-    "edit": "Editar",
-    "add": "Añadir",
-    "loading": "Cargando...",
-    "error": "Algo salió mal",
-    "success": "¡Éxito!",
-    "nameRequired": "El nombre es obligatorio",
-    "unknownError": "Error desconocido"
-  },
   "menu": {
     "featured": "Destacados",
     "viewAll": "Ver Todo",
@@ -432,6 +420,11 @@
     "save": "Guardar",
     "delete": "Eliminar",
     "edit": "Editar",
-    "loading": "Cargando..."
+    "loading": "Cargando...",
+    "add": "Añadir",
+    "success": "¡Éxito!",
+    "nameRequired": "El nombre es obligatorio",
+    "unknownError": "Error desconocido",
+    "status": "Estado"
   }
 }

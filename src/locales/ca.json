@@ -184,18 +184,6 @@
     "backToPlans": "Tornar als plans",
     "backToDashboard": "Anar al panell"
   },
-  "common": {
-    "save": "Guardar",
-    "cancel": "Cancel·lar",
-    "delete": "Eliminar",
-    "edit": "Editar",
-    "add": "Afegir",
-    "loading": "Carregant...",
-    "error": "Quelcom ha anat malament",
-    "success": "¡Èxit!",
-    "nameRequired": "El nom és obligatori",
-    "unknownError": "Error desconegut"
-  },
   "menu": {
     "featured": "Destacats",
     "viewAll": "Veure Tot",
@@ -431,6 +419,11 @@
     "save": "Desar",
     "delete": "Eliminar",
     "edit": "Editar",
-    "loading": "Carregant..."
+    "loading": "Carregant...",
+    "add": "Afegir",
+    "success": "¡Èxit!",
+    "nameRequired": "El nom és obligatori",
+    "unknownError": "Error desconegut",
+    "status": "Estat"
   }
 }
