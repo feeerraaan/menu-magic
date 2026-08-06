@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { useOutletContext } from 'react-router-dom';
 import { Restaurant } from '@/types/database';
 import { useAiCopilot, CopilotChatMessage } from '@/hooks/useAiCopilot';
@@ -149,11 +150,11 @@ function MessageBubble({ message, onConfirm, onCancel, busy }: {
       <div className={cn('max-w-[80%] space-y-1', isUser && 'items-end')}>
         <div
           className={cn(
-            'rounded-xl px-3 py-2 text-sm',
+            'rounded-xl px-3 py-2 text-sm chat-markdown',
             isUser ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground',
           )}
         >
-          {message.content}
+          <ReactMarkdown>{message.content}</ReactMarkdown>
         </div>
         {message.pendingPreview && (
           <PreviewCard

@@ -132,6 +132,43 @@
     @apply border-input bg-background focus:ring-2 focus:ring-ring focus:border-transparent;
   }
 
+  .chat-markdown > :first-child {
+    margin-top: 0;
+  }
+  .chat-markdown > :last-child {
+    margin-bottom: 0;
+  }
+  .chat-markdown p {
+    margin: 0 0 0.5em;
+  }
+  .chat-markdown ul,
+  .chat-markdown ol {
+    margin: 0 0 0.5em;
+    padding-left: 1.2em;
+    list-style: disc;
+  }
+  .chat-markdown ol {
+    list-style: decimal;
+  }
+  .chat-markdown li {
+    margin-bottom: 0.15em;
+  }
+  .chat-markdown strong {
+    font-weight: 600;
+  }
+  .chat-markdown h1,
+  .chat-markdown h2,
+  .chat-markdown h3 {
+    font-weight: 600;
+    margin: 0.5em 0 0.25em;
+  }
+  .chat-markdown code {
+    font-size: 0.9em;
+    background: hsl(var(--muted-foreground) / 0.12);
+    border-radius: 4px;
+    padding: 0 4px;
+  }
+
   .glass-card {
     @apply bg-card/80 backdrop-blur-md border border-border/50;
   }

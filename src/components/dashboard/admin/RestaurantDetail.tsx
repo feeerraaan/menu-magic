@@ -80,7 +80,7 @@ export function RestaurantDetail({ restaurantId, restaurantName, onClose, onChan
     } finally {
       setLoading(false);
     }
-  }, [restaurantId, toast]);
+  }, [restaurantId, toast, t]);
 
   useEffect(() => {
     void load();
@@ -176,7 +176,7 @@ export function RestaurantDetail({ restaurantId, restaurantName, onClose, onChan
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            Restaurante: {restaurantName}
+            {t('admin.restaurantTitle', { name: restaurantName })}
           </DialogTitle>
         </DialogHeader>
 
@@ -189,28 +189,28 @@ export function RestaurantDetail({ restaurantId, restaurantName, onClose, onChan
             {/* Configuración */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Configuración del restaurante</CardTitle>
+                <CardTitle className="text-base">{t('admin.restaurantConfig')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <Label>Nombre</Label>
+                    <Label>{t('admin.name')}</Label>
                     <Input value={String(config.name ?? '')} onChange={(e) => setC('name', e.target.value)} />
                   </div>
                   <div className="space-y-2">
-                    <Label>Teléfono</Label>
+                    <Label>{t('admin.phone')}</Label>
                     <Input value={String(config.phone ?? '')} onChange={(e) => setC('phone', e.target.value)} />
                   </div>
                   <div className="space-y-2">
-                    <Label>Dirección</Label>
+                    <Label>{t('admin.address')}</Label>
                     <Input value={String(config.address ?? '')} onChange={(e) => setC('address', e.target.value)} />
                   </div>
                   <div className="space-y-2">
-                    <Label>Logo URL</Label>
+                    <Label>{t('admin.logoUrl')}</Label>
                     <Input value={String(config.logo_url ?? '')} onChange={(e) => setC('logo_url', e.target.value)} />
                   </div>
                   <div className="space-y-2">
-                    <Label>Moneda</Label>
+                    <Label>{t('admin.currency')}</Label>
                     <Select value={String(config.currency ?? 'EUR')} onValueChange={(v) => setC('currency', v)}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
@@ -219,7 +219,7 @@ export function RestaurantDetail({ restaurantId, restaurantName, onClose, onChan
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label>Idioma por defecto</Label>
+                    <Label>{t('admin.defaultLanguage')}</Label>
                     <Select value={String(config.default_language ?? 'es')} onValueChange={(v) => setC('default_language', v)}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
@@ -228,11 +228,11 @@ export function RestaurantDetail({ restaurantId, restaurantName, onClose, onChan
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label>Idiomas soportados (separados por coma)</Label>
+                    <Label>{t('admin.supportedLanguages')}</Label>
                     <Input value={String(config.supported_languages ?? 'es')} onChange={(e) => setC('supported_languages', e.target.value)} />
                   </div>
                   <div className="space-y-2">
-                    <Label>Tema</Label>
+                    <Label>{t('admin.theme')}</Label>
                     <Select value={String(config.theme ?? 'light')} onValueChange={(v) => setC('theme', v)}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
@@ -243,11 +243,11 @@ export function RestaurantDetail({ restaurantId, restaurantName, onClose, onChan
                 </div>
                 <div className="grid gap-4 sm:grid-cols-3">
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="cfg-published">Menú publicado</Label>
+                    <Label htmlFor="cfg-published">{t('admin.menuPublished')}</Label>
                     <Switch id="cfg-published" checked={!!config.is_published} onCheckedChange={(v) => setC('is_published', v)} />
                   </div>
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="cfg-hideprices">Ocultar precios</Label>
+                    <Label htmlFor="cfg-hideprices">{t('admin.hidePrices')}</Label>
                     <Switch id="cfg-hideprices" checked={!!config.hide_prices} onCheckedChange={(v) => setC('hide_prices', v)} />
                   </div>
                 </div>
@@ -257,28 +257,28 @@ export function RestaurantDetail({ restaurantId, restaurantName, onClose, onChan
             {/* Suscripción */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Suscripción</CardTitle>
+                <CardTitle className="text-base">{t('admin.subscription')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid gap-4 sm:grid-cols-3">
                   <div className="space-y-2">
-                    <Label>Plan</Label>
+                    <Label>{t('admin.plan')}</Label>
                     <Select value={subPlan} onValueChange={setSubPlan}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="free">Sargantana (free)</SelectItem>
-                        <SelectItem value="pro_monthly">Ferreret (mensual)</SelectItem>
-                        <SelectItem value="pro_annual">Ferreret (anual)</SelectItem>
-                        <SelectItem value="lifetime">Myotragus (lifetime)</SelectItem>
+                        <SelectItem value="free">{t('admin.planFree')}</SelectItem>
+                        <SelectItem value="pro_monthly">{t('admin.planProMonthly')}</SelectItem>
+                        <SelectItem value="pro_annual">{t('admin.planProAnnual')}</SelectItem>
+                        <SelectItem value="lifetime">{t('admin.planLifetime')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label>Fotos</Label>
+                    <Label>{t('admin.photos')}</Label>
                     <Input type="number" min={0} value={subPhotos} onChange={(e) => setSubPhotos(Number(e.target.value) || 0)} />
                   </div>
                   <div className="space-y-2">
-                    <Label>Idiomas</Label>
+                    <Label>{t('admin.languages')}</Label>
                     <Input type="number" min={1} value={subLanguages} onChange={(e) => setSubLanguages(Number(e.target.value) || 1)} />
                   </div>
                 </div>
@@ -289,9 +289,9 @@ export function RestaurantDetail({ restaurantId, restaurantName, onClose, onChan
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-base">Menús</CardTitle>
+                  <CardTitle className="text-base">{t('admin.menus')}</CardTitle>
                   <Button size="sm" variant="outline" onClick={openCreateMenu}>
-                    <Plus className="h-4 w-4 mr-1" /> Nuevo menú
+                    <Plus className="h-4 w-4 mr-1" /> {t('admin.newMenu')}
                   </Button>
                 </div>
               </CardHeader>
@@ -308,10 +308,10 @@ export function RestaurantDetail({ restaurantId, restaurantName, onClose, onChan
                         <div className="flex-1 min-w-0">
                           <p className="font-medium truncate">
                             {menu.name}{' '}
-                            {!menu.is_active && <Badge variant="secondary" className="ml-1">oculto</Badge>}
+                            {!menu.is_active && <Badge variant="secondary" className="ml-1">{t('admin.hidden')}</Badge>}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            {menu.category_count} categorías · {menu.item_count} platos
+                            {t('admin.menuCounts', { categories: menu.category_count, items: menu.item_count })}
                           </p>
                         </div>
                         <Button variant="ghost" size="icon" onClick={() => openEditMenu(menu)}>
@@ -323,7 +323,7 @@ export function RestaurantDetail({ restaurantId, restaurantName, onClose, onChan
                       </div>
                       {expandedMenus.has(menu.menu_id) && (
                         <div className="px-4 pb-3 space-y-2 border-t">
-                          <MenuTree menuId={menu.menu_id} details={menuDetails[menu.menu_id]} />
+                          <MenuTree menuId={menu.menu_id} details={menuDetails[menu.menu_id]} currency={String(config.currency ?? 'EUR')} />
                         </div>
                       )}
                     </div>
@@ -333,10 +333,10 @@ export function RestaurantDetail({ restaurantId, restaurantName, onClose, onChan
             </Card>
 
             <DialogFooter>
-              <Button variant="outline" onClick={onClose}>Cerrar</Button>
+              <Button variant="outline" onClick={onClose}>{t('admin.close')}</Button>
               <Button onClick={saveConfig} disabled={saving}>
                 {saving && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
-                Guardar cambios
+                {t('admin.saveChanges')}
               </Button>
             </DialogFooter>
           </div>
@@ -345,29 +345,29 @@ export function RestaurantDetail({ restaurantId, restaurantName, onClose, onChan
         <Dialog open={menuFormOpen} onOpenChange={(o) => !o && setMenuFormOpen(false)}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>{menuForm?.id ? 'Editar menú' : 'Nuevo menú'}</DialogTitle>
+              <DialogTitle>{menuForm?.id ? t('admin.editMenu') : t('admin.newMenu')}</DialogTitle>
             </DialogHeader>
             {menuForm && (
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label>Nombre</Label>
+                  <Label>{t('admin.name')}</Label>
                   <Input value={menuForm.name} onChange={(e) => setMenuForm({ ...menuForm, name: e.target.value })} />
                 </div>
                 <div className="space-y-2">
-                  <Label>Descripción</Label>
+                  <Label>{t('admin.description')}</Label>
                   <Input value={menuForm.description} onChange={(e) => setMenuForm({ ...menuForm, description: e.target.value })} />
                 </div>
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="menu-active">Activo</Label>
+                  <Label htmlFor="menu-active">{t('admin.active')}</Label>
                   <Switch id="menu-active" checked={menuForm.is_active} onCheckedChange={(v) => setMenuForm({ ...menuForm, is_active: v })} />
                 </div>
               </div>
             )}
             <DialogFooter>
-              <Button variant="outline" onClick={() => setMenuFormOpen(false)}>Cancelar</Button>
+              <Button variant="outline" onClick={() => setMenuFormOpen(false)}>{t('admin.cancel')}</Button>
               <Button onClick={saveMenu} disabled={savingMenu || !menuForm?.name.trim()}>
                 {savingMenu && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
-                Guardar
+                {t('admin.save')}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -377,9 +377,10 @@ export function RestaurantDetail({ restaurantId, restaurantName, onClose, onChan
   );
 }
 
-function MenuTree({ menuId, details }: { menuId: string; details?: adminApi.AdminMenuDetails }) {
+function MenuTree({ menuId, details, currency }: { menuId: string; details?: adminApi.AdminMenuDetails; currency: string }) {
+  const { t } = useTranslation();
   if (!details) {
-    return <p className="text-xs text-muted-foreground py-2">Cargando…</p>;
+    return <p className="text-xs text-muted-foreground py-2">{t('common.loading')}</p>;
   }
   if (details.categories.length === 0) {
     return <p className="text-xs text-muted-foreground py-2">{t('admin.emptyCategories')}</p>;
@@ -393,7 +394,7 @@ function MenuTree({ menuId, details }: { menuId: string; details?: adminApi.Admi
             {items.map((item) => (
               <li key={item.id} className="text-sm text-muted-foreground flex justify-between gap-3">
                 <span className="truncate">{item.name}</span>
-                <span className="shrink-0">{item.price != null ? `${item.price} ${config.currency}` : ''}</span>
+                <span className="shrink-0">{item.price != null ? `${item.price} ${currency}` : ''}</span>
               </li>
             ))}
           </ul>

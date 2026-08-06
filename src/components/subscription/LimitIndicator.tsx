@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import { LIMIT_LABELS, type PlanLimits } from '@/lib/subscription-limits';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface LimitIndicatorProps {
   feature: keyof PlanLimits;
@@ -24,6 +25,7 @@ export function LimitIndicator({
   const percentage = limit > 0 ? Math.min(100, (current / limit) * 100) : 100;
   const isAtLimit = current >= limit;
   const isNearLimit = percentage >= 80 && !isAtLimit;
+  const { t } = useTranslation();
 
   return (
     <div className={cn('space-y-1', className)}>
@@ -32,7 +34,7 @@ export function LimitIndicator({
         size === 'sm' ? 'text-xs' : 'text-sm'
       )}>
         {showLabel && (
-          <span className="text-muted-foreground">{LIMIT_LABELS[feature]}</span>
+          <span className="text-muted-foreground">{t(LIMIT_LABELS[feature])}</span>
         )}
         <span className={cn(
           'font-medium',

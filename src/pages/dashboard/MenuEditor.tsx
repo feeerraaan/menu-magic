@@ -895,6 +895,7 @@ function CategoryDialog({
   onClose: () => void; 
   onSave: (name: string, description?: string, category?: Category) => void;
 }) {
+  const { t } = useTranslation();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
@@ -920,33 +921,33 @@ function CategoryDialog({
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{category ? 'Edit Category' : 'Add Category'}</DialogTitle>
+          <DialogTitle>{category ? t('menuEditor.editCategory') : t('menuEditor.addCategory')}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="cat-name">Name</Label>
+            <Label htmlFor="cat-name">{t('menuEditor.categoryName')}</Label>
             <Input
               id="cat-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g., Starters, Main Courses"
+              placeholder={t('menuEditor.categoryNamePlaceholder')}
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="cat-desc">Description (optional)</Label>
+            <Label htmlFor="cat-desc">{t('menuEditor.categoryDesc')}</Label>
             <Textarea
               id="cat-desc"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="A brief description of this category"
+              placeholder={t('menuEditor.categoryDescPlaceholder')}
             />
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button variant="outline" onClick={onClose}>{t('menuEditor.cancel')}</Button>
           <Button onClick={handleSubmit} disabled={loading || !name.trim()}>
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {category ? 'Save' : 'Create'}
+            {category ? t('menuEditor.save') : t('menuEditor.create')}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -1046,7 +1047,7 @@ function ItemDialog({
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{item ? 'Edit Item' : 'Add Item'}</DialogTitle>
+          <DialogTitle>{item ? t('menuEditor.editItem') : t('menuEditor.addItem')}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">
@@ -1098,7 +1099,7 @@ function ItemDialog({
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="item-price">Price ({currency})</Label>
+            <Label htmlFor="item-price">{t('menuEditor.itemPrice')} ({currency})</Label>
             <Input
               id="item-price"
               type="number"
@@ -1111,14 +1112,14 @@ function ItemDialog({
           </div>
           
           <div className="space-y-3 pt-2">
-            <Label>Options</Label>
+            <Label>{t('menuEditor.options')}</Label>
             <div className="grid grid-cols-2 gap-3">
               {[
-                { key: 'is_featured', label: 'Featured', icon: Star },
-                { key: 'is_vegetarian', label: 'Vegetarian', icon: Leaf },
-                { key: 'is_vegan', label: 'Vegan', icon: Leaf },
-                { key: 'is_spicy', label: 'Spicy', icon: Flame },
-                { key: 'is_gluten_free', label: 'Gluten Free', icon: Wheat },
+                { key: 'is_featured', label: t('menuEditor.featured'), icon: Star },
+                { key: 'is_vegetarian', label: t('menuEditor.vegetarian'), icon: Leaf },
+                { key: 'is_vegan', label: t('menuEditor.vegan'), icon: Leaf },
+                { key: 'is_spicy', label: t('menuEditor.spicy'), icon: Flame },
+                { key: 'is_gluten_free', label: t('menuEditor.glutenFree'), icon: Wheat },
               ].map(opt => (
                 <div key={opt.key} className="flex items-center justify-between p-2 rounded-lg border">
                   <div className="flex items-center gap-2">
@@ -1135,10 +1136,10 @@ function ItemDialog({
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button variant="outline" onClick={onClose}>{t('menuEditor.cancel')}</Button>
           <Button onClick={handleSubmit} disabled={loading || !formData.name.trim()}>
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {item ? 'Save' : 'Create'}
+            {item ? t('menuEditor.save') : t('menuEditor.create')}
           </Button>
         </DialogFooter>
       </DialogContent>

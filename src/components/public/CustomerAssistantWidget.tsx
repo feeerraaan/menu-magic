@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { Bot, Send, X, Loader2, MessageCircle } from 'lucide-react';
 import * as aiApi from '@/lib/ai-api';
 import type { CustomerAssistantMessage } from '@ai/customerAssistant';
@@ -119,7 +120,9 @@ export function CustomerAssistantWidget({ slug }: { slug: string }) {
             {messages.map((m) => (
               <div key={m.id} className={cn('flex', m.role === 'user' ? 'justify-end' : 'justify-start')}>
                 <div className={cn('max-w-[85%] rounded-2xl px-3 py-2 text-sm', m.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-slate-100 dark:bg-slate-900')}>
-                  <p className="whitespace-pre-line">{m.content}</p>
+                  <div className="chat-markdown whitespace-pre-line">
+                    <ReactMarkdown>{m.content}</ReactMarkdown>
+                  </div>
                   {m.recommendations && m.recommendations.length > 0 && (
                     <div className="mt-2 space-y-1.5 border-t border-slate-200 dark:border-slate-800 pt-2">
                       {m.recommendations.map((r) => (

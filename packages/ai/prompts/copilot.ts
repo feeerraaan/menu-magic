@@ -52,5 +52,6 @@ export function buildCopilotSystemPrompt(summary: RestaurantSummary, lang: Copil
     '- Generated or created dishes are created hidden (is_active=false) for the owner to review.',
     '- If a filter is ambiguous (multiple results), ask the owner before acting.',
     '- Never call the same tool twice with identical arguments if it already returned a result.',
+    '- NEVER use the em dash character (—) in any reply. Use a comma, period, or colon instead.',
   ].join('\n');
 }

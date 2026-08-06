@@ -160,7 +160,7 @@ export function DashboardSidebar() {
               <Zap className="h-4 w-4 text-primary shrink-0" />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-sm text-muted-foreground">Créditos IA</span>
+                  <span className="text-sm text-muted-foreground">{t('dashboard.aiCredits')}</span>
                   <span className={`text-sm font-medium ${aiCredits.remaining < aiCredits.limit * 0.2 ? 'text-destructive' : 'text-foreground'}`}>
                     {aiCredits.remaining}/{aiCredits.limit}
                   </span>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SaCarta · Technical Whitepaper</title>
+<style>
+  @page { size: A4; margin: 0; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { font-family: 'Segoe UI', system-ui, -apple-system, Arial, sans-serif; color: #1f2328; background: #ffffff; }
+
+  .page {
+    width: 210mm;
+    height: 297mm;
+    padding: 22mm 20mm 20mm 20mm;
+    position: relative;
+    page-break-after: always;
+    overflow: hidden;
+  }
+  .page:last-child { page-break-after: auto; }
+
+  /* Cover */
+  .cover {
+    background: linear-gradient(160deg, #fff7f1 0%, #ffe9db 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+  .cover .logo { width: 64mm; height: 64mm; margin-bottom: 14mm; }
+  .cover h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 44pt;
+    color: #c2410c;
+    letter-spacing: -0.5px;
+  }
+  .cover .tagline {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-style: italic;
+    font-size: 17pt;
+    color: #6b4a3a;
+    margin-top: 6mm;
+    max-width: 130mm;
+  }
+  .cover .meta {
+    margin-top: 22mm;
+    font-size: 11pt;
+    color: #8a6a55;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+  .cover .line { width: 40mm; height: 1px; background: #f76201; margin-top: 10mm; }
+
+  /* Typography */
+  h2 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 24pt;
+    color: #c2410c;
+    margin-bottom: 4mm;
+    padding-bottom: 3mm;
+    border-bottom: 2px solid #f7d9c8;
+  }
+  h3 { font-family: Georgia, serif; font-size: 14pt; color: #1f2328; margin: 6mm 0 2mm; }
+  p { font-size: 10.5pt; line-height: 1.62; color: #333; margin-bottom: 3mm; }
+  .lead { font-size: 12pt; color: #4a3a30; }
+  strong { color: #c2410c; }
+  .kicker {
+    font-size: 9pt; letter-spacing: 2px; text-transform: uppercase; color: #f76201;
+    margin-bottom: 3mm; font-weight: 600;
+  }
+
+  /* Numbers / stat callouts */
+  .stats { display: flex; gap: 6mm; margin: 8mm 0; }
+  .stat {
+    flex: 1; background: #fff7f1; border: 1px solid #f7d9c8; border-radius: 3mm;
+    padding: 5mm 4mm; text-align: center;
+  }
+  .stat .num { font-family: Georgia, serif; font-size: 22pt; color: #c2410c; font-weight: 700; }
+  .stat .lbl { font-size: 8.5pt; color: #6b4a3a; margin-top: 1mm; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  ul { list-style: none; margin: 3mm 0; }
+  li { font-size: 10.5pt; line-height: 1.55; color: #333; padding-left: 7mm; position: relative; margin-bottom: 2mm; }
+  li::before { content: ''; position: absolute; left: 0; top: 0.55em; width: 3mm; height: 3mm; border-radius: 50%; background: #f76201; }
+
+  .shot { border: 1px solid #e6d8cf; border-radius: 3mm; overflow: hidden; margin: 6mm 0; box-shadow: 0 2mm 6mm rgba(0,0,0,0.06); }
+  .shot img { display: block; width: 100%; }
+  .shot.cap::after {
+    content: attr(data-cap); display: block; font-size: 8pt; color: #8a6a55;
+    padding: 2mm 3mm; background: #fdf6f1; border-top: 1px solid #f0e2d7;
+  }
+  .shot.wide img { width: 100%; }
+  .two { display: flex; gap: 5mm; }
+  .two .shot { flex: 1; }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; margin: 6mm 0; }
+  .cell { background: #fdf8f4; border: 1px solid #f0e2d7; border-radius: 3mm; padding: 4mm; }
+  .cell h4 { font-size: 10.5pt; color: #c2410c; margin-bottom: 1.5mm; }
+  .cell p { font-size: 9.5pt; margin: 0; line-height: 1.5; }
+
+  .diagram { margin: 8mm 0; }
+  .diagram img { width: 100%; display: block; }
+
+  .foot {
+    position: absolute; bottom: 10mm; left: 20mm; right: 20mm;
+    display: flex; justify-content: space-between;
+    font-size: 8pt; color: #a49084; border-top: 1px solid #f0e2d7; padding-top: 2.5mm;
+  }
+  .foot .brand { font-family: Georgia, serif; color: #c2410c; font-weight: 700; }
+</style>
+</head>
+<body>
+
+  <!-- ============ COVER ============ -->
+  <div class="page cover">
+    <img class="logo" src="../../public/logo.png" alt="SaCarta logo">
+    <h1>SaCarta</h1>
+    <p class="tagline">The AI operating system for restaurant menus</p>
+    <div class="line"></div>
+    <p class="meta">Technical Whitepaper &nbsp;·&nbsp; 2026</p>
+  </div>
+
+  <!-- ============ PROBLEM ============ -->
+  <div class="page">
+    <p class="kicker">01 · The Problem</p>
+    <h2>A menu that eats the restaurant's time</h2>
+    <p class="lead">Restaurant owners lose hours every single week just keeping their menu alive, and the result is still a static, never-translated, invisible PDF.</p>
+    <div class="stats">
+      <div class="stat"><div class="num">6+ h</div><div class="lbl">per week lost to manual updates</div></div>
+      <div class="stat"><div class="num">0</div><div class="lbl">translations on a typical menu</div></div>
+      <div class="stat"><div class="num">0</div><div class="lbl">visibility into what guests look at</div></div>
+    </div>
+    <p>Every time a plate changes, a price moves, or a season ends, someone edits the menu by hand, dish by dish, category by category. The printed PDF goes stale the moment it is printed. International guests cannot read the menu, so they order less, or not at all. And the owner has no data about what actually sells, so the menu never improves: it just exists.</p>
+    <p>SaCarta was built for the hospitality industry of Mallorca: restaurants, hotels, bars, beach clubs and coffee shops, where multilingual guests are the norm and the menu is the first sales pitch a business makes.</p>
+    <ul>
+      <li><strong>Hours lost:</strong> rewriting dishes, prices and descriptions on every change.</li>
+      <li><strong>Never translated:</strong> international guests cannot read the menu, so they order less.</li>
+      <li><strong>Zero visibility:</strong> no data on what guests look at means the menu never improves.</li>
+    </ul>
+    <div class="foot"><span class="brand">SaCarta</span><span>1</span></div>
+  </div>
+
+  <!-- ============ SOLUTION ============ -->
+  <div class="page">
+    <p class="kicker">02 · The Solution</p>
+    <h2>An AI employee that runs the menu for you</h2>
+    <p class="lead">Upload your menu once. SaCarta structures it, writes appetizing descriptions, translates it into your guests' languages, and keeps it optimized, all behind a QR code your customers scan at the table.</p>
+    <div class="grid">
+      <div class="cell"><h4>Upload</h4><p>Import from a PDF or pasted text. AI builds the full structure: categories, dishes, prices, dietary flags.</p></div>
+      <div class="cell"><h4>Build</h4><p>Descriptions generated in the restaurant's voice, with style presets from luxury to casual.</p></div>
+      <div class="cell"><h4>Translate</h4><p>Every dish translated into every supported language with culinary sensitivity, not word-for-word.</p></div>
+      <div class="cell"><h4>Optimize</h4><p>A 0&ndash;100 health score and daily recommendations tell you exactly what to improve.</p></div>
+    </div>
+    <div class="shot" data-cap="The public menu as a guest sees it, from the table QR.">
+      <img src="../screenshots/public-menu.png" alt="Public menu">
+    </div>
+    <div class="foot"><span class="brand">SaCarta</span><span>2</span></div>
+  </div>
+
+  <!-- ============ AI ============ -->
+  <div class="page">
+    <p class="kicker">03 · The AI Layer</p>
+    <h2>One shared AI layer, seven agents, zero drift</h2>
+    <p class="lead">Every AI capability lives in a single shared TypeScript package consumed by the browser and the backend alike. Nothing is bolted on per feature.</p>
+    <div class="stats">
+      <div class="stat"><div class="num">7</div><div class="lbl">AI agents</div></div>
+      <div class="stat"><div class="num">7</div><div class="lbl">Zod schemas at the boundary</div></div>
+      <div class="stat"><div class="num">8</div><div class="lbl">features shipped &amp; verified live</div></div>
+    </div>
+    <h3>Agents</h3>
+    <ul>
+      <li><strong>Description, Translation, Optimizer</strong>: single-purpose, deterministic pipelines where business rules meet the LLM.</li>
+      <li><strong>Import</strong>: PDF or text to a fully editable menu tree in minutes, chunked and schema-repaired.</li>
+      <li><strong>Copilot</strong>: a chat that can mutate the menu through a mandatory preview-and-confirm gate.</li>
+      <li><strong>Insights &amp; Recommendations</strong>: a consultant-style read of the analytics, with dismissible action cards.</li>
+      <li><strong>Customer Assistant</strong>: a safety-critical chat on the public menu with hard constraints enforced in code.</li>
+    </ul>
+    <h3>Why it is trustworthy</h3>
+    <p>Every input and output crosses a Zod-validated boundary, so invalid data never reaches the UI. Every generation is audited: jobs, credit consumption and menu scores are persisted. The Copilot can only write through a deterministic resolver and executor after the owner confirms a preview. And the LLM gateway uses key rotation with a free-to-paid fallback chain for zero-downtime generation.</p>
+    <div class="shot" data-cap="The Copilot previews an exact price change before applying it.">
+      <img src="../screenshots/ai-copilot.png" alt="AI Copilot">
+    </div>
+    <div class="foot"><span class="brand">SaCarta</span><span>3</span></div>
+  </div>
+
+  <!-- ============ ARCHITECTURE ============ -->
+  <div class="page">
+    <p class="kicker">04 · Architecture</p>
+    <h2>Frontend, backend, and a shared AI package</h2>
+    <p class="lead">A Vite/React SPA talks to Supabase (Postgres + RLS, Auth, Storage, and 14 Deno Edge Functions) and to Vercel serverless for long-running imports. Both consume the same AI package.</p>
+    <div class="diagram">
+      <img src="../architecture.png" alt="SaCarta architecture diagram">
+    </div>
+    <h3>Key decisions</h3>
+    <ul>
+      <li><strong>Shared AI package:</strong> <code>packages/ai</code> is consumed by the browser and by every Edge Function: one schema, one provider gateway, one behavior.</li>
+      <li><strong>Row-level security everywhere:</strong> 21 tables, RLS enabled, with a service-role boundary for server-side writes.</li>
+      <li><strong>Client-driven imports:</strong> long AI imports run as short serverless steps driven by the client, avoiding platform time limits entirely.</li>
+      <li><strong>Stripe webhooks:</strong> entitlement sync is event-driven and idempotent, not client-polled.</li>
+    </ul>
+    <div class="foot"><span class="brand">SaCarta</span><span>4</span></div>
+  </div>
+
+  <!-- ============ USER FLOW ============ -->
+  <div class="page">
+    <p class="kicker">05 · User Flow</p>
+    <h2>From sign-up to a translated, living menu</h2>
+    <p class="lead">Onboarding takes two paths: build the menu by hand, or upload it and let the AI assemble everything.</p>
+    <div class="two">
+      <div class="shot" data-cap="The menu editor: categories, dishes, translations.">
+        <img src="../screenshots/menu-editor.png" alt="Menu editor">
+      </div>
+      <div class="shot" data-cap="Publish with a branded QR.">
+        <img src="../screenshots/qr.png" alt="QR code page">
+      </div>
+    </div>
+    <ul>
+      <li><strong>1 &nbsp;Sign up</strong>: create the restaurant, pick a path: manual or AI-assisted setup.</li>
+      <li><strong>2 &nbsp;Build</strong>: editor or AI import; every suggestion stays editable.</li>
+      <li><strong>3 &nbsp;Translate</strong>: one tap per language, per dish or for the whole menu.</li>
+      <li><strong>4 &nbsp;Publish</strong>: a QR code guests scan at the table; schedule menus by service time.</li>
+      <li><strong>5 &nbsp;Optimize</strong>: a health score, insights, and an AI copilot that acts on your words.</li>
+    </ul>
+    <div class="shot" data-cap="A guest asks the on-menu assistant for a vegetarian option.">
+      <img src="../screenshots/customer-assistant.png" alt="Customer assistant widget">
+    </div>
+    <div class="foot"><span class="brand">SaCarta</span><span>5</span></div>
+  </div>
+
+  <!-- ============ TECH STACK ============ -->
+  <div class="page">
+    <p class="kicker">06 · Tech Stack</p>
+    <h2>Modern, boring, production-grade</h2>
+    <p class="lead">A deliberately mainstream stack: every layer is a widely-known technology with a real community.</p>
+    <div class="grid">
+      <div class="cell"><h4>Frontend</h4><p>React 18 + TypeScript, Vite, Tailwind CSS and shadcn/ui. i18n in en / es / ca.</p></div>
+      <div class="cell"><h4>Database</h4><p>Supabase Postgres: 21 tables, RLS enabled everywhere, Auth, Storage.</p></div>
+      <div class="cell"><h4>Backend</h4><p>14 Deno Edge Functions + Vercel serverless for long-running AI imports.</p></div>
+      <div class="cell"><h4>AI</h4><p><code>packages/ai</code>: agents, pipelines, Zod schemas, providers. Gateway: OpenCode Zen with key rotation + fallback.</p></div>
+      <div class="cell"><h4>Billing</h4><p>Stripe subscriptions with a customer portal; webhook-driven entitlement.</p></div>
+      <div class="cell"><h4>Email</h4><p>Resend transactional email (welcome, contact).</p></div>
+    </div>
+    <h3>Verification</h3>
+    <p>Each of the 8 AI features was exercised end-to-end against the live project with a real LLM call before being considered done, including safety tests for the Customer Assistant (allergen exclusion, budget filtering) and the Copilot (price change previewed, confirmed, applied, and audited).</p>
+    <div class="shot" data-cap="The dashboard overview: health score, today, recommendations.">
+      <img src="../screenshots/dashboard.png" alt="Dashboard overview">
+    </div>
+    <div class="foot"><span class="brand">SaCarta</span><span>6</span></div>
+  </div>
+
+  <!-- ============ BUSINESS MODEL ============ -->
+  <div class="page">
+    <p class="kicker">07 · Business Model</p>
+    <h2>Subscription SaaS, priced for a restaurant</h2>
+    <p class="lead">Three plans that pay for themselves: the AI import alone replaces hours of manual work every month.</p>
+    <div class="grid">
+      <div class="cell"><h4>Sargantana &nbsp;&middot;&nbsp; Free</h4><p>1 menu, 1 language, 25 dishes, basic QR. Enough to try the product; the AI import is the upgrade hook.</p></div>
+      <div class="cell"><h4>Ferreret &nbsp;&middot;&nbsp; 8.99&euro;/mo</h4><p>3 menus, 2 languages, 50 dishes, schedules, advanced analytics. Monthly or annual.</p></div>
+      <div class="cell"><h4>Myotragus &nbsp;&middot;&nbsp; 139.99&euro;</h4><p>Lifetime access, unlimited languages, 1000 dishes, VIP support, manual setup by the team.</p></div>
+      <div class="cell"><h4>AI credits</h4><p>Each plan includes a monthly AI credit allowance metered per generation (description, translation, import, copilot turn, insights).</p></div>
+    </div>
+    <h3>Why it is defensible</h3>
+    <ul>
+      <li><strong>Time is the price anchor:</strong> the hours a menu costs per week dwarf a monthly subscription.</li>
+      <li><strong>High-leverage upgrade:</strong> AI Import is the single biggest reason a free owner converts.</li>
+      <li><strong>Audited usage:</strong> every AI call is metered and persisted, so credit limits and costs are precise.</li>
+      <li><strong>Entitlement that stays honest:</strong> Stripe webhooks keep the plan in sync automatically.</li>
+    </ul>
+    <div class="foot"><span class="brand">SaCarta</span><span>7</span></div>
+  </div>
+
+  <!-- ============ FUTURE VISION ============ -->
+  <div class="page">
+    <p class="kicker">08 · Future Vision</p>
+    <h2>From menu management to an AI employee</h2>
+    <p class="lead">SaCarta's direction is simple: the owner should almost never create a menu item by hand again.</p>
+    <p>They provide raw material: a PDF, a photo of a printed menu, a stack of notes. SaCarta does the work a junior hire would otherwise be paid for: extracting structure, writing appetizing copy, translating with culinary sensitivity, and continuously telling the owner how to make the menu better.</p>
+    <h3>What the future adds</h3>
+    <ul>
+      <li><strong>Deeper insights:</strong> narrative reads of the analytics with concrete, dismissible recommendations.</li>
+      <li><strong>A more capable copilot:</strong> richer natural-language operations, always behind the preview-and-confirm gate.</li>
+      <li><strong>A smarter customer assistant:</strong> more nuance within hard, code-enforced safety constraints.</li>
+    </ul>
+    <h3>A deliberate exclusion</h3>
+    <p>SaCarta will not generate AI food photography. A photo on a real menu is a promise about what the diner will be served; a synthetic image risks deceiving them the moment the real dish arrives. Real owner-provided photos stay, untouched.</p>
+    <div class="shot" data-cap="The dashboard at a glance: greeting, status, and the AI employee at work.">
+      <img src="../screenshots/analytics.png" alt="Analytics and insights">
+    </div>
+    <p style="margin-top:8mm; font-family: Georgia, serif; font-style: italic; color:#8a6a55; font-size:11pt;">
+      Built in Mallorca for the hospitality industry. Scan a real QR at a real table: <strong>sacarta.azpy.es</strong>
+    </p>
+    <div class="foot"><span class="brand">SaCarta</span><span>8</span></div>
+  </div>
+
+</body>
+</html>

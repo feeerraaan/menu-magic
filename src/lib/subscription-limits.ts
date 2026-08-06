@@ -145,17 +145,17 @@ export const PLANS: Record<PlanType, PlanInfo> = {
 // LIMIT LABELS - For UI display
 // ============================================
 export const LIMIT_LABELS: Record<keyof PlanLimits, string> = {
-  photos: 'Fotos',
-  languages: 'Idiomas',
-  menus: 'Menús',
-  categories: 'Categorías',
-  items: 'Items',
-  schedules: 'Horarios',
-  analytics: 'Analytics',
-  qrCustomization: 'QR personalizado',
-  manualSetup: 'Configuración manual del menú por nosotros',
-  aiCreditsPerMonth: 'Créditos IA / mes',
-  aiCustomerAssistantEnabled: 'Asistente IA para clientes',
+  photos: 'limits.photos',
+  languages: 'limits.languages',
+  menus: 'limits.menus',
+  categories: 'limits.categories',
+  items: 'limits.items',
+  schedules: 'limits.schedules',
+  analytics: 'limits.analytics',
+  qrCustomization: 'limits.qrCustomization',
+  manualSetup: 'limits.manualSetup',
+  aiCreditsPerMonth: 'limits.aiCreditsPerMonth',
+  aiCustomerAssistantEnabled: 'limits.aiCustomerAssistantEnabled',
 };
 
 // ============================================

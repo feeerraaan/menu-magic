@@ -18,11 +18,11 @@ import * as adminApi from '@/lib/admin-api';
 import { PLAN_LIMITS } from '@/lib/subscription-limits';
 import { RestaurantDetail } from '@/components/dashboard/admin/RestaurantDetail';
 
-const PLAN_NAMES: Record<string, string> = {
-  free: 'Sargantana',
-  pro_monthly: 'Ferreret',
-  pro_annual: 'Ferreret anual',
-  lifetime: 'Myotragus',
+const PLAN_KEYS: Record<string, string> = {
+  free: 'admin.planFree',
+  pro_monthly: 'admin.planProMonthly',
+  pro_annual: 'admin.planProAnnual',
+  lifetime: 'admin.planLifetime',
 };
 
 interface EditTarget {
@@ -36,6 +36,7 @@ interface EditTarget {
 
 export default function Admin() {
   const { isAdmin, loading: adminLoading } = useIsAdmin();
+  const { t } = useTranslation();
 
   if (adminLoading) {
     return (
@@ -49,8 +50,8 @@ export default function Admin() {
     return (
       <div className="space-y-6 max-w-2xl mx-auto text-center py-20">
         <ShieldCheck className="h-12 w-12 mx-auto text-muted-foreground" />
-        <h2 className="font-display text-2xl font-bold">Acceso restringido</h2>
-        <p className="text-muted-foreground">Esta sección es solo para administradores.</p>
+        <h2 className="font-display text-2xl font-bold">{t('admin.accessDenied')}</h2>
+        <p className="text-muted-foreground">{t('admin.accessDeniedDesc')}</p>
       </div>
     );
   }
@@ -58,20 +59,20 @@ export default function Admin() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="font-display text-2xl font-bold">Backoffice</h2>
-        <p className="text-muted-foreground">Superadmin: usuarios, restaurantes y cupones de descuento.</p>
+        <h2 className="font-display text-2xl font-bold">{t('admin.title')}</h2>
+        <p className="text-muted-foreground">{t('admin.subtitle')}</p>
       </div>
 
       <Tabs defaultValue="users">
         <TabsList>
           <TabsTrigger value="users" className="gap-1.5">
-            <Users className="h-4 w-4" /> Usuarios
+            <Users className="h-4 w-4" /> {t('admin.tabs.users')}
           </TabsTrigger>
           <TabsTrigger value="coupons" className="gap-1.5">
-            <Ticket className="h-4 w-4" /> Cupones
+            <Ticket className="h-4 w-4" /> {t('admin.tabs.coupons')}
           </TabsTrigger>
           <TabsTrigger value="messages" className="gap-1.5">
-            <MessageSquare className="h-4 w-4" /> Mensajes
+            <MessageSquare className="h-4 w-4" /> {t('admin.tabs.messages')}
           </TabsTrigger>
         </TabsList>
         <TabsContent value="users">
@@ -152,21 +153,21 @@ function UsersTab() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">Usuarios y restaurantes</CardTitle>
-        <CardDescription>{rows.length} usuarios registrados.</CardDescription>
+        <CardTitle className="text-lg">{t('admin.usersTitle')}</CardTitle>
+        <CardDescription>{t('admin.usersCount', { n: rows.length })}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Email</TableHead>
-                <TableHead>Restaurante</TableHead>
-                <TableHead>Plan</TableHead>
-                <TableHead>Estado</TableHead>
-                <TableHead>Límites</TableHead>
-                <TableHead>Publicado</TableHead>
-                <TableHead className="text-right">Acciones</TableHead>
+                <TableHead>{t('admin.colEmail')}</TableHead>
+                <TableHead>{t('admin.colRestaurant')}</TableHead>
+                <TableHead>{t('admin.colPlan')}</TableHead>
+                <TableHead>{t('admin.colStatus')}</TableHead>
+                <TableHead>{t('admin.colLimits')}</TableHead>
+                <TableHead>{t('admin.colPublished')}</TableHead>
+                <TableHead className="text-right">{t('admin.colActions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -176,22 +177,22 @@ function UsersTab() {
                   <TableCell>{row.restaurant_name ?? ''}</TableCell>
                   <TableCell>
                     <Badge variant={row.plan === 'free' ? 'secondary' : 'default'}>
-                      {PLAN_NAMES[row.plan ?? 'free'] ?? row.plan}
+                      {t(PLAN_KEYS[row.plan ?? 'free']) || row.plan}
                     </Badge>
                   </TableCell>
                   <TableCell>{row.subscription_status ?? ''}</TableCell>
                   <TableCell className="text-muted-foreground text-sm">
-                    {row.photos_limit ?? 0} fotos · {row.languages_limit ?? 1} idiomas
+                    {t('admin.limitsFormat', { photos: row.photos_limit ?? 0, languages: row.languages_limit ?? 1 })}
                   </TableCell>
-                  <TableCell>{row.is_published ? 'Sí' : 'No'}</TableCell>
+                  <TableCell>{row.is_published ? t('admin.yes') : t('admin.no')}</TableCell>
                   <TableCell className="text-right">
                     {row.restaurant_id && (
                       <div className="flex justify-end gap-2">
                         <Button variant="ghost" size="sm" onClick={() => setDetail(row)}>
-                          Ver
+                          {t('admin.view')}
                         </Button>
                         <Button variant="outline" size="sm" onClick={() => openEdit(row)}>
-                          Editar
+                          {t('admin.edit')}
                         </Button>
                       </div>
                     )}
@@ -205,31 +206,31 @@ function UsersTab() {
         <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Editar restaurante</DialogTitle>
+              <DialogTitle>{t('admin.editRestaurant')}</DialogTitle>
             </DialogHeader>
             {editing && (
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label>Nombre</Label>
+                  <Label>{t('admin.name')}</Label>
                   <Input value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} />
                 </div>
                 <div className="space-y-2">
-                  <Label>Plan</Label>
+                  <Label>{t('admin.plan')}</Label>
                   <Select value={editing.plan} onValueChange={(v) => setEditing({ ...editing, plan: v })}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="free">Sargantana (free)</SelectItem>
-                      <SelectItem value="pro_monthly">Ferreret (mensual)</SelectItem>
-                      <SelectItem value="pro_annual">Ferreret (anual)</SelectItem>
-                      <SelectItem value="lifetime">Myotragus (lifetime)</SelectItem>
+                      <SelectItem value="free">{t('admin.planFree')}</SelectItem>
+                      <SelectItem value="pro_monthly">{t('admin.planProMonthly')}</SelectItem>
+                      <SelectItem value="pro_annual">{t('admin.planProAnnual')}</SelectItem>
+                      <SelectItem value="lifetime">{t('admin.planLifetime')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Fotos</Label>
+                    <Label>{t('admin.photos')}</Label>
                     <Input
                       type="number"
                       min={0}
@@ -238,7 +239,7 @@ function UsersTab() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Idiomas</Label>
+                    <Label>{t('admin.languages')}</Label>
                     <Input
                       type="number"
                       min={1}
@@ -248,7 +249,7 @@ function UsersTab() {
                   </div>
                 </div>
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="published">Menú publicado</Label>
+                  <Label htmlFor="published">{t('admin.menuPublished')}</Label>
                   <Switch
                     id="published"
                     checked={editing.is_published}
@@ -258,10 +259,10 @@ function UsersTab() {
               </div>
             )}
             <DialogFooter>
-              <Button variant="outline" onClick={() => setEditing(null)}>Cancelar</Button>
+              <Button variant="outline" onClick={() => setEditing(null)}>{t('admin.cancel')}</Button>
               <Button onClick={save} disabled={saving}>
                 {saving && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
-                Guardar
+                {t('admin.save')}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -345,38 +346,38 @@ function CouponsTab() {
     <div className="space-y-4">
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Crear cupón de descuento</CardTitle>
-          <CardDescription>Genera un código de promoción del X% en Stripe (pago único, una compra).</CardDescription>
+          <CardTitle className="text-lg">{t('admin.createCoupon')}</CardTitle>
+          <CardDescription>{t('admin.createCouponDesc')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div className="space-y-2">
-              <Label>Código</Label>
+              <Label>{t('admin.couponCodeLabel')}</Label>
               <Input placeholder="PROMO2026" value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} />
             </div>
             <div className="space-y-2">
-              <Label>% descuento</Label>
+              <Label>{t('admin.couponPercent')}</Label>
               <Input type="number" min={1} max={100} placeholder="100" value={percentOff} onChange={(e) => setPercentOff(e.target.value)} />
             </div>
             <div className="space-y-2">
-              <Label>Canjes máx. (opcional)</Label>
+              <Label>{t('admin.couponMaxRedemptions')}</Label>
               <Input type="number" min={1} placeholder="25" value={maxRedemptions} onChange={(e) => setMaxRedemptions(e.target.value)} />
             </div>
             <div className="space-y-2">
-              <Label>Caduca en días (opcional)</Label>
+              <Label>{t('admin.couponExpiresDays')}</Label>
               <Input type="number" min={1} placeholder="30" value={expiresDays} onChange={(e) => setExpiresDays(e.target.value)} />
             </div>
           </div>
           <Button className="mt-4" onClick={create} disabled={creating || !code.trim() || !percentOff}>
             {creating ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : <Ticket className="h-4 w-4 mr-1" />}
-            Crear cupón
+            {t('admin.couponCreateButton')}
           </Button>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Cupones existentes</CardTitle>
+          <CardTitle className="text-lg">{t('admin.couponsExisting')}</CardTitle>
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -395,11 +396,11 @@ function CouponsTab() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Código</TableHead>
-                    <TableHead>Descuento</TableHead>
-                    <TableHead>Canjes</TableHead>
-                    <TableHead>Caduca</TableHead>
-                    <TableHead className="text-right">Acción</TableHead>
+                    <TableHead>{t('admin.couponCodeLabel')}</TableHead>
+                    <TableHead>{t('admin.couponDiscount')}</TableHead>
+                    <TableHead>{t('admin.couponRedemptions')}</TableHead>
+                    <TableHead>{t('admin.couponExpires')}</TableHead>
+                    <TableHead className="text-right">{t('admin.couponAction')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -411,7 +412,7 @@ function CouponsTab() {
                       <TableCell>{c.expires_at ? new Date(c.expires_at * 1000).toLocaleDateString() : ''}</TableCell>
                       <TableCell className="text-right">
                         <Button variant="outline" size="sm" onClick={() => deactivate(c.id)}>
-                          Desactivar
+                          {t('admin.couponDeactivate')}
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -478,7 +479,7 @@ function MessagesTab() {
       await adminApi.adminDeleteContactMessage(id);
       setMessages((prev) => prev.filter((x) => x.id !== id));
       if (selected?.id === id) setSelected(null);
-      toast({ title: 'Mensaje eliminado' });
+      toast({ title: t('admin.messageDeleted') });
     } catch (e) {
       toast({ title: t('common.error'), description: e instanceof Error ? e.message : t('common.unknownError'), variant: 'destructive' });
     }
@@ -487,11 +488,11 @@ function MessagesTab() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">Mensajes de contacto</CardTitle>
+        <CardTitle className="text-lg">{t('admin.messagesTitle')}</CardTitle>
         <CardDescription>
           {messages.length > 0
-            ? `${messages.length} mensajes · ${unreadCount} sin leer.`
-            : 'Los mensajes del formulario de contacto de la landing llegan aquí.'}
+            ? t('admin.messagesSummary', { n: messages.length, m: unreadCount })
+            : t('admin.messagesLandingHint')}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -502,8 +503,8 @@ function MessagesTab() {
         ) : messages.length === 0 ? (
           <EmptyState
             icon={MessageSquare}
-            title="Aún no hay mensajes."
-            description="Los mensajes del formulario de contacto aparecerán aquí."
+            title={t('admin.messagesEmptyTitle')}
+            description={t('admin.messagesEmptyDesc')}
             className="py-8"
           />
         ) : (
@@ -532,10 +533,10 @@ function MessagesTab() {
                 </button>
                 <div className="flex shrink-0 gap-2 sm:pl-4">
                   <Button variant="outline" size="sm" onClick={() => toggleRead(m)}>
-                    {m.is_read ? 'Marcar no leído' : 'Marcar leído'}
+                    {m.is_read ? t('admin.markUnread') : t('admin.markRead')}
                   </Button>
                   <Button variant="destructive" size="sm" onClick={() => remove(m.id)}>
-                    Eliminar
+                    {t('admin.delete')}
                   </Button>
                 </div>
               </div>
@@ -546,7 +547,7 @@ function MessagesTab() {
         <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Mensaje de {selected?.name ?? ''}</DialogTitle>
+              <DialogTitle>{t('admin.messageFrom', { name: selected?.name ?? '' })}</DialogTitle>
             </DialogHeader>
             {selected && (
               <div className="space-y-4">
@@ -555,7 +556,7 @@ function MessagesTab() {
                     {selected.email}
                   </a>
                   <Badge variant={selected.is_read ? 'secondary' : 'default'}>
-                    {selected.is_read ? 'Leído' : 'Sin leer'}
+                    {selected.is_read ? t('admin.read') : t('admin.unread')}
                   </Badge>
                   <span className="text-muted-foreground">
                     {new Date(selected.created_at).toLocaleString()}
@@ -572,10 +573,10 @@ function MessagesTab() {
                 onClick={() => selected && remove(selected.id)}
                 disabled={!selected}
               >
-                Eliminar
+                {t('admin.delete')}
               </Button>
               <Button variant="outline" onClick={() => setSelected(null)}>
-                Cerrar
+                {t('admin.close')}
               </Button>
             </DialogFooter>
           </DialogContent>

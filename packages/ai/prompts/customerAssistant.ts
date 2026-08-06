@@ -70,6 +70,7 @@ export function buildRankingPrompt(input: {
     input.mood_or_craving ? `El cliente busca: ${input.mood_or_craving}` : null,
     'Para cada recomendación indica "item_id" (id real del plato en la lista) y una explicación breve (1-2 frases) de por qué encaja.',
     'Elige entre 1 y 4 platos. Si la lista está vacía o nada encaja, devuelve recommendations vacías y en "reply" explica amablemente.',
+    'Nunca uses el guion largo (—) en la respuesta. Usa coma, punto o dos puntos.',
     `Responde EXCLUSIVAMENTE con un objeto JSON válido de la forma exacta: ${RANKING_RESPONSE_SHAPE}. Sin texto adicional, sin markdown.`,
   ].filter(Boolean).join(' ');
 
