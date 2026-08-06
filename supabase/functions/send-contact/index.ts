@@ -3,7 +3,14 @@ import { Resend } from "https://esm.sh/resend@2.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { corsHeaders } from "../_shared/cors.ts";
 
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+const resendApiKey = Deno.env.get("RESEND_API_KEY");
+
+// Email delivery is optional: if RESEND_API_KEY is unset, the message is still stored
+// in contact_messages (it arrives in the backoffice regardless).
+function getResend(): Resend | null {
+  if (!resendApiKey) return null;
+  return new Resend(resendApiKey);
+}
 
 interface ContactRequest {
   name: string;
@@ -71,7 +78,11 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Email is best-effort; a delivery failure must not lose the message.
     try {
-      const emailResponse = await resend.emails.send({
+      const resend = getResend();
+      if (!resend) {
+        console.log("RESEND_API_KEY not set, skipping email delivery");
+      } else {
+        const emailResponse = await resend.emails.send({
         from: "SaCarta Contacto <no-reply@sacarta.azpy.es>",
         to: ["sacarta@azpy.es"],
         reply_to: email,
@@ -135,6 +146,7 @@ const handler = async (req: Request): Promise<Response> => {
       `,
       });
       console.log("Contact email sent successfully:", emailResponse);
+      }
     } catch (emailError) {
       console.error("Contact email send failed (message already stored):", emailError);
     }

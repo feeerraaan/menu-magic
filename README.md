@@ -17,7 +17,7 @@
 
 ## The product
 
-SaCarta is a SaaS platform that gives restaurants a **digital menu powered by AI**: upload your menu once, and SaCarta structures it, writes appetizing descriptions, translates it into your guests' languages, and keeps it optimized with data-driven recommendations — all from a QR code your customers scan at the table.
+SaCarta is a SaaS platform that gives restaurants a **digital menu powered by AI**: upload your menu once, and SaCarta structures it, writes appetizing descriptions, translates it into your guests' languages, and keeps it optimized with data-driven recommendations: all from a QR code your customers scan at the table.
 
 Born in Mallorca, built for the hospitality industry: restaurants, hotels, bars, beach clubs and coffee shops.
 
@@ -34,17 +34,17 @@ Restaurant owners lose **hours every week** maintaining their menu:
 
 SaCarta replaces the static menu with an AI employee that runs it for you:
 
-1. **Upload** — import a menu from a PDF or image.
-2. **Build** — AI structures categories, writes descriptions and prices your dishes.
-3. **Translate** — the menu is translated automatically into every language you support.
-4. **Optimize** — a restaurant health score, insights and recommendations show you exactly what to improve.
-5. **Grow** — an AI copilot and customer assistant engage your guests directly.
+1. **Upload**: import a menu from a PDF or image.
+2. **Build**: AI structures categories, writes descriptions and prices your dishes.
+3. **Translate**: the menu is translated automatically into every language you support.
+4. **Optimize**: a restaurant health score, insights and recommendations show you exactly what to improve.
+5. **Grow**: an AI copilot and customer assistant engage your guests directly.
 
 Every feature is built on one shared AI layer (see below), one provider gateway, and a subscription that pays for itself.
 
 ## AI architecture
 
-All AI functionality lives in a **single shared package** consumed by every surface of the app — the frontend (browser) and the backend (Supabase Edge Functions in Deno):
+All AI functionality lives in a **single shared package** consumed by every surface of the app: the frontend (browser) and the backend (Supabase Edge Functions in Deno):
 
 ```
 ┌─────────────┐        ┌──────────────────────────────────────────┐        ┌──────────────┐
@@ -55,7 +55,7 @@ All AI functionality lives in a **single shared package** consumed by every surf
 ```
 
 - **7 agents**: Description, Translation, Optimizer, Import, Copilot, Insights + Recommendations, Customer Assistant.
-- **7 Zod schemas** validate every input/output at the boundary — invalid data never reaches the UI.
+- **7 Zod schemas** validate every input/output at the boundary: invalid data never reaches the UI.
 - **1 LLM provider**: OpenCode Zen with **key rotation** and a **fallback chain** (free → paid gateway) for zero-downtime generation.
 - **Pipelines** (Optimizer, Insights, Import) combine deterministic business rules with AI for fast, cheap, explainable results.
 - All generation is **audited**: jobs, credit consumption and menu scores are persisted to the database.
@@ -69,7 +69,7 @@ All AI functionality lives in a **single shared package** consumed by every surf
 | **Frontend** | Vite + React + TypeScript SPA (shadcn/ui + Tailwind), i18n (en/es/ca). |
 | **Supabase** | Postgres (21 tables, RLS enabled everywhere), Auth, Storage, and 14 Deno Edge Functions. |
 | **Vercel serverless** | Two Node endpoints for long-running AI menu imports (up to 300 s), step-based. |
-| **AI layer** | `packages/ai` — shared TypeScript used by both browser and Edge Functions. |
+| **AI layer** | `packages/ai`: shared TypeScript used by both browser and Edge Functions. |
 | **AI gateway** | OpenCode Zen (key rotation + fallback) as the single LLM provider. |
 | **Payments** | Stripe billing (3 plans) with customer portal. |
 | **Email** | Resend transactional email (welcome, contact). |
@@ -92,7 +92,7 @@ All AI functionality lives in a **single shared package** consumed by every surf
 
 ```
 menu-magic/
-├── api/                        # Vercel serverless — long AI imports (Node)
+├── api/                        # Vercel serverless: long AI imports (Node)
 │   ├── ai-import-start.ts
 │   └── ai-import-step.ts
 ├── packages/
@@ -165,6 +165,7 @@ supabase db push
 | `AI_IMPORT_GO_FALLBACK_MODEL` | Optional | Paid gateway fallback model |
 | `RESEND_API_KEY` | Optional | Transactional email |
 | `STRIPE_SECRET_KEY` | Optional | Stripe server key (billing) |
+| `STRIPE_WEBHOOK_SECRET` | Optional | Stripe webhook signing secret (entitlement sync, `stripe-webhook` Edge Function) |
 
 > Secrets (service-role key, AI keys, Stripe/Resend keys) must **never** be exposed in frontend code or committed. They only exist in serverless / Edge Function environments.
 
@@ -176,8 +177,8 @@ supabase db push
 
 ## Live demo
 
-**[sacarta.azpy.es](https://sacarta.azpy.es)** — scan a QR at a real table, watch the menu translate itself, and ask the AI copilot a question. Free tier included.
+**[sacarta.azpy.es](https://sacarta.azpy.es)**: scan a QR at a real table, watch the menu translate itself, and ask the AI copilot a question. Free tier included.
 
 ## Author
 
-Built by [@feeerraaan](https://github.com/feeerraaan) — born in Mallorca, recién horneado. 🥧
+Built by [@feeerraaan](https://github.com/feeerraaan): born in Mallorca, recién horneado. 🥧
