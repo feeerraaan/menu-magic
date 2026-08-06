@@ -1,13 +1,9 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+import { corsHeaders } from "../_shared/cors.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
 
 interface ContactRequest {
   name: string;
@@ -49,14 +45,38 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    console.log("Sending contact email from:", email);
+    // Store the message so it always reaches the backoffice, even if email is unavailable.
+    const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+    const supabase = createClient(supabaseUrl, serviceRoleKey, {
+      auth: { persistSession: false },
+    });
 
-    const emailResponse = await resend.emails.send({
-      from: "SaCarta Contacto <no-reply@sacarta.azpy.es>",
-      to: ["sacarta@azpy.es"],
-      reply_to: email,
-      subject: `Nuevo mensaje de contacto de ${name}`,
-      html: `
+    const { error: insertError } = await supabase
+      .from("contact_messages")
+      .insert({ name, email, message });
+
+    if (insertError) {
+      console.error("Error storing contact message:", insertError);
+      return new Response(
+        JSON.stringify({ error: "No se pudo guardar el mensaje" }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
+    console.log("Contact message stored for:", email);
+
+    // Email is best-effort; a delivery failure must not lose the message.
+    try {
+      const emailResponse = await resend.emails.send({
+        from: "SaCarta Contacto <no-reply@sacarta.azpy.es>",
+        to: ["sacarta@azpy.es"],
+        reply_to: email,
+        subject: `Nuevo mensaje de contacto de ${name}`,
+        html: `
         <!DOCTYPE html>
         <html lang="es">
         <head>
@@ -113,9 +133,11 @@ const handler = async (req: Request): Promise<Response> => {
         </body>
         </html>
       `,
-    });
-
-    console.log("Contact email sent successfully:", emailResponse);
+      });
+      console.log("Contact email sent successfully:", emailResponse);
+    } catch (emailError) {
+      console.error("Contact email send failed (message already stored):", emailError);
+    }
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,

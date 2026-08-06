@@ -6,7 +6,7 @@
   "hero": {
     "title": "A restaurant menu that",
     "highlight": "works for you",
-    "description": "Create, translate and optimize your menu with AI in minutes. Your customers scan, and everything they need is right there — in their language.",
+    "description": "Create, translate and optimize your menu with AI in minutes. Your customers scan, and everything they need is right there, in their language.",
     "startButton": "Start Free",
     "demoButton": "View Live Demo",
     "badge": "AI-powered menu platform"
@@ -731,7 +731,7 @@
       },
       {
         "title": "Never translated",
-        "desc": "International guests can't read your menu, so they order less — or leave."
+        "desc": "International guests can't read your menu, so they order less, or leave."
       },
       {
         "title": "Zero visibility",
@@ -770,7 +770,7 @@
       {
         "label": "Time",
         "before": "Hours every week editing dishes.",
-        "after": "Minutes a month — or none."
+        "after": "Minutes a month, or none."
       },
       {
         "label": "Manual work",

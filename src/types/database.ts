@@ -124,6 +124,6 @@ export interface Profile {
   updated_at: string;
 }
 
-// PlanType/PLAN_LIMITS live in @/lib/subscription-limits — that's the single source of
+// PlanType/PLAN_LIMITS live in @/lib/subscription-limits - that's the single source of
 // truth for plan limits (consumed via useSubscriptionContext()); this file used to have
 // a second, drifted copy of both that nothing actually imported.

@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 /**
  * Shared empty-state: explanatory headline + subtext + strong CTA.
  * Empty states should invite the next AI-assisted action, never show dead text.
- * Plan: docs/HACKATHON_POLISH_PLAN.md — Task 7.
+ * Plan: docs/HACKATHON_POLISH_PLAN.md - Task 7.
  */
 interface EmptyStateProps {
   icon?: LucideIcon;

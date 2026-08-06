@@ -23,7 +23,7 @@ export interface PlanLimits {
   // (an import costs ~15x a single description) to hand-tune separately.
   aiCreditsPerMonth: number;
   // Phase 8: public anonymous chat on the menu page. Gated by plan flag, NOT credit-metered
-  // against the owner's pool — its cost is driven by diner traffic, not the owner's actions
+  // against the owner's pool - its cost is driven by diner traffic, not the owner's actions
   // (see docs/FEATURE_SPECIFICATIONS.md §Phase 8).
   aiCustomerAssistantEnabled: boolean;
 }

@@ -42,8 +42,8 @@ function Sparkline({ data }: { data: { date: string; views: number }[] }) {
 }
 
 /**
- * "Today" — the daily activity card of the Overview.
- * Plan: docs/HACKATHON_POLISH_PLAN.md — Task 4 (implemented with Task 3).
+ * "Today" - the daily activity card of the Overview.
+ * Plan: docs/HACKATHON_POLISH_PLAN.md - Task 4 (implemented with Task 3).
  */
 export function TodaySection({
   todayViews,

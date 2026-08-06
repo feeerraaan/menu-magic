@@ -43,7 +43,7 @@ export default function QRCodePage() {
     try {
       localStorage.setItem(LOGO_STORAGE_KEY(restaurant.slug), mode);
     } catch {
-      // Storage unavailable — keep the choice in-memory for this session.
+      // Storage unavailable - keep the choice in-memory for this session.
     }
   };
 

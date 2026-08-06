@@ -31,7 +31,7 @@ export function useAiOptimizer(restaurantId: string | undefined) {
 
   // Realtime: this run() call resolves synchronously today, but subscribing here means the
   // UI keeps working unchanged if a future optimizer run ever needs to go fully async (the
-  // same channel pattern Phase 4's AI Import relies on for real — see docs/AI_ARCHITECTURE.md §4).
+  // same channel pattern Phase 4's AI Import relies on for real - see docs/AI_ARCHITECTURE.md §4).
   useEffect(() => {
     if (!restaurantId) return;
     const channel = supabase

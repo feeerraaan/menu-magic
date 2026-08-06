@@ -27,7 +27,7 @@ import type {
 } from '@ai/customerAssistant';
 
 // One function per AI operation, mirroring src/lib/api.ts's convention. Every call goes
-// through supabase.functions.invoke — never a direct provider/agent import (see
+// through supabase.functions.invoke - never a direct provider/agent import (see
 // docs/AI_ARCHITECTURE.md §1 and §5).
 
 // Edge Functions signal failure with a non-2xx status; supabase-js wraps that in a
@@ -94,7 +94,7 @@ export async function fetchMenuScoreHistory(restaurantId: string): Promise<MenuS
 
 /**
  * Credits spent this billing period (or this month when the subscription has no
- * current_period_start), via the get_ai_credits_used_this_period SECURITY DEFINER function —
+ * current_period_start), via the get_ai_credits_used_this_period SECURITY DEFINER function -
  * safe to call from the client; the owner can only ever read their own restaurant's usage.
  */
 export async function fetchAiCreditsUsed(restaurantId: string): Promise<number> {
@@ -257,7 +257,7 @@ interface CommitImportedMenuInput {
 /**
  * Persists an owner-reviewed import result as real menus/categories/items, using the exact
  * same tables/writes as the manual editor (createMenu/createCategory/createItem-equivalent
- * inserts) — this is a normal authenticated write respecting RLS, not an AI operation, so it
+ * inserts) - this is a normal authenticated write respecting RLS, not an AI operation, so it
  * doesn't go through an Edge Function.
  *
  * Enforces the plan's real limits BEFORE writing anything: an import must not exceed the
@@ -278,7 +278,7 @@ export async function commitImportedMenu(input: CommitImportedMenuInput): Promis
     items: addedItems,
   });
 
-  // Imported translations must not exceed the plan's language quota either — the restaurant's
+  // Imported translations must not exceed the plan's language quota either - the restaurant's
   // supported_languages should already respect it, but guard against a stale config.
   const supportedLanguages = (await fetchRestaurantSupportedLanguages(input.restaurantId));
   const plan = await getPlanTypeForRestaurant(input.restaurantId);

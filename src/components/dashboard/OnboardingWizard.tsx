@@ -78,7 +78,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
 
   // Phase 5 (AI Setup): after the AI import is committed, remove the auto-created empty
   // default menu (created in createRestaurant) so the imported menu is the restaurant's only
-  // active menu — otherwise the empty "Main Menu" shadows it on the public page.
+  // active menu - otherwise the empty "Main Menu" shadows it on the public page.
   const removeEmptyDefaultMenu = async () => {
     if (!restaurant) return;
     const { data: menus } = await supabase
@@ -139,7 +139,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
   };
 
   // AI Setup path: after the user commits the imported menu, clean up the empty default menu
-  // and jump straight to the existing finish flow (no manual address/currency steps needed —
+  // and jump straight to the existing finish flow (no manual address/currency steps needed -
   // the AI path skips them, mirroring docs/FEATURE_SPECIFICATIONS.md §Phase 5).
   const handleAiSetupImported = async () => {
     try {
@@ -325,7 +325,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
         </CardContent>
       </Card>
 
-      {/* Phase 5 — AI Setup: same upload UI as AI Import, tagged job_type='ai_setup' so
+      {/* Phase 5 - AI Setup: same upload UI as AI Import, tagged job_type='ai_setup' so
           onboarding imports are separable in analytics (docs/FEATURE_SPECIFICATIONS.md §Phase 5). */}
       <AiImportDialog
         open={aiSetupOpen}

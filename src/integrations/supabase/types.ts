@@ -514,6 +514,33 @@ export type Database = {
           },
         ]
       }
+      contact_messages: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          is_read: boolean
+          message: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          is_read?: boolean
+          message: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          name?: string
+        }
+        Relationships: []
+      }
       category_translations: {
         Row: {
           category_id: string
@@ -932,9 +959,21 @@ export type Database = {
         Args: { _is_active: boolean; _name: string; _restaurant_id: string }
         Returns: string
       }
+      admin_delete_contact_message: { Args: { _message_id: string }; Returns: boolean }
       admin_delete_menu: { Args: { _menu_id: string }; Returns: boolean }
       admin_get_menu_details: { Args: { _menu_id: string }; Returns: Json }
       admin_get_restaurant: { Args: { _restaurant_id: string }; Returns: Json }
+      admin_list_contact_messages: {
+        Args: never
+        Returns: {
+          created_at: string
+          email: string
+          id: string
+          is_read: boolean
+          message: string
+          name: string
+        }[]
+      }
       admin_list_menus: {
         Args: { _restaurant_id: string }
         Returns: {
@@ -973,6 +1012,10 @@ export type Database = {
           _menu_id: string
           _name: string
         }
+        Returns: boolean
+      }
+      admin_toggle_contact_message_read: {
+        Args: { _is_read: boolean; _message_id: string }
         Returns: boolean
       }
       admin_update_restaurant: {

@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { EmptyState } from '@/components/ui/empty-state';
-import { Loader2, ShieldCheck, Users, Ticket } from 'lucide-react';
+import { Loader2, ShieldCheck, Users, Ticket, MessageSquare } from 'lucide-react';
 import { useIsAdmin } from '@/hooks/useIsAdmin';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useToast } from '@/hooks/use-toast';
@@ -70,12 +70,18 @@ export default function Admin() {
           <TabsTrigger value="coupons" className="gap-1.5">
             <Ticket className="h-4 w-4" /> Cupones
           </TabsTrigger>
+          <TabsTrigger value="messages" className="gap-1.5">
+            <MessageSquare className="h-4 w-4" /> Mensajes
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="users">
           <UsersTab />
         </TabsContent>
         <TabsContent value="coupons">
           <CouponsTab />
+        </TabsContent>
+        <TabsContent value="messages">
+          <MessagesTab />
         </TabsContent>
       </Tabs>
     </div>
@@ -332,7 +338,7 @@ function CouponsTab() {
     }
   };
 
-  // Only active coupons are shown — deactivated ones leave the panel.
+  // Only active coupons are shown - deactivated ones leave the panel.
   const activeCoupons = coupons.filter((c) => c.active);
 
   return (
@@ -417,5 +423,164 @@ function CouponsTab() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+function MessagesTab() {
+  const { toast } = useToast();
+  const { t } = useTranslation();
+  const [messages, setMessages] = useState<adminApi.AdminContactMessage[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selected, setSelected] = useState<adminApi.AdminContactMessage | null>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      setMessages(await adminApi.adminListContactMessages());
+    } catch (e) {
+      toast({ title: t('common.error'), description: e instanceof Error ? e.message : t('common.unknownError'), variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
+  }, [toast, t]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  const unreadCount = messages.filter((m) => !m.is_read).length;
+
+  const openMessage = async (m: adminApi.AdminContactMessage) => {
+    setSelected(m);
+    if (!m.is_read) {
+      try {
+        await adminApi.adminToggleContactMessageRead(m.id, true);
+        setMessages((prev) => prev.map((x) => (x.id === m.id ? { ...x, is_read: true } : x)));
+      } catch {
+        // non-blocking: read state is cosmetic
+      }
+    }
+  };
+
+  const toggleRead = async (m: adminApi.AdminContactMessage) => {
+    const next = !m.is_read;
+    try {
+      await adminApi.adminToggleContactMessageRead(m.id, next);
+      setMessages((prev) => prev.map((x) => (x.id === m.id ? { ...x, is_read: next } : x)));
+      if (selected?.id === m.id) setSelected({ ...selected, is_read: next });
+    } catch (e) {
+      toast({ title: t('common.error'), description: e instanceof Error ? e.message : t('common.unknownError'), variant: 'destructive' });
+    }
+  };
+
+  const remove = async (id: string) => {
+    try {
+      await adminApi.adminDeleteContactMessage(id);
+      setMessages((prev) => prev.filter((x) => x.id !== id));
+      if (selected?.id === id) setSelected(null);
+      toast({ title: 'Mensaje eliminado' });
+    } catch (e) {
+      toast({ title: t('common.error'), description: e instanceof Error ? e.message : t('common.unknownError'), variant: 'destructive' });
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg">Mensajes de contacto</CardTitle>
+        <CardDescription>
+          {messages.length > 0
+            ? `${messages.length} mensajes · ${unreadCount} sin leer.`
+            : 'Los mensajes del formulario de contacto de la landing llegan aquí.'}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {loading ? (
+          <div className="flex items-center justify-center py-16">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : messages.length === 0 ? (
+          <EmptyState
+            icon={MessageSquare}
+            title="Aún no hay mensajes."
+            description="Los mensajes del formulario de contacto aparecerán aquí."
+            className="py-8"
+          />
+        ) : (
+          <div className="space-y-3">
+            {messages.map((m) => (
+              <div
+                key={m.id}
+                className={`flex flex-col gap-2 rounded-xl border p-4 transition-colors sm:flex-row sm:items-center ${
+                  m.is_read ? 'border-border/60 bg-card' : 'border-primary/40 bg-primary/5'
+                }`}
+              >
+                <button
+                  type="button"
+                  onClick={() => openMessage(m)}
+                  className="flex-1 min-w-0 text-left"
+                >
+                  <div className="flex items-center gap-2">
+                    {!m.is_read && <span className="h-2 w-2 shrink-0 rounded-full bg-primary" />}
+                    <span className="font-medium truncate">{m.name}</span>
+                    <span className="text-muted-foreground text-sm truncate">{m.email}</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{m.message}</p>
+                  <p className="text-xs text-muted-foreground/70 mt-1">
+                    {new Date(m.created_at).toLocaleString()}
+                  </p>
+                </button>
+                <div className="flex shrink-0 gap-2 sm:pl-4">
+                  <Button variant="outline" size="sm" onClick={() => toggleRead(m)}>
+                    {m.is_read ? 'Marcar no leído' : 'Marcar leído'}
+                  </Button>
+                  <Button variant="destructive" size="sm" onClick={() => remove(m.id)}>
+                    Eliminar
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Mensaje de {selected?.name ?? ''}</DialogTitle>
+            </DialogHeader>
+            {selected && (
+              <div className="space-y-4">
+                <div className="flex flex-wrap items-center gap-2 text-sm">
+                  <a href={`mailto:${selected.email}`} className="text-primary hover:underline">
+                    {selected.email}
+                  </a>
+                  <Badge variant={selected.is_read ? 'secondary' : 'default'}>
+                    {selected.is_read ? 'Leído' : 'Sin leer'}
+                  </Badge>
+                  <span className="text-muted-foreground">
+                    {new Date(selected.created_at).toLocaleString()}
+                  </span>
+                </div>
+                <p className="whitespace-pre-wrap rounded-lg bg-muted/50 p-4 text-sm leading-relaxed">
+                  {selected.message}
+                </p>
+              </div>
+            )}
+            <DialogFooter className="flex justify-between sm:justify-between">
+              <Button
+                variant="destructive"
+                onClick={() => selected && remove(selected.id)}
+                disabled={!selected}
+              >
+                Eliminar
+              </Button>
+              <Button variant="outline" onClick={() => setSelected(null)}>
+                Cerrar
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </CardContent>
+    </Card>
   );
 }

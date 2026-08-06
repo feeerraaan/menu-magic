@@ -27,7 +27,7 @@ export async function createRestaurant(data: Partial<Restaurant> & { owner_id: s
   if (error) throw error;
 
   // The default 'free' subscription row is created server-side by the
-  // handle_new_restaurant_subscription trigger (migration 20260805120000_*) — the client
+  // handle_new_restaurant_subscription trigger (migration 20260805120000_*) - the client
   // cannot insert into subscriptions (RLS blocks it), which is why this used to silently
   // no-op and leave restaurants without a subscription row.
 
@@ -269,7 +269,7 @@ export async function uploadImage(file: File, restaurantId: string): Promise<str
 // The manual editor blocks in the UI via `canCreateMenu/Category/Item`, but those are
 // computed from the component's local state which can drift (and AI import bypassed them
 // entirely). These helpers query the real row counts + the real subscription plan right
-// before a write and throw a clear upgrade-prompt error when the plan would be exceeded —
+// before a write and throw a clear upgrade-prompt error when the plan would be exceeded -
 // the single source of truth for every create path.
 // ---------------------------------------------------------------------------
 

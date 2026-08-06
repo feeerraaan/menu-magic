@@ -6,7 +6,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 /**
  * Premium AI preparation flow shown right after onboarding or an AI import.
  * Builds anticipation before dropping the user into the polished dashboard.
- * Plan: docs/HACKATHON_POLISH_PLAN.md — Task 6.
+ * Plan: docs/HACKATHON_POLISH_PLAN.md - Task 6.
  */
 interface AiWelcomeSequenceProps {
   open: boolean;

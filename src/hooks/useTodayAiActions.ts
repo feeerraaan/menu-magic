@@ -5,7 +5,7 @@ import { startOfDay } from 'date-fns';
 /**
  * Counts AI actions performed today (rows in ai_usage for this restaurant
  * since local start of day). Used by the "Today" card of the Overview.
- * Plan: docs/HACKATHON_POLISH_PLAN.md — Task 4.
+ * Plan: docs/HACKATHON_POLISH_PLAN.md - Task 4.
  */
 export function useTodayAiActions(restaurantId: string | undefined) {
   const [count, setCount] = useState<number>(0);

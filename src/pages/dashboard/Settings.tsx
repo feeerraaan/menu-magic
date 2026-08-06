@@ -111,7 +111,7 @@ export default function Settings() {
     }
   };
 
-  // The logo persists immediately on upload/remove — uploading already gave the user visual
+  // The logo persists immediately on upload/remove - uploading already gave the user visual
   // feedback, so it should not depend on the separate "Guardar cambios" button.
   const handleLogoChange = async (url: string | null) => {
     setLogoUrl(url);

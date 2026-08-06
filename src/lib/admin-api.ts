@@ -1,7 +1,7 @@
 import { supabase } from '@/integrations/supabase/client';
 
 // Client API for the superadmin backoffice. Every call is gated server-side by the
-// has_role(auth.uid(), 'admin') check inside the RPCs / Edge Function — the client just
+// has_role(auth.uid(), 'admin') check inside the RPCs / Edge Function - the client just
 // surfaces the results.
 
 export interface AdminUserRow {
@@ -236,4 +236,41 @@ export async function adminDeactivateCoupon(id: string): Promise<{ id: string; a
     id: string;
     active: boolean;
   };
+}
+
+// Contact form messages (landing page "Contacto"), see migration 20260806090000_*.
+
+export interface AdminContactMessage {
+  id: string;
+  name: string;
+  email: string;
+  message: string;
+  is_read: boolean;
+  created_at: string;
+}
+
+export async function adminListContactMessages(): Promise<AdminContactMessage[]> {
+  const { data, error } = await supabase.rpc('admin_list_contact_messages');
+  if (error) throw error;
+  return (data ?? []) as AdminContactMessage[];
+}
+
+export async function adminToggleContactMessageRead(
+  messageId: string,
+  isRead: boolean,
+): Promise<boolean> {
+  const { data, error } = await supabase.rpc('admin_toggle_contact_message_read', {
+    _message_id: messageId,
+    _is_read: isRead,
+  });
+  if (error) throw error;
+  return !!data;
+}
+
+export async function adminDeleteContactMessage(messageId: string): Promise<boolean> {
+  const { data, error } = await supabase.rpc('admin_delete_contact_message', {
+    _message_id: messageId,
+  });
+  if (error) throw error;
+  return !!data;
 }

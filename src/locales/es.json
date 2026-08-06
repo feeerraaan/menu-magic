@@ -6,7 +6,7 @@
   "hero": {
     "title": "Una carta de restaurante que",
     "highlight": "trabaja por ti",
-    "description": "Crea, traduce y optimiza tu menú con IA en minutos. Tus clientes escanean y tienen todo lo que necesitan al instante — en su idioma.",
+    "description": "Crea, traduce y optimiza tu menú con IA en minutos. Tus clientes escanean y tienen todo lo que necesitan al instante, en su idioma.",
     "startButton": "Empezar gratis",
     "demoButton": "Ver demo en vivo",
     "badge": "Plataforma de cartas con IA"
@@ -728,7 +728,7 @@
       },
       {
         "title": "Nunca traducida",
-        "desc": "Los clientes internacionales no pueden leer tu carta, así que piden menos — o se van."
+        "desc": "Los clientes internacionales no pueden leer tu carta, así que piden menos, o se van."
       },
       {
         "title": "Cero visibilidad",

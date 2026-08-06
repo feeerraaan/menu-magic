@@ -37,7 +37,7 @@ function persistSnapshot(restaurantId: string, score: number): number | null {
   try {
     localStorage.setItem(SNAPSHOTS_KEY(restaurantId), JSON.stringify(next));
   } catch {
-    // storage full/blocked — non-fatal
+    // storage full/blocked - non-fatal
   }
   return previous ? previous.score : null;
 }

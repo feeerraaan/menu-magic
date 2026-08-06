@@ -6,7 +6,7 @@
   "hero": {
     "title": "Una carta de restaurant que",
     "highlight": "treballa per tu",
-    "description": "Crea, tradueix i optimitza el teu menú amb IA en minuts. Els teus clients escanegen i tenen tot el que necessiten a l'instant — en el seu idioma.",
+    "description": "Crea, tradueix i optimitza el teu menú amb IA en minuts. Els teus clients escanegen i tenen tot el que necessiten a l'instant, en el seu idioma.",
     "startButton": "Començar gratis",
     "demoButton": "Veure demostració en directe",
     "badge": "Plataforma de cartes amb IA"
@@ -728,7 +728,7 @@
       },
       {
         "title": "Mai traduïda",
-        "desc": "Els clients internacionals no poden llegir la teva carta, així que demanen menys — o se'n van."
+        "desc": "Els clients internacionals no poden llegir la teva carta, així que demanen menys, o se'n van."
       },
       {
         "title": "Zero visibilitat",

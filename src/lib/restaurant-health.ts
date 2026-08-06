@@ -1,6 +1,6 @@
-// Restaurant Health Score — deterministic rules engine (v1).
+// Restaurant Health Score - deterministic rules engine (v1).
 // Pure functions, no I/O: unit-testable and safe. No LLM cost, no DB writes.
-// Plan: docs/HACKATHON_POLISH_PLAN.md — Task 3.
+// Plan: docs/HACKATHON_POLISH_PLAN.md - Task 3.
 
 import type { Category, CategoryTranslation, Item, ItemTranslation, Restaurant } from '@/types/database';
 
@@ -16,7 +16,7 @@ export type HealthFactorStatus = 'good' | 'warn' | 'bad';
 
 export interface HealthFactor {
   id: HealthFactorId;
-  /** Points earned (0..maxScore), fractional — rounded by the caller. */
+  /** Points earned (0..maxScore), fractional - rounded by the caller. */
   score: number;
   maxScore: number;
   /** Progress evidence for the UI note. */

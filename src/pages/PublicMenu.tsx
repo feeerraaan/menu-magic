@@ -359,7 +359,7 @@ function MenuContent({ data }: { data: PublicMenuData }) {
         <p>{t('footer.copyright', { year: new Date().getFullYear().toString() })}</p>
       </footer>
 
-      {/* Phase 8 — AI Customer Assistant (anonymous chat widget) */}
+      {/* Phase 8 - AI Customer Assistant (anonymous chat widget) */}
       <CustomerAssistantWidget slug={restaurant.slug} />
     </div>
   );
