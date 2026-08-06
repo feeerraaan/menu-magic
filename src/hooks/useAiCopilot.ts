@@ -39,24 +39,6 @@ export function useAiCopilot(restaurantId: string | undefined) {
     }
   }, [restaurantId]);
 
-  useEffect(() => {
-    let disposed = false;
-    (async () => {
-      if (!restaurantId) return;
-      const { conversations: list } = await aiApi.listCopilotConversations({ restaurantId });
-      if (disposed) return;
-      setConversations(list);
-      // Auto-resume the most recent conversation so returning to the page never starts blank.
-      if (!autoOpenedRef.current && list.length > 0) {
-        autoOpenedRef.current = true;
-        await openConversation(list[0].id);
-      }
-    })();
-    return () => {
-      disposed = true;
-    };
-  }, [restaurantId, openConversation]);
-
   const openConversation = useCallback(
     async (id: string) => {
       if (!restaurantId) return;
@@ -75,6 +57,24 @@ export function useAiCopilot(restaurantId: string | undefined) {
     },
     [restaurantId],
   );
+
+  useEffect(() => {
+    let disposed = false;
+    (async () => {
+      if (!restaurantId) return;
+      const { conversations: list } = await aiApi.listCopilotConversations({ restaurantId });
+      if (disposed) return;
+      setConversations(list);
+      // Auto-resume the most recent conversation so returning to the page never starts blank.
+      if (!autoOpenedRef.current && list.length > 0) {
+        autoOpenedRef.current = true;
+        await openConversation(list[0].id);
+      }
+    })();
+    return () => {
+      disposed = true;
+    };
+  }, [restaurantId, openConversation]);
 
   const newConversation = useCallback(() => {
     setConversationId(null);
