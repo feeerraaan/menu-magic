@@ -123,6 +123,7 @@ function CategoryCard({
   expanded,
   onToggleExpand,
 }: CategoryCardProps) {
+  const { t } = useTranslation();
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
