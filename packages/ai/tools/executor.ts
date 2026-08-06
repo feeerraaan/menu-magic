@@ -243,7 +243,7 @@ export async function executePreview(
     }
 
     default:
-      throw new Error(`Tool "${toolName}" no es ejecutable`);
+      throw new Error(`Tool "${toolName}" is not executable`);
   }
 
   return { applied, changes };

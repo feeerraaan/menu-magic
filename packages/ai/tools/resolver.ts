@@ -236,8 +236,8 @@ export function previewBulkAdjustPrices(
   const hasChange = changes.some((c) => c.before !== c.after);
   return {
     summary: hasChange
-      ? `Ajustar precios de ${items.length} plato(s)${args.category_name_filter ? ` en categorías que contienen "${args.category_name_filter}"` : ''}${args.item_name_filter ? ` con nombres que contienen "${args.item_name_filter}"` : ''}.`
-      : `Ningún plato coincide con el filtro — nada que ajustar.`,
+      ? `Adjust prices of ${items.length} dish(es)${args.category_name_filter ? ` in categories containing "${args.category_name_filter}"` : ''}${args.item_name_filter ? ` with names containing "${args.item_name_filter}"` : ''}.`
+      : `No dishes match the filter. Nothing to adjust.`,
     destructive: false,
     affected_count: items.length,
     changes,
@@ -294,8 +294,8 @@ export function previewBulkUpdateDietaryFlags(
   const softHide = changes.some((c) => c.field === 'is_active' && c.after === false);
   return {
     summary: changes.length
-      ? `Actualizar ${items.length} plato(s) (${changes.length} cambio(s)).${softHide ? ' Incluye ocultar platos (is_active=false) — no borrado físico.' : ''}`
-      : 'Ningún plato coincide o ningún cambio real — nada que hacer.',
+      ? `Update ${items.length} dish(es) (${changes.length} change(s)).${softHide ? ' Includes hiding dishes (is_active=false). No physical deletion.' : ''}`
+      : 'No dishes match or no real change. Nothing to do.',
     destructive: softHide,
     affected_count: items.length,
     changes,
@@ -310,7 +310,7 @@ export function previewCreateCategory(
   const menus = args.menu_id ? graph.menus.filter((m) => m.id === args.menu_id) : args.menu_name ? resolveMenu(graph, args.menu_name) : [];
   if (menus.length === 0) {
     return {
-      summary: 'No se encontró el menú destino. Di el nombre de un menú existente (usa get_menu_structure).',
+      summary: 'Target menu not found. Name an existing menu (use get_menu_structure).',
       destructive: false,
       affected_count: 0,
       changes: [],
@@ -321,7 +321,7 @@ export function previewCreateCategory(
   const existing = graph.categories.some((c) => c.menu_id === menu.id && norm(c.name) === norm(args.name));
   if (existing) {
     return {
-      summary: `La categoría "${args.name}" ya existe en el menú "${menu.name}".`,
+      summary: `The category "${args.name}" already exists in menu "${menu.name}".`,
       destructive: false,
       affected_count: 0,
       changes: [],
@@ -329,7 +329,7 @@ export function previewCreateCategory(
     };
   }
   return {
-    summary: `Crear categoría "${args.name}" en el menú "${menu.name}".`,
+    summary: `Create category "${args.name}" in menu "${menu.name}".`,
     destructive: false,
     affected_count: 1,
     changes: [{ entity_type: 'category', entity_id: '__new__', entity_name: args.name, field: 'name', before: null, after: args.name }],
@@ -360,7 +360,7 @@ export function previewCreateItem(
       : [];
   if (cats.length === 0) {
     return {
-      summary: 'No se encontró la categoría destino. Da el nombre exacto de una categoría existente.',
+      summary: 'Target category not found. Give the exact name of an existing category.',
       destructive: false,
       affected_count: 0,
       changes: [],
@@ -371,7 +371,7 @@ export function previewCreateItem(
   const existing = graph.items.some((i) => i.category_id === cat.id && norm(i.name) === norm(args.name));
   if (existing) {
     return {
-      summary: `El plato "${args.name}" ya existe en "${cat.name}".`,
+      summary: `The dish "${args.name}" already exists in "${cat.name}".`,
       destructive: false,
       affected_count: 0,
       changes: [],
@@ -379,7 +379,7 @@ export function previewCreateItem(
     };
   }
   return {
-    summary: `Crear plato "${args.name}"${args.price !== undefined ? ` a ${args.price} ${graph.currency}` : ''} en "${cat.name}" (oculto hasta publicarlo).`,
+    summary: `Crear plato "${args.name}"${args.price !== undefined ? ` at ${args.price} ${graph.currency}` : ''} in "${cat.name}" (hidden until published).`,
     destructive: false,
     affected_count: 1,
     changes: [{ entity_type: 'item', entity_id: '__new__', entity_name: args.name, field: 'name', before: null, after: args.name }],
@@ -404,7 +404,7 @@ export function previewUpdateItem(
   const items = args.item_id ? graph.items.filter((i) => i.id === args.item_id) : args.item_name ? resolveItem(graph, args.item_name) : [];
   if (items.length === 0) {
     return {
-      summary: 'No se encontró el plato. Usa search_items para encontrarlo.',
+      summary: 'Dish not found. Use search_items to locate it.',
       destructive: false,
       affected_count: 0,
       changes: [],
@@ -420,7 +420,7 @@ export function previewUpdateItem(
     }
   }
   return {
-    summary: `Actualizar "${item.name}" (${changes.length} cambio(s)).`,
+    summary: `Update "${item.name}" (${changes.length} change(s)).`,
     destructive: changes.some((c) => c.field === 'is_active' && c.after === false),
     affected_count: 1,
     changes,
@@ -439,7 +439,7 @@ export function previewUpdateCategory(
       : [];
   if (cats.length === 0) {
     return {
-      summary: 'No se encontró la categoría. Usa get_menu_structure para verlas.',
+      summary: 'Category not found. Use get_menu_structure to list them.',
       destructive: false,
       affected_count: 0,
       changes: [],
@@ -455,7 +455,7 @@ export function previewUpdateCategory(
     }
   }
   return {
-    summary: `Actualizar categoría "${cat.name}" (${changes.length} cambio(s)).`,
+    summary: `Update category "${cat.name}" (${changes.length} change(s)).`,
     destructive: false,
     affected_count: 1,
     changes,
@@ -470,7 +470,7 @@ export function previewUpdateMenu(
   const menus = args.menu_id ? graph.menus.filter((m) => m.id === args.menu_id) : args.menu_name ? resolveMenu(graph, args.menu_name) : [];
   if (menus.length === 0) {
     return {
-      summary: 'No se encontró el menú. Usa get_menu_structure para verlos.',
+      summary: 'Menu not found. Use get_menu_structure to list them.',
       destructive: false,
       affected_count: 0,
       changes: [],
@@ -486,7 +486,7 @@ export function previewUpdateMenu(
     }
   }
   return {
-    summary: `Actualizar menú "${menu.name}" (${changes.length} cambio(s)).`,
+    summary: `Update menu "${menu.name}" (${changes.length} change(s)).`,
     destructive: false,
     affected_count: 1,
     changes,

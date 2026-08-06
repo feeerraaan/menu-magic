@@ -206,7 +206,7 @@ serve(async (req) => {
             supabaseService,
             conversationId,
             "assistant",
-            `Se necesita tu confirmación: ${computed.summary}`,
+            `Your confirmation is needed: ${computed.summary}`,
           );
           await touchConversation(supabaseService, conversationId);
 
@@ -241,7 +241,7 @@ serve(async (req) => {
         }
         if (action.expires_at && new Date(action.expires_at).getTime() < Date.now()) {
           await supabaseService.from("ai_copilot_actions").update({ status: "failed", updated_at: new Date().toISOString() }).eq("id", previewId);
-          return jsonResponse({ error: "Preview expired — pide al Copilot que repita la acción" }, 410);
+          return jsonResponse({ error: "Preview expired. Ask the Copilot to repeat the action" }, 410);
         }
 
         // Re-load a fresh graph so the executor operates on current data (no drift).
@@ -265,7 +265,7 @@ serve(async (req) => {
               supabaseService,
               action.conversation_id,
               "assistant",
-              `✔ Confirmado. ${result.applied} cambio(s) aplicado(s).`,
+              `✔ Applied. ${result.applied} change(s) applied.`,
             );
             await touchConversation(supabaseService, action.conversation_id);
           }
@@ -294,7 +294,7 @@ serve(async (req) => {
           .update({ status: "cancelled", updated_at: new Date().toISOString() })
           .eq("id", previewId);
         if (action.conversation_id) {
-          await saveMessage(supabaseService, action.conversation_id, "assistant", "✖ Acción cancelada — no se ha cambiado nada.");
+          await saveMessage(supabaseService, action.conversation_id, "assistant", "✖ Action cancelled — nothing was changed.");
           await touchConversation(supabaseService, action.conversation_id);
         }
         return jsonResponse({ actionId: previewId, status: "cancelled" });

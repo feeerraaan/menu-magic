@@ -81,18 +81,29 @@ const shots = [
     needle: 'AI Copilot',
     auth: true,
     setup: async (page) => {
+      // Fresh conversation so the exchange is self-contained.
+      const newBtn = page.getByRole('button', { name: /new conversation/i });
+      if (await newBtn.count()) await newBtn.first().click();
+      await wait(1500);
+      // Ask for a mutating change; the copilot returns a preview that must be confirmed.
       const textarea = page.locator('textarea').first();
-      await textarea.fill('Which dishes are vegetarian?');
+      await textarea.fill('Increase the price of all Entrantes dishes by 10%');
       await textarea.press('Enter');
-      // Wait for the model reply: the send button shows a spinner while sending.
-      const sendBtn = page.getByRole('button').filter({ has: page.locator('svg') });
-      await page.waitForTimeout(2000);
-      for (let i = 0; i < 20; i++) {
-        const spinning = await page.locator('.animate-spin').count();
-        if (spinning === 0) break;
+      // Wait for the preview card with its Confirm button (LLM round trip).
+      const confirm = page.getByRole('button', { name: /^confirm$/i });
+      for (let i = 0; i < 24; i++) {
+        if (await confirm.count()) break;
         await wait(3000);
       }
-      await wait(2500);
+      if (await confirm.count()) {
+        await confirm.first().click();
+        // Wait until the change is applied (preview disappears).
+        for (let i = 0; i < 20; i++) {
+          if (!(await confirm.count())) break;
+          await wait(2000);
+        }
+        await wait(2500);
+      }
     },
   },
   { file: 'analytics', url: '/dashboard/analytics', needle: 'Analytics', auth: true },
@@ -133,11 +144,15 @@ async function sessionFor(email) {
 
 const browser = await chromium.launch();
 const consoleErrors = [];
+const only = process.env.SC_ONLY ? process.env.SC_ONLY.split(',').map((s) => s.trim()) : null;
 
 for (const shot of shots) {
+  if (only && !only.includes(shot.file)) continue;
   try {
     const file = join(OUTPUT, `${shot.file}.png`);
-    const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2 });
+    const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2, locale: 'en-GB' });
+    // Force the whole app to English for every capture.
+    await context.addInitScript(() => { localStorage.setItem('SaCarta-language', 'en'); });
     if (shot.auth) {
       const session = await sessionFor(shot.email ?? DEMO_EMAIL);
       const storage = {

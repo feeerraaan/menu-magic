@@ -165,6 +165,7 @@
         "npm:lovable-tagger@^1.1.13",
         "npm:lucide-react@0.462",
         "npm:next-themes@0.3",
+        "npm:playwright@^1.62.0",
         "npm:postcss@^8.5.6",
         "npm:qrcode.react@^4.2.0",
         "npm:react-day-picker@^8.10.1",

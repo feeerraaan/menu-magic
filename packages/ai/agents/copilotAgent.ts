@@ -117,7 +117,7 @@ async function computeGenerativePreview(
         : [];
     if (categories.length === 0) {
       return {
-        summary: 'No se encontró la categoría destino. Usa get_menu_structure para ver las categorías existentes.',
+        summary: 'Target category not found. Use get_menu_structure to see the existing categories.',
         destructive: false,
         affected_count: 0,
         changes: [],
@@ -135,7 +135,7 @@ async function computeGenerativePreview(
       typeof args.price_hint === 'number' ? args.price_hint : undefined,
     );
     return {
-      summary: `Generar ${proposals.length} plato(s) propuesto(s) en "${category.name}" — se crearán OCULTOS (is_active=false) para que los revises antes de publicar.`,
+      summary: `Generate ${proposals.length} proposed dish(es) in "${category.name}". They will be created HIDDEN (is_active=false) so you can review them before publishing.`,
       destructive: false,
       affected_count: proposals.length,
       changes: proposals.map((p) => ({
@@ -192,7 +192,7 @@ async function computeGenerativePreview(
       }
     }
     return {
-      summary: `Traducir ${items.length} plato(s) al "${language}". Las traducciones se guardan solo tras tu confirmación.`,
+      summary: `Translate ${items.length} dish(es) into "${language}". Translations are only saved after your confirmation.`,
       destructive: false,
       affected_count: items.length,
       changes: Object.entries(itemTranslations).map(([id, t]) => ({
@@ -241,7 +241,7 @@ async function generateItemProposals(
 
   return provider.generateStructured({
     system,
-    messages: [{ role: 'user', content: 'Genera los platos ahora.' }],
+    messages: [{ role: 'user', content: 'Generate the dishes now.' }],
     schema: ProposalsSchema,
     temperature: 0.7,
     maxTokens: 1500,
@@ -275,7 +275,7 @@ export async function computePreview(
       const name = String(args.name ?? '');
       if (!name.trim()) {
         return {
-          summary: 'Falta el nombre del menú.',
+          summary: 'Menu name is missing.',
           destructive: false,
           affected_count: 0,
           changes: [],
@@ -284,7 +284,7 @@ export async function computePreview(
       }
       const copyFrom = args.copy_items_from_menu_id ? copyTreeFromMenu(graph, String(args.copy_items_from_menu_id)) : null;
       return {
-        summary: `Crear menú "${name}"${copyFrom ? ` copiando la estructura de otro menú` : ''}.`,
+        summary: `Create menu "${name}"${copyFrom ? ` copying the structure from another menu` : ''}.`,
         destructive: false,
         affected_count: 1,
         changes: [{ entity_type: 'menu', entity_id: '__new__', entity_name: name, field: 'name', before: null, after: name }],
