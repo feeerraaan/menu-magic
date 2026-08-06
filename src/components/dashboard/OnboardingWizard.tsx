@@ -46,7 +46,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
     supported_languages: ['es'],
   });
 
-  const updateField = (field: string, value: any) => {
+  const updateField = (field: string, value: string | string[]) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 

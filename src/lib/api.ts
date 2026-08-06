@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import type { Json } from '@/integrations/supabase/types';
 import { Restaurant, Menu, Category, Item, Subscription } from '@/types/database';
 import { PlanType, getPlanLimits } from '@/lib/subscription-limits';
 
@@ -81,7 +82,7 @@ export async function updateMenu(id: string, data: Partial<Menu>): Promise<Menu>
   const { schedule_rules, ...rest } = data;
   const { data: menu, error } = await supabase
     .from('menus')
-    .update({ ...rest, schedule_rules: schedule_rules as unknown as any })
+    .update({ ...rest, schedule_rules: schedule_rules as unknown as Json | null })
     .eq('id', id)
     .select()
     .single();

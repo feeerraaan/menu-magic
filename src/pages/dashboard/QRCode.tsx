@@ -119,11 +119,12 @@ export default function QRCodePage() {
       <head>
         <title>${restaurant.name} - QR Code</title>
         <style>
-          @page { size: A4; margin: 2cm; }
+          @page { size: A4; margin: 1.5cm; }
+          html, body { margin: 0; padding: 0; }
           body { 
             font-family: 'Georgia', serif; 
             text-align: center; 
-            padding: 40px;
+            padding: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -132,22 +133,29 @@ export default function QRCodePage() {
             box-sizing: border-box;
           }
           h1 { 
-            font-size: 48px; 
-            margin-bottom: 20px; 
+            font-size: 30px; 
+            margin: 0 0 10px 0; 
             color: #333;
           }
           .qr-container {
-            margin: 40px 0;
+            margin: 20px 0;
+            max-width: 400px;
+            width: 100%;
+          }
+          .qr-container svg {
+            width: 100%;
+            height: auto;
+            display: block;
           }
           .instructions {
-            font-size: 24px;
+            font-size: 17px;
             color: #666;
-            margin-top: 30px;
+            margin-top: 16px;
           }
           .url {
-            font-size: 14px;
+            font-size: 12px;
             color: #999;
-            margin-top: 20px;
+            margin-top: 12px;
             word-break: break-all;
           }
         </style>

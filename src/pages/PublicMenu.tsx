@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import type { Database } from '@/integrations/supabase/types';
 import { Restaurant, Menu, Category, Item, ScheduleRule } from '@/types/database';
 import { LanguageProvider, useLanguage } from '@/contexts/LanguageContext';
 import { Language, languages, t } from '@/lib/i18n';
@@ -30,6 +31,15 @@ interface PublicMenuData {
   categories: (Category & { items: Item[] })[];
   canShowLanguageSelector: boolean; // true if plan supports multiple languages
 }
+
+// Raw shape returned by the nested categories->items select (relations are not part of
+// the base Row types, so this bridges the generated types to the runtime joined payload).
+type CategoryWithRelations = Database['public']['Tables']['categories']['Row'] & {
+  category_translations: Database['public']['Tables']['category_translations']['Row'][];
+  items: (Database['public']['Tables']['items']['Row'] & {
+    item_translations: Database['public']['Tables']['item_translations']['Row'][];
+  })[];
+};
 
 function MenuContent({ data }: { data: PublicMenuData }) {
   const { restaurant, categories, canShowLanguageSelector } = data;
@@ -669,13 +679,13 @@ export default function PublicMenu() {
 
         if (catError) throw catError;
 
-        const categories = (categoriesData || []).map(cat => ({
+        const categories = ((categoriesData as unknown as CategoryWithRelations[]) || []).map(cat => ({
           ...cat,
           translations: cat.category_translations,
-          items: ((cat.items as any[]) || [])
-            .filter((i: any) => i.is_active)
-            .sort((a: any, b: any) => a.display_order - b.display_order)
-            .map((item: any) => ({
+          items: (cat.items || [])
+            .filter(i => i.is_active)
+            .sort((a, b) => a.display_order - b.display_order)
+            .map(item => ({
               ...item,
               translations: item.item_translations,
             })),

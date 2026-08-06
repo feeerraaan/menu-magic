@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { Restaurant, Category, Item, Menu, ScheduleRule } from '@/types/database';
+import type { Json } from '@/integrations/supabase/types';
 import { assertWithinLimits } from '@/lib/api';
 import { useMenus, useCategories, useItems } from '@/hooks/useRestaurant';
 import { useSubscriptionContext } from '@/contexts/SubscriptionContext';
@@ -457,8 +458,8 @@ export default function MenuEditor() {
           i.id === item.id ? { ...i, is_active: !item.is_active } : i
         ),
       }));
-    } catch (e: any) {
-      toast({ title: t('common.error'), description: e.message, variant: 'destructive' });
+    } catch (e: unknown) {
+      toast({ title: t('common.error'), description: e instanceof Error ? e.message : t('common.unknownError'), variant: 'destructive' });
     }
   };
 
@@ -469,7 +470,7 @@ export default function MenuEditor() {
       for (let i = 0; i < newItems.length; i++) {
         await supabase.from('items').update({ display_order: i }).eq('id', newItems[i].id);
       }
-    } catch (e: any) {
+    } catch {
       toast({ title: t('menuEditor.errorSavingOrder'), variant: 'destructive' });
     }
   };
@@ -814,8 +815,8 @@ export default function MenuEditor() {
                       setSelectedMenuId(remaining[0].id);
                     }
                     refetchMenus();
-                  } catch (e: any) {
-                    toast({ title: t('common.error'), description: e.message, variant: 'destructive' });
+                  } catch (e: unknown) {
+                    toast({ title: t('common.error'), description: e instanceof Error ? e.message : t('common.unknownError'), variant: 'destructive' });
                   }
                 }
               }}
@@ -846,7 +847,7 @@ export default function MenuEditor() {
                   name: data.name,
                   description: data.description,
                   is_active: data.is_active,
-                  schedule_rules: data.schedule_rules as any,
+                  schedule_rules: data.schedule_rules as unknown as Json | null,
                 })
                 .eq('id', menu.id);
               toast({ title: t('menuEditor.menuUpdated') });
@@ -859,7 +860,7 @@ export default function MenuEditor() {
                   name: data.name,
                   description: data.description,
                   is_active: data.is_active,
-                  schedule_rules: data.schedule_rules as any,
+                  schedule_rules: data.schedule_rules as unknown as Json | null,
                   display_order: menus.length,
                 })
                 .select()
@@ -872,8 +873,8 @@ export default function MenuEditor() {
             }
             setMenuDialog({ open: false });
             refetchMenus();
-          } catch (e: any) {
-            toast({ title: t('common.error'), description: e.message, variant: 'destructive' });
+          } catch (e: unknown) {
+            toast({ title: t('common.error'), description: e instanceof Error ? e.message : t('common.unknownError'), variant: 'destructive' });
           }
         }}
       />
@@ -1179,9 +1180,9 @@ function MenuEditDialog({
       const r1 = (!scheduleRules || scheduleRules.length === 0) 
         ? [{ days: [0, 1, 2, 3, 4, 5, 6], start_time: '00:00', end_time: '23:59' }] 
         : scheduleRules;
-      const r2 = (!m.schedule_rules || (m.schedule_rules as any).length === 0) 
+      const r2 = (!m.schedule_rules || m.schedule_rules.length === 0) 
         ? [{ days: [0, 1, 2, 3, 4, 5, 6], start_time: '00:00', end_time: '23:59' }] 
-        : m.schedule_rules as any as ScheduleRule[];
+        : m.schedule_rules;
 
       for (const rule1 of r1) {
         for (const rule2 of r2) {
