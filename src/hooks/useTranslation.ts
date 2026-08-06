@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 // Importar las traducciones
@@ -14,9 +15,9 @@ const translations: Record<string, Record<string, unknown>> = {
 export function useTranslation() {
   const { language } = useLanguage();
 
-  const t = (key: string, replacements?: Record<string, string | number>): string => {
+  const t = useCallback((key: string, replacements?: Record<string, string | number>): string => {
     const keys = key.split('.');
-    let value: any = translations[language];
+    let value: unknown = translations[language];
 
     for (const k of keys) {
       if (value && typeof value === 'object' && k in value) {
@@ -38,14 +39,14 @@ export function useTranslation() {
     }
 
     return value;
-  };
+  }, [language]);
 
-  const tReplace = (key: string, replacements: Record<string, string | number>): string => {
+  const tReplace = useCallback((key: string, replacements: Record<string, string | number>): string => {
     return t(key, replacements);
-  };
+  }, [t]);
 
   /** Returns the raw JSON value for a key (arrays/objects), or undefined. */
-  const tRaw = (key: string): unknown => {
+  const tRaw = useCallback((key: string): unknown => {
     const keys = key.split('.');
     let value: unknown = translations[language];
     for (const k of keys) {
@@ -56,7 +57,7 @@ export function useTranslation() {
       }
     }
     return value;
-  };
+  }, [language]);
 
   return { t, tReplace, tRaw, language };
 }
