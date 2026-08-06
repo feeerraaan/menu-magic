@@ -21,11 +21,20 @@ import { getProviderForFeature } from "../../../packages/ai/providers/registry.t
 import { loadMenuGraph, type ComputedPreview } from "../../../packages/ai/tools/resolver.ts";
 import { executePreview } from "../../../packages/ai/tools/executor.ts";
 import { runCopilotLoop } from "../../../packages/ai/agents/copilotAgent.ts";
+import { copilotT, isCopilotLang, type CopilotLang } from "../../../packages/ai/prompts/copilotL10n.ts";
 import type { LLMMessage } from "../../../packages/ai/providers/types.ts";
 import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 
 const PREVIEW_TTL_MS = 15 * 60 * 1000; // 15 minutes — see FEATURE_SPECIFICATIONS.md §Phase 6
 const HISTORY_SLIDING_WINDOW = 20;
+
+// Owner language for the Copilot's deterministic strings: the client's UI language, else
+// the restaurant's default language, else Spanish.
+function resolveLang(body: ActionBody, fallback: string | undefined): CopilotLang {
+  if (isCopilotLang(String(body.language ?? ''))) return String(body.language) as CopilotLang;
+  if (isCopilotLang(fallback ?? '')) return fallback as CopilotLang;
+  return 'es';
+}
 
 interface ActionBody {
   action?: string;
@@ -34,6 +43,7 @@ interface ActionBody {
   previewId?: string;
   message?: string;
   title?: string;
+  language?: string;
 }
 
 interface DbMessage {
@@ -168,7 +178,10 @@ serve(async (req) => {
         const history = await loadHistory(supabaseUser, conversationId);
         const provider = getProviderForFeature("copilot");
 
-        const turn = await runCopilotLoop(provider, graph, history, message.trim());
+        // Owner language: explicit from the client, else the restaurant's default language.
+        const lang = resolveLang(body, graph.defaultLanguage);
+
+        const turn = await runCopilotLoop(provider, graph, history, message.trim(), lang);
 
         // Charge the copilot turn (message + any tool calls).
         await chargeAiCredits(supabaseService, restaurantId, "copilot", {
@@ -206,7 +219,7 @@ serve(async (req) => {
             supabaseService,
             conversationId,
             "assistant",
-            `Your confirmation is needed: ${computed.summary}`,
+            copilotT(lang, 'confirm_needed', { summary: computed.summary }),
           );
           await touchConversation(supabaseService, conversationId);
 
@@ -239,13 +252,14 @@ serve(async (req) => {
         if (action.status !== "previewed") {
           return jsonResponse({ error: `Preview already ${action.status}` }, 409);
         }
-        if (action.expires_at && new Date(action.expires_at).getTime() < Date.now()) {
-          await supabaseService.from("ai_copilot_actions").update({ status: "failed", updated_at: new Date().toISOString() }).eq("id", previewId);
-          return jsonResponse({ error: "Preview expired. Ask the Copilot to repeat the action" }, 410);
-        }
-
         // Re-load a fresh graph so the executor operates on current data (no drift).
         const graph = await loadMenuGraph(supabaseUser, restaurantId);
+        const lang = resolveLang(body, graph.defaultLanguage);
+        if (action.expires_at && new Date(action.expires_at).getTime() < Date.now()) {
+          await supabaseService.from("ai_copilot_actions").update({ status: "failed", updated_at: new Date().toISOString() }).eq("id", previewId);
+          return jsonResponse({ error: copilotT(lang, 'preview_expired') }, 410);
+        }
+
         const computed = (action.preview_payload?.computed ?? {}) as ComputedPreview;
 
         try {
@@ -265,7 +279,7 @@ serve(async (req) => {
               supabaseService,
               action.conversation_id,
               "assistant",
-              `✔ Applied. ${result.applied} change(s) applied.`,
+              copilotT(lang, 'applied', { n: result.applied }),
             );
             await touchConversation(supabaseService, action.conversation_id);
           }
@@ -294,7 +308,7 @@ serve(async (req) => {
           .update({ status: "cancelled", updated_at: new Date().toISOString() })
           .eq("id", previewId);
         if (action.conversation_id) {
-          await saveMessage(supabaseService, action.conversation_id, "assistant", "✖ Action cancelled — nothing was changed.");
+          await saveMessage(supabaseService, action.conversation_id, "assistant", copilotT(resolveLang(body, undefined), 'cancelled'));
           await touchConversation(supabaseService, action.conversation_id);
         }
         return jsonResponse({ actionId: previewId, status: "cancelled" });

@@ -56,6 +56,7 @@ export interface CopilotMessageInput {
   restaurantId: string;
   conversationId: string;
   message: string;
+  language?: 'es' | 'en' | 'ca';
 }
 
 export type CopilotMessageTurn =
@@ -76,6 +77,7 @@ export type CopilotMessageTurn =
 export interface CopilotConfirmPreviewInput {
   restaurantId: string;
   previewId: string;
+  language?: 'es' | 'en' | 'ca';
 }
 
 export interface CopilotConfirmPreviewResponse {
@@ -87,6 +89,7 @@ export interface CopilotConfirmPreviewResponse {
 export interface CopilotCancelPreviewInput {
   restaurantId: string;
   previewId: string;
+  language?: 'es' | 'en' | 'ca';
 }
 
 export interface CopilotCancelPreviewResponse {

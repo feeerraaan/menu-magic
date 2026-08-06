@@ -12,7 +12,8 @@ export interface CopilotChatMessage {
 }
 
 export function useAiCopilot(restaurantId: string | undefined) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const copilotLanguage = language === 'en' || language === 'ca' ? language : 'es';
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [messages, setMessages] = useState<CopilotChatMessage[]>([]);
   const [sending, setSending] = useState(false);
@@ -73,7 +74,7 @@ export function useAiCopilot(restaurantId: string | undefined) {
     const userMsg: CopilotChatMessage = { id: `local-${Date.now()}`, role: 'user', content: text, createdAt: new Date().toISOString() };
     setMessages((prev) => [...prev, userMsg]);
     try {
-      const turn = await aiApi.sendCopilotMessage({ restaurantId, conversationId: convId, message: text });
+      const turn = await aiApi.sendCopilotMessage({ restaurantId, conversationId: convId, message: text, language: copilotLanguage });
       if (turn.kind === 'text') {
         setMessages((prev) => [
           ...prev,
@@ -107,7 +108,7 @@ export function useAiCopilot(restaurantId: string | undefined) {
     setSending(true);
     setError(null);
     try {
-      const res = await aiApi.confirmCopilotPreview({ restaurantId, previewId });
+      const res = await aiApi.confirmCopilotPreview({ restaurantId, previewId, language: copilotLanguage });
       setMessages((prev) =>
         prev.map((m) =>
           m.id === messageId
@@ -129,7 +130,7 @@ export function useAiCopilot(restaurantId: string | undefined) {
     setSending(true);
     setError(null);
     try {
-      await aiApi.cancelCopilotPreview({ restaurantId, previewId });
+      await aiApi.cancelCopilotPreview({ restaurantId, previewId, language: copilotLanguage });
       setMessages((prev) =>
         prev.map((m) => (m.id === messageId ? { ...m, pendingPreview: undefined, content: `${m.content} · ${t('copilot.canceled')}` } : m)),
       );

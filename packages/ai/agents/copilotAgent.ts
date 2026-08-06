@@ -29,6 +29,7 @@ import {
 } from '../tools/resolver.ts';
 import { translateText } from '../agents/translationAgent.ts';
 import { buildCopilotSystemPrompt, buildRestaurantSummary } from '../prompts/copilot.ts';
+import { copilotT, type CopilotLang } from '../prompts/copilotL10n.ts';
 
 export const MAX_LOOP_ITERATIONS = 8;
 
@@ -108,6 +109,7 @@ async function computeGenerativePreview(
   graph: MenuGraph,
   toolName: string,
   args: Record<string, unknown>,
+  lang: CopilotLang,
 ): Promise<ComputedPreview> {
   if (toolName === 'generate_new_items') {
     const categories = args.category_id
@@ -117,7 +119,7 @@ async function computeGenerativePreview(
         : [];
     if (categories.length === 0) {
       return {
-        summary: 'Target category not found. Use get_menu_structure to see the existing categories.',
+        summary: copilotT(lang, 'target_category_not_found'),
         destructive: false,
         affected_count: 0,
         changes: [],
@@ -135,7 +137,7 @@ async function computeGenerativePreview(
       typeof args.price_hint === 'number' ? args.price_hint : undefined,
     );
     return {
-      summary: `Generate ${proposals.length} proposed dish(es) in "${category.name}". They will be created HIDDEN (is_active=false) so you can review them before publishing.`,
+      summary: copilotT(lang, 'generate_items', { n: proposals.length, cat: category.name }),
       destructive: false,
       affected_count: proposals.length,
       changes: proposals.map((p) => ({
@@ -155,7 +157,7 @@ async function computeGenerativePreview(
     const language = String(args.language ?? '').toLowerCase();
     if (!language) {
       return {
-        summary: 'Falta el idioma destino (campo "language").',
+        summary: copilotT(lang, 'translate_language_missing'),
         destructive: false,
         affected_count: 0,
         changes: [],
@@ -164,7 +166,7 @@ async function computeGenerativePreview(
     }
     if (!graph.supportedLanguages.includes(language)) {
       return {
-        summary: `El idioma "${language}" no está entre los idiomas del restaurante (${graph.supportedLanguages.join(', ')}). Actívalo en Ajustes o usa uno de los existentes.`,
+        summary: copilotT(lang, 'translate_language_unsupported', { lang: language, list: graph.supportedLanguages.join(', ') }),
         destructive: false,
         affected_count: 0,
         changes: [],
@@ -192,7 +194,7 @@ async function computeGenerativePreview(
       }
     }
     return {
-      summary: `Translate ${items.length} dish(es) into "${language}". Translations are only saved after your confirmation.`,
+      summary: copilotT(lang, 'translate_items', { n: items.length, lang: language }),
       destructive: false,
       affected_count: items.length,
       changes: Object.entries(itemTranslations).map(([id, t]) => ({
@@ -208,7 +210,7 @@ async function computeGenerativePreview(
     };
   }
 
-  throw new Error(`Tool "${toolName}" no es generativo`);
+  throw new Error(copilotT(lang, 'not_generative', { tool: toolName }));
 }
 
 const GENERATED_ITEM_SCHEMA_SHAPE = [
@@ -255,27 +257,28 @@ export async function computePreview(
   graph: MenuGraph,
   toolName: string,
   args: Record<string, unknown>,
+  lang: CopilotLang,
 ): Promise<ComputedPreview | null> {
   switch (toolName) {
     case 'bulk_adjust_prices':
-      return previewBulkAdjustPrices(graph, args as never);
+      return previewBulkAdjustPrices(graph, args as never, lang);
     case 'bulk_update_dietary_flags':
-      return previewBulkUpdateDietaryFlags(graph, args as never);
+      return previewBulkUpdateDietaryFlags(graph, args as never, lang);
     case 'create_category':
-      return previewCreateCategory(graph, args as never);
+      return previewCreateCategory(graph, args as never, lang);
     case 'create_item':
-      return previewCreateItem(graph, args as never);
+      return previewCreateItem(graph, args as never, lang);
     case 'update_item':
-      return previewUpdateItem(graph, args as never);
+      return previewUpdateItem(graph, args as never, lang);
     case 'update_category':
-      return previewUpdateCategory(graph, args as never);
+      return previewUpdateCategory(graph, args as never, lang);
     case 'update_menu':
-      return previewUpdateMenu(graph, args as never);
+      return previewUpdateMenu(graph, args as never, lang);
     case 'create_menu': {
       const name = String(args.name ?? '');
       if (!name.trim()) {
         return {
-          summary: 'Menu name is missing.',
+          summary: copilotT(lang, 'menu_name_missing'),
           destructive: false,
           affected_count: 0,
           changes: [],
@@ -284,7 +287,7 @@ export async function computePreview(
       }
       const copyFrom = args.copy_items_from_menu_id ? copyTreeFromMenu(graph, String(args.copy_items_from_menu_id)) : null;
       return {
-        summary: `Create menu "${name}"${copyFrom ? ` copying the structure from another menu` : ''}.`,
+        summary: copilotT(lang, 'create_menu', { name, copy: copyFrom ? copilotT(lang, 'copy_from') : '' }),
         destructive: false,
         affected_count: 1,
         changes: [{ entity_type: 'menu', entity_id: '__new__', entity_name: name, field: 'name', before: null, after: name }],
@@ -299,7 +302,7 @@ export async function computePreview(
     }
     case 'generate_new_items':
     case 'bulk_translate':
-      return computeGenerativePreview(provider, graph, toolName, args);
+      return computeGenerativePreview(provider, graph, toolName, args, lang);
     default:
       return null;
   }
@@ -317,9 +320,10 @@ export async function runCopilotLoop(
   graph: MenuGraph,
   history: LLMMessage[],
   userMessage: string,
+  lang: CopilotLang,
 ): Promise<CopilotTurnResult> {
   const messages: LLMMessage[] = [
-    { role: 'system', content: buildCopilotSystemPrompt(buildRestaurantSummary(graph)) },
+    { role: 'system', content: buildCopilotSystemPrompt(buildRestaurantSummary(graph), lang) },
     ...history,
     { role: 'user', content: userMessage },
   ];
@@ -334,7 +338,7 @@ export async function runCopilotLoop(
     const toolCalls = result.toolCalls ?? [];
 
     if (toolCalls.length === 0) {
-      reply = result.text.trim() || 'Hecho. ¿Quieres que haga algo más con el menú?';
+      reply = result.text.trim() || (lang === 'es' ? 'Hecho. ¿Quieres que haga algo más con el menú?' : lang === 'ca' ? 'Fet. Vols que faci alguna cosa més amb el menú?' : 'Done. Anything else you want with the menu?');
       messages.push({ role: 'assistant', content: reply });
       break;
     }
@@ -357,7 +361,7 @@ export async function runCopilotLoop(
         continue;
       }
 
-      const computed = await computePreview(provider, graph, toolName, args);
+      const computed = await computePreview(provider, graph, toolName, args, lang);
       if (computed && computed.affected_count === 0) {
         // Nothing to do — tell the model and keep the loop going.
         messages.push({

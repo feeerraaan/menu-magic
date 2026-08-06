@@ -5,6 +5,7 @@
 // See docs/FEATURE_SPECIFICATIONS.md §Phase 6 (core safety rule).
 
 import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+import { copilotT, type CopilotLang } from '../prompts/copilotL10n.ts';
 
 export interface MenuRow {
   id: string;
@@ -220,6 +221,7 @@ export function previewBulkAdjustPrices(
     price_delta_absolute?: number;
     round_to?: number;
   },
+  lang: CopilotLang = 'es',
 ): ComputedPreview {
   const items = matchItems(graph, {
     category_name_contains: args.category_name_filter,
@@ -236,8 +238,12 @@ export function previewBulkAdjustPrices(
   const hasChange = changes.some((c) => c.before !== c.after);
   return {
     summary: hasChange
-      ? `Adjust prices of ${items.length} dish(es)${args.category_name_filter ? ` in categories containing "${args.category_name_filter}"` : ''}${args.item_name_filter ? ` with names containing "${args.item_name_filter}"` : ''}.`
-      : `No dishes match the filter. Nothing to adjust.`,
+      ? copilotT(lang, 'adjust_prices', {
+          n: items.length,
+          cats: args.category_name_filter ? copilotT(lang, 'in_categories', { c: args.category_name_filter }) : '',
+          names: args.item_name_filter ? copilotT(lang, 'with_names', { c: args.item_name_filter }) : '',
+        })
+      : copilotT(lang, 'no_match_adjust'),
     destructive: false,
     affected_count: items.length,
     changes,
@@ -259,6 +265,7 @@ export function previewBulkUpdateDietaryFlags(
       allergens_remove?: string[];
     };
   },
+  lang: CopilotLang = 'es',
 ): ComputedPreview {
   const items = matchItems(graph, args.filter);
   const changes: MutationChange[] = [];
@@ -294,8 +301,9 @@ export function previewBulkUpdateDietaryFlags(
   const softHide = changes.some((c) => c.field === 'is_active' && c.after === false);
   return {
     summary: changes.length
-      ? `Update ${items.length} dish(es) (${changes.length} change(s)).${softHide ? ' Includes hiding dishes (is_active=false). No physical deletion.' : ''}`
-      : 'No dishes match or no real change. Nothing to do.',
+      ? copilotT(lang, 'update_items', { n: items.length, m: changes.length }) +
+        (softHide ? copilotT(lang, 'includes_hiding') : '')
+      : copilotT(lang, 'no_change'),
     destructive: softHide,
     affected_count: items.length,
     changes,
@@ -306,11 +314,12 @@ export function previewBulkUpdateDietaryFlags(
 export function previewCreateCategory(
   graph: MenuGraph,
   args: { menu_id?: string; menu_name?: string; name: string; description?: string },
+  lang: CopilotLang = 'es',
 ): ComputedPreview {
   const menus = args.menu_id ? graph.menus.filter((m) => m.id === args.menu_id) : args.menu_name ? resolveMenu(graph, args.menu_name) : [];
   if (menus.length === 0) {
     return {
-      summary: 'Target menu not found. Name an existing menu (use get_menu_structure).',
+      summary: copilotT(lang, 'menu_not_found'),
       destructive: false,
       affected_count: 0,
       changes: [],
@@ -321,7 +330,7 @@ export function previewCreateCategory(
   const existing = graph.categories.some((c) => c.menu_id === menu.id && norm(c.name) === norm(args.name));
   if (existing) {
     return {
-      summary: `The category "${args.name}" already exists in menu "${menu.name}".`,
+      summary: copilotT(lang, 'category_exists', { name: args.name, menu: menu.name }),
       destructive: false,
       affected_count: 0,
       changes: [],
@@ -329,7 +338,7 @@ export function previewCreateCategory(
     };
   }
   return {
-    summary: `Create category "${args.name}" in menu "${menu.name}".`,
+    summary: copilotT(lang, 'create_category', { name: args.name, menu: menu.name }),
     destructive: false,
     affected_count: 1,
     changes: [{ entity_type: 'category', entity_id: '__new__', entity_name: args.name, field: 'name', before: null, after: args.name }],
@@ -352,6 +361,7 @@ export function previewCreateItem(
     is_gluten_free?: boolean;
     allergens?: string[];
   },
+  lang: CopilotLang = 'es',
 ): ComputedPreview {
   const cats = args.category_id
     ? graph.categories.filter((c) => c.id === args.category_id)
@@ -360,7 +370,7 @@ export function previewCreateItem(
       : [];
   if (cats.length === 0) {
     return {
-      summary: 'Target category not found. Give the exact name of an existing category.',
+      summary: copilotT(lang, 'target_category_not_found'),
       destructive: false,
       affected_count: 0,
       changes: [],
@@ -371,7 +381,7 @@ export function previewCreateItem(
   const existing = graph.items.some((i) => i.category_id === cat.id && norm(i.name) === norm(args.name));
   if (existing) {
     return {
-      summary: `The dish "${args.name}" already exists in "${cat.name}".`,
+      summary: copilotT(lang, 'dish_exists', { name: args.name, cat: cat.name }),
       destructive: false,
       affected_count: 0,
       changes: [],
@@ -379,7 +389,11 @@ export function previewCreateItem(
     };
   }
   return {
-    summary: `Crear plato "${args.name}"${args.price !== undefined ? ` at ${args.price} ${graph.currency}` : ''} in "${cat.name}" (hidden until published).`,
+    summary: copilotT(lang, 'create_item', {
+      name: args.name,
+      price: args.price !== undefined ? copilotT(lang, 'price_suffix', { p: args.price, currency: graph.currency }) : '',
+      cat: cat.name,
+    }),
     destructive: false,
     affected_count: 1,
     changes: [{ entity_type: 'item', entity_id: '__new__', entity_name: args.name, field: 'name', before: null, after: args.name }],
@@ -400,11 +414,12 @@ export function previewCreateItem(
 export function previewUpdateItem(
   graph: MenuGraph,
   args: { item_id?: string; item_name?: string; set: Record<string, unknown> },
+  lang: CopilotLang = 'es',
 ): ComputedPreview {
   const items = args.item_id ? graph.items.filter((i) => i.id === args.item_id) : args.item_name ? resolveItem(graph, args.item_name) : [];
   if (items.length === 0) {
     return {
-      summary: 'Dish not found. Use search_items to locate it.',
+      summary: copilotT(lang, 'dish_not_found'),
       destructive: false,
       affected_count: 0,
       changes: [],
@@ -420,7 +435,7 @@ export function previewUpdateItem(
     }
   }
   return {
-    summary: `Update "${item.name}" (${changes.length} change(s)).`,
+    summary: copilotT(lang, 'update_item', { name: item.name, m: changes.length }),
     destructive: changes.some((c) => c.field === 'is_active' && c.after === false),
     affected_count: 1,
     changes,
@@ -431,6 +446,7 @@ export function previewUpdateItem(
 export function previewUpdateCategory(
   graph: MenuGraph,
   args: { category_id?: string; category_name?: string; set: Record<string, unknown> },
+  lang: CopilotLang = 'es',
 ): ComputedPreview {
   const cats = args.category_id
     ? graph.categories.filter((c) => c.id === args.category_id)
@@ -439,7 +455,7 @@ export function previewUpdateCategory(
       : [];
   if (cats.length === 0) {
     return {
-      summary: 'Category not found. Use get_menu_structure to list them.',
+      summary: copilotT(lang, 'category_not_found'),
       destructive: false,
       affected_count: 0,
       changes: [],
@@ -455,7 +471,7 @@ export function previewUpdateCategory(
     }
   }
   return {
-    summary: `Update category "${cat.name}" (${changes.length} change(s)).`,
+    summary: copilotT(lang, 'update_category', { name: cat.name, m: changes.length }),
     destructive: false,
     affected_count: 1,
     changes,
@@ -466,11 +482,12 @@ export function previewUpdateCategory(
 export function previewUpdateMenu(
   graph: MenuGraph,
   args: { menu_id?: string; menu_name?: string; set: Record<string, unknown> },
+  lang: CopilotLang = 'es',
 ): ComputedPreview {
   const menus = args.menu_id ? graph.menus.filter((m) => m.id === args.menu_id) : args.menu_name ? resolveMenu(graph, args.menu_name) : [];
   if (menus.length === 0) {
     return {
-      summary: 'Menu not found. Use get_menu_structure to list them.',
+      summary: copilotT(lang, 'menu_not_found_plural'),
       destructive: false,
       affected_count: 0,
       changes: [],
@@ -486,7 +503,7 @@ export function previewUpdateMenu(
     }
   }
   return {
-    summary: `Update menu "${menu.name}" (${changes.length} change(s)).`,
+    summary: copilotT(lang, 'update_menu', { name: menu.name, m: changes.length }),
     destructive: false,
     affected_count: 1,
     changes,

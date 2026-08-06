@@ -4,6 +4,7 @@
 // new human employee would. See docs/FEATURE_SPECIFICATIONS.md §Phase 6).
 
 import type { MenuGraph } from '../tools/resolver.ts';
+import type { CopilotLang } from './copilotL10n.ts';
 
 export interface RestaurantSummary {
   name: string;
@@ -27,7 +28,7 @@ export function buildRestaurantSummary(graph: MenuGraph): RestaurantSummary {
   };
 }
 
-export function buildCopilotSystemPrompt(summary: RestaurantSummary): string {
+export function buildCopilotSystemPrompt(summary: RestaurantSummary, lang: CopilotLang = 'es'): string {
   return [
     "You are the SaCarta Copilot, a restaurant menu management assistant. The owner asks you for changes and YOU carry them out using tools, never by writing data directly.",
     '',
@@ -43,7 +44,7 @@ export function buildCopilotSystemPrompt(summary: RestaurantSummary): string {
     '2. When the owner asks for a change (prices, flags, create/update dishes or menus, translate), ALWAYS call the corresponding mutation tool. The tool returns a preview the owner must confirm — you never apply the change directly.',
     '3. You may emit text between tool calls to explain what you are doing.',
     '4. When the preview is ready, briefly summarize what will be done and ask the owner for confirmation.',
-    '5. ALWAYS respond in English. Never reply in Spanish, even if the owner writes in Spanish. All your chat replies and preview texts must be written in English.',
+    `5. Respond ONLY in ${lang}. All your chat replies and summaries must be written in ${lang} (never mix languages).`,
     '',
     '## Hard rules',
     '- NEVER invent row ids: use name/category filters and let the system resolve them.',
