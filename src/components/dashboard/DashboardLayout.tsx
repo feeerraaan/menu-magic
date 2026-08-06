@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom';
-import { SidebarProvider } from '@/components/ui/sidebar';
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { DashboardSidebar } from './DashboardSidebar';
 import { useRestaurant } from '@/hooks/useRestaurant';
 import { OnboardingWizard } from './OnboardingWizard';
@@ -25,6 +25,7 @@ export function DashboardLayout() {
           <DashboardSidebar />
           <div className="flex flex-1 flex-col min-w-0">
             <header className="h-14 shrink-0 border-b border-border flex items-center px-4 gap-4 bg-card/50 backdrop-blur-sm sticky top-0 z-40">
+              <SidebarTrigger className="md:hidden" />
               <h1 className="font-display text-lg font-semibold truncate">{restaurant.name}</h1>
             </header>
             <main className="flex-1 overflow-y-auto overflow-x-auto p-6 bg-background">

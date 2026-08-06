@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink } from '@/components/NavLink';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useSidebar } from '@/components/ui/sidebar';
 import { useTranslation } from '@/hooks/useTranslation';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import {
@@ -45,7 +46,12 @@ export function DashboardSidebar() {
   const aiCredits = useAiCredits(subscription?.restaurant_id ?? undefined);
   const { isAdmin } = useIsAdmin();
   const { t } = useTranslation();
+  const { setOpenMobile } = useSidebar();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  useEffect(() => {
+    setOpenMobile(false);
+  }, [location.pathname, setOpenMobile]);
 
   const handleLogout = async () => {
     try {
