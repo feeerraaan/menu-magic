@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import * as aiApi from '@/lib/ai-api';
 import { useTranslation } from '@/hooks/useTranslation';
 import type { CopilotMessageTurn, MutationPreview } from '@ai/copilot';
@@ -19,6 +19,7 @@ export function useAiCopilot(restaurantId: string | undefined) {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [conversations, setConversations] = useState<{ id: string; title: string | null; updated_at: string }[]>([]);
+  const autoOpenedRef = useRef(false);
 
   const ensureConversation = useCallback(async (): Promise<string> => {
     if (conversationId) return conversationId;
@@ -39,8 +40,22 @@ export function useAiCopilot(restaurantId: string | undefined) {
   }, [restaurantId]);
 
   useEffect(() => {
-    refreshConversations();
-  }, [refreshConversations]);
+    let disposed = false;
+    (async () => {
+      if (!restaurantId) return;
+      const { conversations: list } = await aiApi.listCopilotConversations({ restaurantId });
+      if (disposed) return;
+      setConversations(list);
+      // Auto-resume the most recent conversation so returning to the page never starts blank.
+      if (!autoOpenedRef.current && list.length > 0) {
+        autoOpenedRef.current = true;
+        await openConversation(list[0].id);
+      }
+    })();
+    return () => {
+      disposed = true;
+    };
+  }, [restaurantId, openConversation]);
 
   const openConversation = useCallback(
     async (id: string) => {
