@@ -760,5 +760,43 @@
         "desc": "A health score and daily recommendations keep it growing."
       }
     ]
+  },
+  "comparison": {
+    "title": "Before and after SaCarta",
+    "subtitle": "The same menu, without the busywork.",
+    "beforeLabel": "Before",
+    "afterLabel": "After",
+    "rows": [
+      {
+        "label": "Time",
+        "before": "Hours every week editing dishes.",
+        "after": "Minutes a month — or none."
+      },
+      {
+        "label": "Manual work",
+        "before": "Every change by hand, dish by dish.",
+        "after": "One upload, AI does the rest."
+      },
+      {
+        "label": "Translations",
+        "before": "Your menu in your language only.",
+        "after": "Auto-translated into every language."
+      },
+      {
+        "label": "Menu creation",
+        "before": "Design, layout and corrections.",
+        "after": "Menu ready in seconds."
+      },
+      {
+        "label": "Updates",
+        "before": "Reprinting stale PDFs.",
+        "after": "Instant changes on your QR."
+      },
+      {
+        "label": "Optimization",
+        "before": "No data on what guests look at.",
+        "after": "Health score and recommendations."
+      }
+    ]
   }
 }

@@ -757,5 +757,43 @@
         "desc": "Un índice de salud y recomendaciones diarias la hacen crecer."
       }
     ]
+  },
+  "comparison": {
+    "title": "Antes y después de SaCarta",
+    "subtitle": "La misma carta, sin las horas de trabajo.",
+    "beforeLabel": "Antes",
+    "afterLabel": "Después",
+    "rows": [
+      {
+        "label": "Tiempo",
+        "before": "Horas cada semana editando platos.",
+        "after": "Minutos al mes, o ninguno."
+      },
+      {
+        "label": "Trabajo manual",
+        "before": "Cada cambio a mano, plato a plato.",
+        "after": "Una subida y la IA lo hace todo."
+      },
+      {
+        "label": "Traducciones",
+        "before": "La carta solo en tu idioma.",
+        "after": "Traducida sola a cada idioma."
+      },
+      {
+        "label": "Creación de la carta",
+        "before": "Diseño, maquetación y correcciones.",
+        "after": "Carta lista en segundos."
+      },
+      {
+        "label": "Actualizaciones",
+        "before": "Volver a imprimir PDFs desactualizados.",
+        "after": "Cambios al instante en tu QR."
+      },
+      {
+        "label": "Optimización",
+        "before": "Sin datos de lo que miran tus clientes.",
+        "after": "Índice de salud y recomendaciones."
+      }
+    ]
   }
 }

@@ -6,6 +6,7 @@ import { PricingCard } from '@/components/PricingCard';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import { ProblemSection } from '@/components/landing/ProblemSection';
 import { SolutionSection } from '@/components/landing/SolutionSection';
+import { ComparisonSection } from '@/components/landing/ComparisonSection';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
@@ -160,6 +161,9 @@ export default function Index() {
           </div>
         </div>
       </section>
+
+      {/* Before vs After */}
+      <ComparisonSection />
 
       {/* Pricing */}
       <section className="py-24 relative">

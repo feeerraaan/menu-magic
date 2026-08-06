@@ -757,5 +757,43 @@
         "desc": "Un índex de salut i recomanacions diàries la fan créixer."
       }
     ]
+  },
+  "comparison": {
+    "title": "Abans i després de SaCarta",
+    "subtitle": "La mateixa carta, sense les hores de feina.",
+    "beforeLabel": "Abans",
+    "afterLabel": "Després",
+    "rows": [
+      {
+        "label": "Temps",
+        "before": "Hores cada setmana editant plats.",
+        "after": "Minuts al mes, o cap."
+      },
+      {
+        "label": "Feina manual",
+        "before": "Cada canvi a mà, plat a plat.",
+        "after": "Una pujada i la IA ho fa tot."
+      },
+      {
+        "label": "Traduccions",
+        "before": "La carta només en el teu idioma.",
+        "after": "Traduïda sola a cada idioma."
+      },
+      {
+        "label": "Creació de la carta",
+        "before": "Disseny, maquetació i correccions.",
+        "after": "Carta llesta en segons."
+      },
+      {
+        "label": "Actualitzacions",
+        "before": "Tornar a imprimir PDFs desactualitzats.",
+        "after": "Canvis a l'instant al teu QR."
+      },
+      {
+        "label": "Optimització",
+        "before": "Sense dades del que miren els teus clients.",
+        "after": "Índex de salut i recomanacions."
+      }
+    ]
   }
 }
