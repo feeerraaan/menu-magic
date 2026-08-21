@@ -9,10 +9,10 @@ import type { GenerateStructuredOptions, LLMProvider } from './types.ts';
 
 const OPENCODE_ZEN_BASE_URL = 'https://opencode.ai/zen/v1';
 
-// Free-tier default. OpenCode Zen's free roster rotates over time (promotional), so this is
-// only a fallback — always overridable per-feature via AI_MODEL_<FEATURE> env vars, see
-// registry.ts.
-const DEFAULT_MODEL = 'deepseek-v4-flash-free';
+// Default model, matching the Hermes/fantasybot setup on this VPS. OpenCode Zen's free
+// roster rotates over time (promotional), so this is only a fallback: always overridable
+// per-feature via AI_MODEL_<FEATURE> env vars, see registry.ts.
+const DEFAULT_MODEL = 'nemotron-3-ultra-free';
 
 export function createOpenCodeZenProvider(
   apiKeys: string[],
@@ -42,10 +42,11 @@ export function createOpenCodeZenProvider(
       model,
       requestTimeoutMs: index === 0 ? opts?.requestTimeoutMs : opts?.fallbackRequestTimeoutMs,
       maxRequestDurationMs: index === 0 ? opts?.maxRequestDurationMs : opts?.fallbackMaxRequestDurationMs,
-      // The current DFLASH-backed Zen models reject grammar-constrained decoding. The
-      // structured-output prompt plus local JSON extraction/schema validation remains active.
+      // Zen models behind structured extraction (DFLASH and Nemotron backends) reject
+      // grammar-constrained decoding. The structured-output prompt plus local JSON
+      // extraction/schema validation remains active.
       supportsJsonObjectResponseFormat: false,
-      // The provider's DeepSeek backend can spend the entire output budget on reasoning, while
+      // Reasoning models on Zen can spend the entire output budget on reasoning, while
       // structured menu extraction only needs the JSON payload and does not echo reasoning.
       disableThinkingForStructured: true,
     }),

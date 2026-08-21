@@ -57,13 +57,15 @@ Accepts **multiple API keys** (the user runs several OpenCode accounts, each wit
 ```ts
 export function getProviderForFeature(feature: AiFeatureKey): LLMProvider {
   const keys = (Deno.env.get('OPENCODE_ZEN_API_KEYS') ?? '').split(',').map(s => s.trim()).filter(Boolean);
-  const model = Deno.env.get(`AI_MODEL_${feature.toUpperCase()}`) ?? Deno.env.get('AI_MODEL_DEFAULT') ?? 'deepseek-v4-flash-free';
+  const model = Deno.env.get(`AI_MODEL_${feature.toUpperCase()}`) ?? Deno.env.get('AI_MODEL_DEFAULT') ?? 'nemotron-3-ultra-free';
   return createOpenCodeZenProvider(keys, { model });
 }
 ```
 Switching a feature's model is `supabase secrets set AI_MODEL_TRANSLATION=qwen3.6-plus-free` — no redeploy, picked up on the next invocation. No DB-backed config table; this is a solo-operator product at this stage, and Deno secrets already work exactly this way for Stripe/Resend.
 
 **Function-calling on Zen (VALIDATED 2026-08-01 during Phase 6 build):** the free model (`deepseek-v4-flash-free`) reliably emits `tool_calls` in `tool_choice:'auto'` mode and chains read-only → mutating calls across turns. Two gotchas shaped the Copilot implementation: (1) `tool_choice:'required'` is rejected by the provider (DeepSeek thinking-mode: `"Thinking mode does not support this tool_choice"`) — the Copilot only ever uses `auto`; (2) DeepSeek thinking-mode demands `reasoning_content` be echoed back on the next turn, which the provider contract doesn't store — the Copilot's loop disables thinking (`thinking:{type:'disabled'}`) and multi-turn tool loops work. See `IMPLEMENTATION_PLAN.md` §Phase 6.
+
+**Default model switch (2026-08-21):** the default moved to `nemotron-3-ultra-free`, the same model Hermes/fantasybot runs on this VPS. Revalidated on that date: it emits `tool_calls` with `tool_choice:'auto'` and accepts `thinking:{type:'disabled'}`. The Phase 6 gotchas above still apply as written; `mimo-v2.5-free` remains the `menu_import` fallback in `registry.ts`.
 
 ## 3. `prompts/` vs `agents/` vs `pipelines/` vs `tools/`
 

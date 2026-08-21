@@ -20,15 +20,15 @@ export const CHUNK_SIZE = 2_500;
 export const CHUNK_OVERLAP = 350;
 export const MODEL_MAX_TOKENS = 4_500;
 
-// Candidate endpoints, tried in order. The paid gateway (AI_IMPORT_GO_*) mirrors mindmap's
-// "go" provider: fast deepseek-v4-flash when it's available on the account (it needs an
-// explicit region opt-in on the OpenCode workspace). If it errors (e.g. 403 RegionError /
-// 401 balance), the call falls through to the free Zen models.
+// Candidate endpoints, tried in order. The free Zen models go first: the paid Go plan is
+// exhausted (2026-08-21), so leading with it only added a dead hop to every chunk. The
+// paid gateway (AI_IMPORT_GO_*) stays at the tail as a fallback for when the subscription
+// is active again.
 const GO_BASE_URL = (process.env.AI_IMPORT_GO_BASE_URL ?? '').replace(/\/+$/, '');
 const GO_KEY = process.env.AI_IMPORT_GO_KEY ?? '';
 const GO_MODEL = process.env.AI_IMPORT_GO_MODEL ?? 'deepseek-v4-flash';
 const GO_FALLBACK_MODEL = process.env.AI_IMPORT_GO_FALLBACK_MODEL ?? 'deepseek-v4-pro';
-const ZEN_MODEL = process.env.AI_MODEL_MENU_IMPORT ?? 'deepseek-v4-flash-free';
+const ZEN_MODEL = process.env.AI_MODEL_MENU_IMPORT ?? 'nemotron-3-ultra-free';
 const ZEN_FALLBACK_MODEL = 'mimo-v2.5-free';
 const ZEN_KEYS = (process.env.OPENCODE_ZEN_API_KEYS ?? '').split(',').map((key) => key.trim()).filter(Boolean);
 // A single call retries internally via schema-repair (same-model corrective turns),
@@ -43,14 +43,14 @@ export interface Endpoint {
 
 export function buildEndpoints(): Endpoint[] {
   const endpoints: Endpoint[] = [];
+  for (const key of ZEN_KEYS) endpoints.push({ url: OPENCODE_URL, key, model: ZEN_MODEL });
+  for (const key of ZEN_KEYS) endpoints.push({ url: OPENCODE_URL, key, model: ZEN_FALLBACK_MODEL });
   if (GO_BASE_URL && GO_KEY) {
     endpoints.push({ url: `${GO_BASE_URL}/chat/completions`, key: GO_KEY, model: GO_MODEL });
     if (GO_FALLBACK_MODEL !== GO_MODEL) {
       endpoints.push({ url: `${GO_BASE_URL}/chat/completions`, key: GO_KEY, model: GO_FALLBACK_MODEL });
     }
   }
-  for (const key of ZEN_KEYS) endpoints.push({ url: OPENCODE_URL, key, model: ZEN_MODEL });
-  for (const key of ZEN_KEYS) endpoints.push({ url: OPENCODE_URL, key, model: ZEN_FALLBACK_MODEL });
   const seen = new Set<string>();
   return endpoints.filter((endpoint) => {
     const key = `${endpoint.url}|${endpoint.key}|${endpoint.model}`;
