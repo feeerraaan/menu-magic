@@ -19,7 +19,10 @@ function parseKeys(raw: string | undefined): string[] {
 export function getProviderForFeature(feature: AiFeatureKey): LLMProvider {
   const keys = parseKeys(Deno.env.get('OPENCODE_ZEN_API_KEYS'));
   const model = Deno.env.get(`AI_MODEL_${feature.toUpperCase()}`) ?? Deno.env.get('AI_MODEL_DEFAULT');
-  const fallbackModels = feature === 'menu_import' ? ['mimo-v2.5-free'] : [];
+  // laguna-s-2.1-free is the general fallback (fastest clean JSON + tool calls of the free
+  // roster; deepseek-v4-flash-free has outage days). menu_import keeps mimo as a last resort.
+  const fallbackModels =
+    feature === 'menu_import' ? ['laguna-s-2.1-free', 'mimo-v2.5-free'] : ['laguna-s-2.1-free'];
   // Streaming gets an inactivity timeout plus a hard per-block cap. This lets active model
   // output run past 30s without allowing two chunks + fallback to hit Supabase's CPU/wall limit.
   const requestTimeoutMs = feature === 'menu_import' ? 30_000 : undefined;

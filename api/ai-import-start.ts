@@ -29,7 +29,9 @@ const GO_KEY = process.env.AI_IMPORT_GO_KEY ?? '';
 const GO_MODEL = process.env.AI_IMPORT_GO_MODEL ?? 'deepseek-v4-flash';
 const GO_FALLBACK_MODEL = process.env.AI_IMPORT_GO_FALLBACK_MODEL ?? 'deepseek-v4-pro';
 const ZEN_MODEL = process.env.AI_MODEL_MENU_IMPORT ?? 'nemotron-3-ultra-free';
-const ZEN_FALLBACK_MODEL = 'mimo-v2.5-free';
+// laguna-s-2.1-free: fastest clean JSON of the free roster; deepseek-v4-flash-free has
+// outage days and mimo's numerics are weak (returned "max_bid": 8 in the 2026-08-24 probe).
+const ZEN_FALLBACK_MODEL = 'laguna-s-2.1-free';
 const ZEN_KEYS = (process.env.OPENCODE_ZEN_API_KEYS ?? '').split(',').map((key) => key.trim()).filter(Boolean);
 // A single call retries internally via schema-repair (same-model corrective turns),
 // mirroring mindmap's withSchemaRepair.
