@@ -26,3 +26,10 @@ dist-ssr
 .env*
 .claude
 supabase/.temp
+
+# Remotion render artifacts. Chunks, probes and temp bundles are regenerable and
+# large; the finished films live in docs/video/.
+video/out/
+video/.rtmp*/
+video/.assets-tmp/
+video/.aj/

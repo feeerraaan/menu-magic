@@ -5,6 +5,7 @@ import * as aiApi from '@/lib/ai-api';
 import type { CustomerAssistantMessage } from '@ai/customerAssistant';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface WidgetMessage {
   id: string;
@@ -26,6 +27,7 @@ function getSessionToken(): string {
 
 export function CustomerAssistantWidget({ slug }: { slug: string }) {
   const { t } = useTranslation();
+  const { language } = useLanguage();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<WidgetMessage[]>([]);
   const [input, setInput] = useState('');
@@ -51,6 +53,7 @@ export function CustomerAssistantWidget({ slug }: { slug: string }) {
         slug,
         sessionToken: getSessionToken(),
         message: text,
+        lang: language,
       });
       setMessages((prev) => [
         ...prev,

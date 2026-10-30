@@ -4,6 +4,7 @@ export interface CustomerAssistantSendInput {
   slug: string;
   sessionToken: string;
   message: string;
+  lang?: string;
 }
 
 export interface CustomerAssistantMessage {

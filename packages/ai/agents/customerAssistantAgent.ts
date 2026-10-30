@@ -54,8 +54,9 @@ export async function extractConstraints(
   provider: LLMProvider,
   message: string,
   restaurantName: string,
+  lang: string = 'es',
 ): Promise<ConstraintExtraction> {
-  const { system, messages } = buildConstraintExtractionPrompt(message, restaurantName);
+  const { system, messages } = buildConstraintExtractionPrompt(message, restaurantName, lang);
   const result = await provider.generateStructured({
     system,
     messages,
@@ -168,6 +169,7 @@ export async function rankCandidates(
     currency: string;
     mood_or_craving: string | null;
     candidates: RankedCandidate[];
+    lang?: string;
   },
 ): Promise<z.infer<typeof RankingOutputSchema>> {
   const { system, messages } = buildRankingPrompt(input);

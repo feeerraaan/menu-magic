@@ -44,6 +44,7 @@ interface RequestBody {
   slug?: string;
   sessionToken?: string;
   message?: string;
+  lang?: string;
 }
 
 interface RestaurantCtx {
@@ -77,6 +78,7 @@ serve(async (req) => {
 
   try {
     const body = (await req.json()) as RequestBody;
+    const lang = body.lang === 'en' ? 'en' : 'es';
     if (!body.slug || !body.message?.trim() || !body.sessionToken) {
       return jsonResponse({ error: "slug, sessionToken and message are required" }, 400);
     }
@@ -106,8 +108,11 @@ serve(async (req) => {
     };
 
     if (!ASSISTANT_ENABLED_PLANS.includes(plan)) {
+      const notEnabledReply = lang === 'en'
+        ? "This restaurant hasn't enabled the smart assistant yet. 🍽️"
+        : "Este restaurante todavía no ha activado el asistente inteligente. 🍽️";
       return jsonResponse({
-        reply: "Este restaurante todavía no ha activado el asistente inteligente. 🍽️",
+        reply: notEnabledReply,
         recommendations: [],
         rateLimited: false,
       });
@@ -153,11 +158,17 @@ serve(async (req) => {
         session_token: body.sessionToken,
         ip_hash: ipHash,
       });
+      const rateLimitReply = lang === 'en'
+        ? "Oops! I've received too many messages in a short time. Try again later. 😊"
+        : "¡Uy! He recibido demasiados mensajes en poco tiempo. Vuelve a intentarlo en un rato. 😊";
+      const rateLimitMsg = lang === 'en'
+        ? "Too many messages. Try again later."
+        : "Demasiados mensajes — intenta más tarde";
       return jsonResponse({
-        reply: "¡Uy! He recibido demasiados mensajes en poco tiempo. Vuelve a intentarlo en un rato. 😊",
+        reply: rateLimitReply,
         recommendations: [],
         rateLimited: true,
-        rateLimitMessage: "Demasiados mensajes — intenta más tarde",
+        rateLimitMessage: rateLimitMsg,
       });
     }
 
@@ -206,15 +217,17 @@ serve(async (req) => {
     const provider = getProviderForFeature("customer_assistant");
 
     // 1. Parse constraints (LLM, non-safety-critical).
-    const constraints = await extractConstraints(provider, body.message, ctx.name);
+    const constraints = await extractConstraints(provider, body.message, ctx.name, lang);
 
     // 2. Deterministic pre-filter (pure code, no LLM).
     const candidates = filterCandidates(menuItems, constraints);
 
     if (candidates.length === 0) {
+      const noMatchReply = lang === 'en'
+        ? "I couldn't find dishes on the menu that match all your constraints. Try relaxing a condition (e.g. price or spice level)."
+        : "No encuentro platos en el menú que cumplan con todas tus restricciones. Prueba a relajar alguna condición (por ejemplo el precio o el picante).";
       return jsonResponse({
-        reply:
-          "No encuentro platos en el menú que cumplan con todas tus restricciones. Prueba a relajar alguna condición (por ejemplo el precio o el picante).",
+        reply: noMatchReply,
         recommendations: [],
         rateLimited: false,
       });
@@ -226,11 +239,12 @@ serve(async (req) => {
       currency: ctx.currency,
       mood_or_craving: constraints.mood_or_craving ?? null,
       candidates,
+      lang,
     });
 
     // 4. Server-side hallucination safety net.
     const valid = validateRecommendations(ranking.recommendations, candidates);
-    const reply = ranking.reply || buildDefaultReply(valid);
+    const reply = ranking.reply || buildDefaultReply(valid, lang);
 
     return jsonResponse({
       reply,
@@ -249,7 +263,12 @@ serve(async (req) => {
   }
 });
 
-function buildDefaultReply(recs: { name: string; price: number | null }[]): string {
-  if (recs.length === 0) return "No he encontrado opciones que encajen, pero puedo volver a intentarlo con otras condiciones.";
-  return `Te recomiendo ${recs.map((r) => r.name).join(", ")}.`;
+function buildDefaultReply(recs: { name: string; price: number | null }[], lang: string = 'es'): string {
+  if (recs.length === 0) {
+    return lang === 'en'
+      ? "I couldn't find matching options, but I can try again with different conditions."
+      : "No he encontrado opciones que encajen, pero puedo volver a intentarlo con otras condiciones.";
+  }
+  const list = recs.map((r) => r.name).join(', ');
+  return lang === 'en' ? `I recommend ${list}.` : `Te recomiendo ${list}.`;
 }

@@ -21,6 +21,17 @@ SaCarta is a SaaS platform that gives restaurants a **digital menu powered by AI
 
 Born in Mallorca, built for the hospitality industry: restaurants, hotels, bars, beach clubs and coffee shops.
 
+## Watch it
+
+| | |
+|---|---|
+| **Launch film** (2:45) | [`docs/video/sacarta-launch-v3.mp4`](docs/video/sacarta-launch-v3.mp4) · the whole product, click by click |
+| **Tour** (1:00) | [16:9](docs/video/sacarta-tour-16x9-v3.mp4) · [9:16](docs/video/sacarta-tour-9x16-v3.mp4) · five clicks, five payoffs |
+| **Reel** (0:56) | [16:9](docs/video/sacarta-reel-16x9-v3.mp4) · [9:16](docs/video/sacarta-reel-9x16-v3.mp4) · thirty shots for a feed |
+
+Every page in shot is a live screenshot of the deployed app. Scripts and build notes in
+[`docs/video/`](docs/video/README.md); the Remotion source is in [`/video`](video).
+
 ## The problem
 
 Restaurant owners lose **hours every week** maintaining their menu:

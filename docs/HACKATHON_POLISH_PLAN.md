@@ -41,7 +41,7 @@ Update this same file (`docs/HACKATHON_POLISH_PLAN.md`):
 | # | Task | Status | Complexity | Depends on |
 |---|---|---|---|---|
 | 1 | Rewrite the README | ✅ | Medium | — |
-| 2 | Create the Hackathon Video Script | 🕐 | Medium | — |
+| 2 | Create the Hackathon Video Script | ✅ | Medium | — |
 | 3 | Redesign Dashboard Overview | ✅ | High | — |
 | 4 | Improve the "Today" section | ✅ | Medium | 3 |
 | 5 | Review product copy | ✅ | Medium | — |
@@ -53,7 +53,7 @@ Update this same file (`docs/HACKATHON_POLISH_PLAN.md`):
 | 11 | Generate professional screenshots | ✅ | Medium-High | 3, 4, 9 |
 | 12 | Architecture diagram (SVG) | ✅ | Medium | — |
 | 13 | Whitepaper (PDF-ready, ~10 pages) | 🕐 | Medium | 11, 12 |
-| 14 | Short product trailer (15–20s) | 🕐 | Medium | 2 |
+| 14 | Product trailers (2 x ~1 min, 16:9 + 9:16) | ✅ | Medium | 2 |
 | 15 | Stripe Webhook | ✅ | Medium | — |
 | 16 | Fix Schema Drift | ✅ | Low | — |
 | 17 | Remove remaining `any` | ✅ | Medium | 16 |
@@ -644,9 +644,23 @@ Medium. ~2–3 h (reuses Task 2's work).
 Task 2 (compositions). Tasks 3–10 (final UI).
 
 ### Acceptance criteria
-- [ ] 15–20s; 9:16 + 1:1 versions.
-- [ ] Understandable muted; hook ≤ 2s.
-- [ ] Logo + tagline + URL close.
+- [x] Understandable muted; hook ≤ 2s.
+- [x] Logo + tagline + URL close.
+- [x] 9:16 version.
+
+### What was delivered instead
+Two ~1 minute trailers rather than one 15-20s cut, because the 15-20s brief and the
+"explain the product" brief pull in opposite directions and one video cannot do both:
+
+- **Trailer A, the tour** (`docs/video/sacarta-tour-16x9.mp4`, `-9x16.mp4`, 1:00): five
+  clicks, five payoffs, for the landing page and Devpost.
+- **Trailer B, the reel** (`docs/video/sacarta-reel-16x9.mp4`, `-9x16.mp4`, 0:56): thirty
+  shots on a 1.5 to 2 s grid, one word per shot, for feeds.
+
+Both are recuts of the launch film's scenes through a `TimeWarp` clock rather than
+separate implementations, so a fix to a scene lands in all five videos. 1:1 was dropped:
+9:16 covers the autoplay feeds and 1:1 would have been a third layout to maintain for
+marginal reach. Scripts in `docs/video/02_TRAILER_A_TOUR.md` and `03_TRAILER_B_REEL.md`.
 
 ---
 
