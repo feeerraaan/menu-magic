@@ -112,9 +112,11 @@ async function callChatCompletions(
 
       // Rate-limited or out of balance on this key — try the next one before failing.
       if (res.status === 429 || res.status === 402) {
-        lastError = new Error(
-          `Provider ${config.id} rejected key #${i + 1}/${config.apiKeys.length} (status ${res.status})`,
-        );
+        const text = await res.text().catch(() => '');
+        const freeUsageLimit = /FreeUsageLimitError|free usage limit reached/i.test(text);
+        lastError = new Error(freeUsageLimit
+          ? `Provider ${config.id} free usage limit reached for all configured keys.`
+          : `Provider ${config.id} rejected key #${i + 1}/${config.apiKeys.length} (status ${res.status}): ${text}`);
         continue;
       }
 

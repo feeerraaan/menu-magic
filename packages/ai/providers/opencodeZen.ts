@@ -59,6 +59,9 @@ export function createOpenCodeZenProvider(
         return await operation(providers[i]);
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
+        // OpenCode Zen's free allowance is account-wide. Once every configured key reports
+        // this limit, trying more free models cannot succeed and only wastes requests.
+        if (/FreeUsageLimitError|free usage limit reached/i.test(message)) throw error;
         failures.push(`${models[i]}: ${message}`);
         if (i + 1 < providers.length) {
           console.warn(`[opencode-zen] model ${models[i]} failed; trying ${models[i + 1]}: ${message}`);

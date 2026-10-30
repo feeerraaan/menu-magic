@@ -75,10 +75,12 @@ serve(async (req) => {
   const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
   const supabase = createClient(supabaseUrl, serviceKey, { auth: { persistSession: false } });
+  let responseLanguage: 'en' | 'es' = 'es';
 
   try {
     const body = (await req.json()) as RequestBody;
     const lang = body.lang === 'en' ? 'en' : 'es';
+    responseLanguage = lang;
     if (!body.slug || !body.message?.trim() || !body.sessionToken) {
       return jsonResponse({ error: "slug, sessionToken and message are required" }, 400);
     }
@@ -259,6 +261,12 @@ serve(async (req) => {
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.error("[ai-customer-assistant] ERROR", message);
+    if (/FreeUsageLimitError|free usage limit reached/i.test(message)) {
+      const reply = responseLanguage === 'en'
+        ? 'The assistant has temporarily reached its free AI usage limit. Please try again later.'
+        : 'El asistente ha alcanzado temporalmente su límite gratuito de IA. Inténtalo más tarde.';
+      return jsonResponse({ error: reply }, 429);
+    }
     return jsonResponse({ error: message }, 500);
   }
 });
