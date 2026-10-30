@@ -1,6 +1,6 @@
 // Edge-Function-only. Never imported by the Vite frontend — see /docs/AI_ARCHITECTURE.md §1.
 
-export type ProviderId = 'opencode-zen'; // extend later: 'openai' | 'anthropic' | 'gemini' | ...
+export type ProviderId = 'opencode-zen' | 'openrouter';
 
 export type AiFeatureKey =
   | 'description_generator'
