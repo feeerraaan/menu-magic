@@ -652,14 +652,10 @@ export default function PublicMenu() {
         const availableMenu = menus.find(m => {
           const scheduleRules = m.schedule_rules as unknown as ScheduleRule[] | null;
           return isMenuAvailable(scheduleRules);
-        });
+        }) ?? menus[0];
 
-        if (!availableMenu) {
-          setError(t('common.menuUnavailableNow'));
-          setLoading(false);
-          return;
-        }
-
+        // Keep the public menu available outside configured service hours by
+        // falling back to the first menu in display order.
         const menu = availableMenu;
 
         // Fetch categories with items
