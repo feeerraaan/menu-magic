@@ -1,15 +1,19 @@
 {
   "header": {
     "signIn": "Sign In",
-    "startFree": "Start Free"
+    "startFree": "Create my menu"
   },
   "hero": {
     "title": "A restaurant menu that",
     "highlight": "works for you",
     "description": "Create, translate and optimize your menu with AI in minutes. Your customers scan, and everything they need is right there, in their language.",
-    "startButton": "Start Free",
-    "demoButton": "View Live Demo",
-    "badge": "AI-powered menu platform"
+    "startButton": "Create my menu free",
+    "demoButton": "See a real menu",
+    "badge": "AI-powered menu platform",
+    "kicker": "Digital menus for restaurants",
+    "proof": "No card needed. Your first menu ready in minutes.",
+    "demoLink": "See a real menu",
+    "previewCaption": "The menu your guest sees."
   },
   "features": {
     "title": "Everything you need to grow",
@@ -25,7 +29,8 @@
     "analytics": {
       "title": "Know what actually sells",
       "desc": "See what customers look at and get AI recommendations to improve it."
-    }
+    },
+    "kicker": "The product"
   },
   "pricing": {
     "title": "Transparent pricing",
@@ -98,10 +103,24 @@
           "Manual menu setup by us"
         ]
       }
+    },
+    "kicker": "Pricing",
+    "note": "No commitment. Prices in euros, VAT included.",
+    "planTaglines": {
+      "sargantana": "Try it with no commitment.",
+      "ferreret": "For a menu that changes all year.",
+      "myotragus": "Never pay monthly again."
+    },
+    "planCta": {
+      "sargantana": "Create a free account",
+      "ferreret": "Start with Ferreret",
+      "myotragus": "Buy Myotragus"
     }
   },
   "footer": {
-    "copyright": "© {year} SaCarta. All rights reserved."
+    "copyright": "© {year} SaCarta. All rights reserved.",
+    "tagline": "Digital menus for restaurants that change often.",
+    "madeIn": "Made in Mallorca"
   },
   "contact": {
     "title": "Have a question?",
@@ -117,7 +136,9 @@
     "success": "Message sent!",
     "successDesc": "We'll get back to you as soon as possible.",
     "error": "Failed to send",
-    "errorDesc": "Please try again."
+    "errorDesc": "Please try again.",
+    "kicker": "Contact",
+    "replyTime": "We reply within one working day."
   },
   "auth": {
     "signIn": "Sign In",
@@ -818,7 +839,8 @@
         "title": "Zero visibility",
         "desc": "No data on what customers look at, so you can't improve what sells."
       }
-    ]
+    ],
+    "kicker": "The problem"
   },
   "solution": {
     "title": "Let AI run your menu",
@@ -840,7 +862,9 @@
         "title": "Optimize",
         "desc": "A health score and daily recommendations keep it growing."
       }
-    ]
+    ],
+    "kicker": "How it works",
+    "imageCaption": "Upload a PDF, a photo or text and AI structures the menu."
   },
   "comparison": {
     "title": "Before and after SaCarta",
@@ -878,7 +902,8 @@
         "before": "No data on what guests look at.",
         "after": "Health score and recommendations."
       }
-    ]
+    ],
+    "kicker": "Before and after"
   },
   "limits": {
     "photos": "Photos",
@@ -892,5 +917,14 @@
     "manualSetup": "Manual menu setup by us",
     "aiCreditsPerMonth": "AI credits / month",
     "aiCustomerAssistantEnabled": "AI assistant for customers"
+  },
+  "nav": {
+    "product": "Product",
+    "how": "How it works",
+    "pricing": "Pricing",
+    "contact": "Contact"
+  },
+  "statement": {
+    "text": "Your menu shouldn't steal your afternoons."
   }
 }

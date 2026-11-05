@@ -1,15 +1,19 @@
 {
   "header": {
     "signIn": "Iniciar sesión",
-    "startFree": "Empezar gratis"
+    "startFree": "Crear mi carta"
   },
   "hero": {
     "title": "Una carta de restaurante que",
     "highlight": "trabaja por ti",
     "description": "Crea, traduce y optimiza tu menú con IA en minutos. Tus clientes escanean y tienen todo lo que necesitan al instante, en su idioma.",
-    "startButton": "Empezar gratis",
-    "demoButton": "Ver demo en vivo",
-    "badge": "Plataforma de cartas con IA"
+    "startButton": "Crear mi carta gratis",
+    "demoButton": "Ver una carta real",
+    "badge": "Plataforma de cartas con IA",
+    "kicker": "Cartas digitales para restaurantes",
+    "proof": "Sin tarjeta. Tu primera carta lista en minutos.",
+    "demoLink": "Ver una carta real",
+    "previewCaption": "La carta que ve tu cliente."
   },
   "features": {
     "title": "Todo lo que necesitas para crecer",
@@ -25,7 +29,8 @@
     "analytics": {
       "title": "Sabes qué vende de verdad",
       "desc": "Ve lo que miran tus clientes y recibe recomendaciones IA para mejorarlo."
-    }
+    },
+    "kicker": "El producto"
   },
   "pricing": {
     "title": "Precios transparentes",
@@ -95,10 +100,24 @@
           "Configuración manual del menú por nosotros"
         ]
       }
+    },
+    "kicker": "Precios",
+    "note": "Sin permanencia. Precios en euros, IVA incluido.",
+    "planTaglines": {
+      "sargantana": "Para probar sin compromiso.",
+      "ferreret": "Para una carta viva, todo el año.",
+      "myotragus": "Para no volver a pagar cada mes."
+    },
+    "planCta": {
+      "sargantana": "Crear cuenta gratis",
+      "ferreret": "Empezar con Ferreret",
+      "myotragus": "Comprar Myotragus"
     }
   },
   "footer": {
-    "copyright": "© {year} SaCarta. Todos los derechos reservados."
+    "copyright": "© {year} SaCarta. Todos los derechos reservados.",
+    "tagline": "Cartas digitales para restaurantes que cambian a menudo.",
+    "madeIn": "Hecho en Mallorca"
   },
   "contact": {
     "title": "¿Tienes alguna pregunta?",
@@ -114,7 +133,9 @@
     "success": "¡Mensaje enviado!",
     "successDesc": "Te responderemos lo antes posible.",
     "error": "Error al enviar",
-    "errorDesc": "Por favor, inténtalo de nuevo."
+    "errorDesc": "Por favor, inténtalo de nuevo.",
+    "kicker": "Contacto",
+    "replyTime": "Respondemos en un día laborable."
   },
   "auth": {
     "signIn": "Iniciar Sesión",
@@ -815,7 +836,8 @@
         "title": "Cero visibilidad",
         "desc": "Sin datos sobre lo que miran tus clientes, no puedes mejorar lo que vende."
       }
-    ]
+    ],
+    "kicker": "El problema"
   },
   "solution": {
     "title": "Deja que la IA gestione tu carta",
@@ -837,7 +859,9 @@
         "title": "Optimiza",
         "desc": "Un índice de salud y recomendaciones diarias la hacen crecer."
       }
-    ]
+    ],
+    "kicker": "Cómo funciona",
+    "imageCaption": "Sube un PDF, una foto o texto y la IA estructura la carta."
   },
   "comparison": {
     "title": "Antes y después de SaCarta",
@@ -875,7 +899,8 @@
         "before": "Sin datos de lo que miran tus clientes.",
         "after": "Índice de salud y recomendaciones."
       }
-    ]
+    ],
+    "kicker": "Antes y después"
   },
   "limits": {
     "photos": "Fotos",
@@ -889,5 +914,14 @@
     "manualSetup": "Configuración manual del menú por nosotros",
     "aiCreditsPerMonth": "Créditos IA / mes",
     "aiCustomerAssistantEnabled": "Asistente IA para clientes"
+  },
+  "nav": {
+    "product": "Producto",
+    "how": "Cómo funciona",
+    "pricing": "Precios",
+    "contact": "Contacto"
+  },
+  "statement": {
+    "text": "Tu carta no debería robarte las tardes."
   }
 }

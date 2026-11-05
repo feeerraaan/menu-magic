@@ -1,15 +1,19 @@
 {
   "header": {
     "signIn": "Iniciar sessió",
-    "startFree": "Començar gratis"
+    "startFree": "Crear la meva carta"
   },
   "hero": {
     "title": "Una carta de restaurant que",
     "highlight": "treballa per tu",
     "description": "Crea, tradueix i optimitza el teu menú amb IA en minuts. Els teus clients escanegen i tenen tot el que necessiten a l'instant, en el seu idioma.",
-    "startButton": "Començar gratis",
-    "demoButton": "Veure demostració en directe",
-    "badge": "Plataforma de cartes amb IA"
+    "startButton": "Crear la meva carta gratis",
+    "demoButton": "Veure una carta real",
+    "badge": "Plataforma de cartes amb IA",
+    "kicker": "Cartes digitals per a restaurants",
+    "proof": "Sense targeta. La teva primera carta llesta en minuts.",
+    "demoLink": "Veure una carta real",
+    "previewCaption": "La carta que veu el teu client."
   },
   "features": {
     "title": "Tot el que necessites per créixer",
@@ -25,7 +29,8 @@
     "analytics": {
       "title": "Saps què ven de veritat",
       "desc": "Veus què miren els teus clients i reps recomanacions IA per millorar-ho."
-    }
+    },
+    "kicker": "El producte"
   },
   "pricing": {
     "title": "Preus transparents",
@@ -95,10 +100,24 @@
           "Configuració manual del menú per nosaltres"
         ]
       }
+    },
+    "kicker": "Preus",
+    "note": "Sense permanència. Preus en euros, IVA inclòs.",
+    "planTaglines": {
+      "sargantana": "Prova-ho sense compromís.",
+      "ferreret": "Per a una carta que canvia tot l'any.",
+      "myotragus": "No tornis a pagar cada mes."
+    },
+    "planCta": {
+      "sargantana": "Crear un compte gratis",
+      "ferreret": "Començar amb Ferreret",
+      "myotragus": "Comprar Myotragus"
     }
   },
   "footer": {
-    "copyright": "© {year} SaCarta. Tots els drets reservats."
+    "copyright": "© {year} SaCarta. Tots els drets reservats.",
+    "tagline": "Cartes digitals per a restaurants que canvien sovint.",
+    "madeIn": "Fet a Mallorca"
   },
   "contact": {
     "title": "Tens alguna pregunta?",
@@ -114,7 +133,9 @@
     "success": "Missatge enviat!",
     "successDesc": "Et respondrem el més aviat possible.",
     "error": "Error en enviar",
-    "errorDesc": "Si us plau, torna-ho a provar."
+    "errorDesc": "Si us plau, torna-ho a provar.",
+    "kicker": "Contacte",
+    "replyTime": "Responem en un dia laborable."
   },
   "auth": {
     "signIn": "Iniciar Sessió",
@@ -815,7 +836,8 @@
         "title": "Zero visibilitat",
         "desc": "Sense dades sobre què miren els teus clients, no pots millorar el que ven."
       }
-    ]
+    ],
+    "kicker": "El problema"
   },
   "solution": {
     "title": "Deixa que la IA gestioni la teva carta",
@@ -837,7 +859,9 @@
         "title": "Optimitza",
         "desc": "Un índex de salut i recomanacions diàries la fan créixer."
       }
-    ]
+    ],
+    "kicker": "Com funciona",
+    "imageCaption": "Puja un PDF, una foto o text i la IA estructura la carta."
   },
   "comparison": {
     "title": "Abans i després de SaCarta",
@@ -875,7 +899,8 @@
         "before": "Sense dades del que miren els teus clients.",
         "after": "Índex de salut i recomanacions."
       }
-    ]
+    ],
+    "kicker": "Abans i després"
   },
   "limits": {
     "photos": "Fotos",
@@ -889,5 +914,14 @@
     "manualSetup": "Configuració manual del menú per nosaltres",
     "aiCreditsPerMonth": "Crèdits IA / mes",
     "aiCustomerAssistantEnabled": "Assistent IA per a clients"
+  },
+  "nav": {
+    "product": "Producte",
+    "how": "Com funciona",
+    "pricing": "Preus",
+    "contact": "Contacte"
+  },
+  "statement": {
+    "text": "La teva carta no hauria de robar-te les tardes."
   }
 }

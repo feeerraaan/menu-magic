@@ -1,12 +1,11 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { QrCode, BarChart3, Globe, ArrowRight, Mail, Send, Sparkles } from 'lucide-react';
-import { PRICING_PLANS } from '@/lib/constants';
-import { PricingCard } from '@/components/PricingCard';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import { ProblemSection } from '@/components/landing/ProblemSection';
 import { SolutionSection } from '@/components/landing/SolutionSection';
+import { FeaturesSection } from '@/components/landing/FeaturesSection';
 import { ComparisonSection } from '@/components/landing/ComparisonSection';
+import { PublicPricing } from '@/components/landing/PublicPricing';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
@@ -15,6 +14,13 @@ import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+const NAV_LINKS = [
+  { key: 'product', href: '#producto' },
+  { key: 'how', href: '#como-funciona' },
+  { key: 'pricing', href: '#precios' },
+  { key: 'contact', href: '#contacto' },
+] as const;
+
 export default function Index() {
   const { t } = useTranslation();
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
@@ -22,8 +28,7 @@ export default function Index() {
 
   const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Validate inputs
+
     if (!contactForm.name.trim() || !contactForm.email.trim() || !contactForm.message.trim()) {
       return;
     }
@@ -62,145 +67,141 @@ export default function Index() {
 
   return (
     <div className="min-h-screen bg-background font-sans selection:bg-primary/20">
-      {/* Header */}
-      <header className="border-b border-border/40 bg-background/95 backdrop-blur-md sticky top-0 z-50 transition-all duration-300">
-        <div className="container mx-auto flex items-center justify-between py-2 px-6">
-          <div className="flex items-center gap-2">
-            <Link to="/" className="flex items-center gap-2 group">
-              <div className="h-20 w-20">
-                <img src="/logo.png" alt="SaCarta Logo"/>
-              </div>
+      <header className="sticky top-0 z-50 border-b border-border/70 bg-background/90 backdrop-blur-md">
+        <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-2 px-4 py-2 sm:px-6 lg:px-8">
+          <Link to="/" className="shrink-0" aria-label="SaCarta">
+            <img src="/logo.png" alt="SaCarta" className="h-12 w-12 sm:h-16 sm:w-16" />
+          </Link>
+
+          <nav className="hidden items-center gap-8 text-sm font-medium lg:flex">
+            {NAV_LINKS.map((link) => (
+              <a
+                key={link.key}
+                href={link.href}
+                className="text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {t(`nav.${link.key}`)}
+              </a>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-2 sm:gap-5">
+            <LanguageSelector className="w-[96px] sm:w-[140px]" />
+            <Link
+              to="/auth?mode=signin"
+              className="hidden text-sm font-medium text-muted-foreground transition-colors hover:text-foreground sm:block"
+            >
+              {t('header.signIn')}
             </Link>
-          </div>
-          <div className="flex items-center gap-2 sm:gap-4">
-            <LanguageSelector className="w-[120px] sm:w-[150px]" />
-            <Link to="/auth?mode=signin">
-              <Button variant="ghost" className="hidden sm:block font-medium hover:bg-primary/5 hover:text-primary">{t('header.signIn')}</Button>
-            </Link>
-            <Link to="/auth?mode=signup">
-              <Button className="rounded-full shadow-md shadow-primary/20 text-sm sm:text-base px-3 sm:px-6">{t('header.startFree')}</Button>
-            </Link>
+            <Button asChild size="sm" className="h-9 rounded-sm px-3 text-xs sm:h-10 sm:px-5 sm:text-sm">
+              <Link to="/auth?mode=signup">{t('header.startFree')}</Link>
+            </Button>
           </div>
         </div>
       </header>
 
-      {/* Hero */}
-      <section className="relative overflow-hidden pt-8 sm:pt-20 md:pt-32 pb-20 lg:pb-32">
-        {/* Background decoration */}
-        <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
-        <div className="absolute left-0 right-0 top-0 -z-10 m-auto h-[310px] w-[310px] rounded-full bg-primary/20 opacity-20 blur-[100px]"></div>
-        
-        <div className="container mx-auto px-4 text-center">
-          <div className="space-y-6 max-w-4xl mx-auto">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
-              <Sparkles className="h-4 w-4" />
-              {t('hero.badge')}
-            </div>
-            <h1 className="font-display text-5xl md:text-7xl font-bold tracking-tight leading-[1.1]">
-              {t('hero.title')} <br />
-              <span className="relative inline-block mt-1 sm:mt-2">
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-orange-500 to-accent drop-shadow-sm">
-                  {t('hero.highlight')}
-                </span>
-                <svg className="absolute w-[110%] h-3 -bottom-2 -left-[5%] text-primary/30 hidden sm:block" viewBox="0 0 200 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M2.00025 6.99997C25.7501 2.49994 132.5 -1.49996 198 6.99997" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
-                </svg>
-              </span>
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              {t('hero.description')}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-              <Link to="/auth">
-                <Button size="lg" className="text-lg px-8 h-14 rounded-full shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-0.5">
-                  {t('hero.startButton')} <ArrowRight className="ml-2 h-5 w-5" />
+      <main>
+        <section className="border-b border-border/70">
+          <div className="mx-auto grid w-full max-w-6xl items-center gap-14 px-6 pb-16 pt-12 lg:grid-cols-12 lg:gap-10 lg:px-8 lg:pb-24 lg:pt-20">
+            <div className="lg:col-span-6">
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary">
+                {t('hero.kicker')}
+              </p>
+              <h1 className="mt-7 max-w-2xl font-display text-[clamp(2.8rem,5.6vw,5rem)] font-medium leading-[0.98] tracking-[-0.02em] text-foreground">
+                {t('hero.title')}{' '}
+                <span className="italic">{t('hero.highlight')}</span>.
+              </h1>
+              <p className="mt-8 max-w-xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
+                {t('hero.description')}
+              </p>
+
+              <div className="mt-10 flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:gap-7">
+                <Button asChild size="lg" className="h-12 rounded-sm px-7 text-base font-semibold">
+                  <Link to="/auth?mode=signup">
+                    {t('hero.startButton')}
+                    <span aria-hidden="true">→</span>
+                  </Link>
                 </Button>
-              </Link>
-              <Link to="/m/sacarta">
-                <Button size="lg" variant="outline" className="text-lg px-8 h-14 rounded-full border-2 hover:bg-secondary/50 transition-all hover:-translate-y-0.5">
-                  {t('hero.demoButton')}
-                </Button>
-              </Link>
+                <Link
+                  to="/m/sacarta"
+                  className="text-sm font-semibold text-muted-foreground underline decoration-border underline-offset-4 transition-colors hover:text-foreground hover:decoration-primary"
+                >
+                  {t('hero.demoLink')}
+                </Link>
+              </div>
+
+              <p className="mt-8 text-xs uppercase tracking-[0.16em] text-muted-foreground">
+                {t('hero.proof')}
+              </p>
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Problem: the time restaurants lose */}
-      <ProblemSection />
-
-      {/* How AI solves it */}
-      <SolutionSection />
-
-      {/* Features */}
-      <section className="py-24 bg-secondary/30">
-        <div className="container mx-auto px-4">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="font-display text-4xl font-bold mb-4">
-              {t('features.title')}
-            </h2>
-            <p className="text-muted-foreground text-lg">
-              {t('features.subtitle')}
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            { [
-              { icon: QrCode, title: t('features.qr.title'), desc: t('features.qr.desc') },
-              { icon: Globe, title: t('features.translation.title'), desc: t('features.translation.desc') },
-              { icon: BarChart3, title: t('features.analytics.title'), desc: t('features.analytics.desc') },
-            ].map((f, i) => (
-              <div key={i} className="group bg-card hover:bg-card/50 p-8 rounded-2xl border border-border/50 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
-                <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                  <f.icon className="h-7 w-7 text-primary" />
+            <div className="lg:col-span-6">
+              <div className="mx-auto w-full max-w-[340px] lg:ml-auto lg:mr-0">
+                <div className="border border-border bg-card p-2 shadow-[0_30px_80px_-45px_rgba(38,28,23,0.55)]">
+                  <div className="flex items-center justify-between border-b border-border px-3 py-2">
+                    <span className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                      sacarta.azpy.es/m/sacarta
+                    </span>
+                    <span className="h-1.5 w-1.5 rounded-full bg-primary" aria-hidden="true" />
+                  </div>
+                  <img
+                    src="/product/menu-mobile.webp"
+                    alt={t('hero.previewCaption')}
+                    className="w-full"
+                  />
                 </div>
-                <h3 className="font-display text-xl font-bold mb-3">{f.title}</h3>
-                <p className="text-muted-foreground leading-relaxed">{f.desc}</p>
+                <p className="mt-3 text-left text-xs uppercase tracking-[0.16em] text-muted-foreground">
+                  {t('hero.previewCaption')}
+                </p>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Before vs After */}
-      <ComparisonSection />
-
-      {/* Pricing */}
-      <section className="py-24 relative">
-        <div className="container mx-auto px-4">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="font-display text-4xl font-bold mb-4">{t('pricing.title')}</h2>
-            <p className="text-muted-foreground text-lg">{t('pricing.subtitle')}</p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {PRICING_PLANS.map((plan, i) => (
-              <PricingCard 
-                key={i}
-                plan={plan}
-                isPublic={true}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Contact */}
-      <section className="py-24 bg-secondary/30">
-        <div className="container mx-auto px-4">
-          <div className="max-w-2xl mx-auto">
-            <div className="text-center mb-12">
-              <div className="inline-flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 mb-6">
-                <Mail className="h-7 w-7 text-primary" />
-              </div>
-              <h2 className="font-display text-4xl font-bold mb-4">{t('contact.title')}</h2>
-              <p className="text-muted-foreground text-lg">{t('contact.subtitle')}</p>
             </div>
-            
-            <form onSubmit={handleContactSubmit} className="bg-card p-8 rounded-2xl border border-border/50 shadow-sm space-y-6">
-              <div className="grid sm:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="contact-name">{t('contact.name')}</Label>
+          </div>
+        </section>
+
+        <ProblemSection />
+
+        <SolutionSection />
+
+        <FeaturesSection />
+
+        <section className="border-b border-primary/20 bg-primary py-16 text-primary-foreground lg:py-20">
+          <div className="mx-auto w-full max-w-6xl px-6 lg:px-8">
+            <p className="max-w-4xl font-display text-3xl font-medium leading-[1.12] tracking-tight sm:text-4xl lg:text-5xl">
+              {t('statement.text')}
+            </p>
+          </div>
+        </section>
+
+        <ComparisonSection />
+
+        <PublicPricing />
+
+        <section id="contacto" className="border-b border-border/70 bg-secondary/40 py-20 lg:py-28">
+          <div className="mx-auto grid w-full max-w-6xl gap-12 px-6 lg:grid-cols-12 lg:gap-16 lg:px-8">
+            <div className="lg:col-span-4">
+              <p className="mb-5 text-xs font-semibold uppercase tracking-[0.24em] text-primary">
+                {t('contact.kicker')}
+              </p>
+              <h2 className="font-display text-4xl font-medium leading-[1.05] tracking-tight sm:text-5xl">
+                {t('contact.title')}
+              </h2>
+              <p className="mt-6 max-w-sm text-lg leading-relaxed text-muted-foreground">
+                {t('contact.subtitle')}
+              </p>
+              <p className="mt-8 max-w-xs border-t border-border pt-4 text-sm leading-relaxed text-muted-foreground">
+                {t('contact.replyTime')}
+              </p>
+            </div>
+
+            <form onSubmit={handleContactSubmit} className="space-y-7 lg:col-span-8">
+              <div className="grid gap-7 sm:grid-cols-2 sm:gap-x-8">
+                <div>
+                  <Label
+                    htmlFor="contact-name"
+                    className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+                  >
+                    {t('contact.name')}
+                  </Label>
                   <Input
                     id="contact-name"
                     placeholder={t('contact.namePlaceholder')}
@@ -208,10 +209,16 @@ export default function Index() {
                     onChange={(e) => setContactForm(prev => ({ ...prev, name: e.target.value }))}
                     required
                     maxLength={100}
+                    className="mt-2 h-11 rounded-none border-0 border-b border-input bg-transparent px-0 text-base shadow-none focus-visible:border-primary focus-visible:ring-0 focus-visible:ring-offset-0"
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="contact-email">{t('contact.email')}</Label>
+                <div>
+                  <Label
+                    htmlFor="contact-email"
+                    className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+                  >
+                    {t('contact.email')}
+                  </Label>
                   <Input
                     id="contact-email"
                     type="email"
@@ -220,11 +227,18 @@ export default function Index() {
                     onChange={(e) => setContactForm(prev => ({ ...prev, email: e.target.value }))}
                     required
                     maxLength={255}
+                    className="mt-2 h-11 rounded-none border-0 border-b border-input bg-transparent px-0 text-base shadow-none focus-visible:border-primary focus-visible:ring-0 focus-visible:ring-offset-0"
                   />
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="contact-message">{t('contact.message')}</Label>
+
+              <div>
+                <Label
+                  htmlFor="contact-message"
+                  className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+                >
+                  {t('contact.message')}
+                </Label>
                 <Textarea
                   id="contact-message"
                   placeholder={t('contact.messagePlaceholder')}
@@ -232,35 +246,54 @@ export default function Index() {
                   onChange={(e) => setContactForm(prev => ({ ...prev, message: e.target.value }))}
                   required
                   maxLength={1000}
-                  rows={5}
-                  className="resize-none"
+                  rows={4}
+                  className="mt-2 resize-none rounded-none border-0 border-b border-input bg-transparent px-0 text-base shadow-none focus-visible:border-primary focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
               </div>
-              <Button 
-                type="submit" 
-                size="lg" 
-                className="w-full rounded-full shadow-md shadow-primary/20"
+
+              <Button
+                type="submit"
+                size="lg"
+                className="h-12 rounded-sm px-8 text-sm font-semibold"
                 disabled={isSending}
               >
-                {isSending ? (
-                  t('contact.sending')
-                ) : (
-                  <>
-                    {t('contact.send')} <Send className="ml-2 h-5 w-5" />
-                  </>
-                )}
+                {isSending ? t('contact.sending') : t('contact.send')}
+                {!isSending && <span aria-hidden="true">→</span>}
               </Button>
             </form>
           </div>
-        </div>
-      </section>
+        </section>
+      </main>
 
-      {/* Footer */}
-      <footer className="border-t border-border/50 bg-secondary/20 py-8">
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-muted-foreground text-sm">
-            {t('footer.copyright').replace('{year}', new Date().getFullYear().toString())}
-          </p>
+      <footer className="py-10">
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 lg:flex-row lg:items-end lg:justify-between lg:px-8">
+          <div>
+            <Link to="/" aria-label="SaCarta">
+              <img src="/logo.png" alt="SaCarta" className="h-14 w-14" />
+            </Link>
+            <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
+              {t('footer.tagline')}
+            </p>
+          </div>
+
+          <nav className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+            {NAV_LINKS.map((link) => (
+              <a
+                key={link.key}
+                href={link.href}
+                className="text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {t(`nav.${link.key}`)}
+              </a>
+            ))}
+          </nav>
+
+          <div className="text-xs leading-relaxed text-muted-foreground">
+            <p>{t('footer.madeIn')}</p>
+            <p className="mt-1">
+              {t('footer.copyright').replace('{year}', new Date().getFullYear().toString())}
+            </p>
+          </div>
         </div>
       </footer>
     </div>
